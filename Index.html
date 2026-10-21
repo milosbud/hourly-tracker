@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>HVAC Hours Tracker</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --danger: #dc2626;
+      --success: #16a34a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 16px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    h1 { font-size: 1.5rem; margin-bottom: 8px; }
+    h2 { font-size: 1.2rem; margin: 24px 0 12px; }
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    label { display: block; font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; }
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 1rem;
+      margin-bottom: 14px;
+    }
+    textarea { resize: vertical; min-height: 70px; }
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--primary);
+      color: white;
+    }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    button.secondary { background: #e2e8f0; color: var(--text); }
+    button.danger { background: var(--danger); }
+    button.small { width: auto; padding: 8px 14px; font-size: 0.9rem; margin-right: 8px; }
+    .hidden { display: none !important; }
+    .entry {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: #f8fafc;
+    }
+    .entry-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+    .entry-job { font-weight: 600; }
+    .entry-meta { font-size: 0.85rem; color: var(--muted); }
+    .error { color: var(--danger); font-size: 0.9rem; margin-top: 8px; }
+    .success { color: var(--success); font-size: 0.9rem; margin-top: 8px; }
+    .nav { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .nav button { width: auto; padding: 10px 16px; font-size: 0.95rem; }
+    .user-info { font-size: 0.9rem; color: var(--muted); margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen">
+    <div class="card">
+      <h1>HVAC Hours</h1>
+      <p style="color:var(--muted); margin-bottom:20px;">Log in to track your hours</p>
+
+      <label>Email</label>
+      <input type="email" id="email" placeholder="you@example.com" />
+
+      <label>Password</label>
+      <input type="password" id="password" placeholder="Password" />
+
+      <button id="login-btn">Log In</button>
+      <p id="login-error" class="error hidden"></p>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="app" class="hidden">
+    <div class="user-info">
+      Logged in as <strong id="user-email"></strong>
+      <button class="small secondary" id="logout-btn" style="float:right;">Log out</button>
+    </div>
+
+    <div class="nav">
+      <button id="nav-log" class="secondary">Log Hours</button>
+      <button id="nav-my" class="secondary">My Entries</button>
+      <button id="nav-admin" class="secondary hidden">Admin</button>
+    </div>
+
+    <!-- LOG HOURS -->
+    <div id="screen-log" class="card">
+      <h2>Log Hours</h2>
+
+      <label>Job</label>
+      <select id="job-select">
+        <option value="">Loading jobs...</option>
+      </select>
+
+      <label>Date</label>
+      <input type="date" id="work-date" />
+
+      <label>Hours worked</label>
+      <input type="number" id="hours" step="0.25" min="0.25" max="24" placeholder="e.g. 4.5" />
+
+      <label>Description (optional)</label>
+      <textarea id="description" placeholder="What did you do?"></textarea>
+
+      <button id="submit-btn">Submit Hours</button>
+      <p id="submit-msg" class="hidden"></p>
+    </div>
+
+    <!-- MY ENTRIES -->
+    <div id="screen-my" class="card hidden">
+      <h2>My Recent Entries</h2>
+      <div id="entries-list">Loading...</div>
+    </div>
+
+    <!-- ADMIN (placeholder for now) -->
+    <div id="screen-admin" class="card hidden">
+      <h2>Admin</h2>
+      <p>Admin tools will go here (Manage Jobs, Manage Users, View All Entries, Export CSV).</p>
+      <p style="margin-top:12px; color:var(--muted);">We will add these next.</p>
+    </div>
+  </div>
+
+<script>
+  // -------------------------------------------------
+  // 1. PUT YOUR SUPABASE CREDENTIALS HERE
+  // -------------------------------------------------
+  const SUPABASE_URL = 'https://bnryuusnqfjltstwwqaa.supabase.co'
+  const SUPABASE_ANON_KEY = 'PASTE_YOUR_ANON_PUBLIC_KEY_HERE'
+
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+  // -------------------------------------------------
+  // State
+  // -------------------------------------------------
+  let currentUser = null
+  let isAdmin = false
+
+  // -------------------------------------------------
+  // Helpers
+  // -------------------------------------------------
+  function show(id) {
+    document.getElementById('login-screen').classList.add('hidden')
+    document.getElementById('app').classList.remove('hidden')
+
+    document.getElementById('screen-log').classList.add('hidden')
+    document.getElementById('screen-my').classList.add('hidden')
+    document.getElementById('screen-admin').classList.add('hidden')
+
+    document.getElementById(id).classList.remove('hidden')
+  }
+
+  function showLogin() {
+    document.getElementById('login-screen').classList.remove('hidden')
+    document.getElementById('app').classList.add('hidden')
+  }
+
+  // -------------------------------------------------
+  // Auth
+  // -------------------------------------------------
+  async function checkSession() {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (session) {
+      currentUser = session.user
+      await loadProfile()
+      document.getElementById('user-email').textContent = currentUser.email
+      show('screen-log')
+      loadJobs()
+      // set today's date
+      document.getElementById('work-date').valueAsDate = new Date()
+    } else {
+      showLogin()
+    }
+  }
+
+  async function loadProfile() {
+    const { data } = await supabase
+      .from('profiles')
+      .select('is_admin, full_name')
+      .eq('id', currentUser.id)
+      .single()
+
+    isAdmin = data?.is_admin === true
+    if (isAdmin) {
+      document.getElementById('nav-admin').classList.remove('hidden')
+    }
+  }
+
+  document.getElementById('login-btn').addEventListener('click', async () => {
+    const email = document.getElementById('email').value.trim()
+    const password = document.getElementById('password').value
+    const errorEl = document.getElementById('login-error')
+
+    errorEl.classList.add('hidden')
+    document.getElementById('login-btn').disabled = true
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+
+    document.getElementById('login-btn').disabled = false
+
+    if (error) {
+      errorEl.textContent = error.message
+      errorEl.classList.remove('hidden')
+      return
+    }
+
+    currentUser = data.user
+    await loadProfile()
+    document.getElementById('user-email').textContent = currentUser.email
+    show('screen-log')
+    loadJobs()
+    document.getElementById('work-date').valueAsDate = new Date()
+  })
+
+  document.getElementById('logout-btn').addEventListener('click', async () => {
+    await supabase.auth.signOut()
+    currentUser = null
+    isAdmin = false
+    showLogin()
+  })
+
+  // -------------------------------------------------
+  // Navigation
+  // -------------------------------------------------
+  document.getElementById('nav-log').addEventListener('click', () => show('screen-log'))
+  document.getElementById('nav-my').addEventListener('click', () => {
+    show('screen-my')
+    loadMyEntries()
+  })
+  document.getElementById('nav-admin').addEventListener('click', () => show('screen-admin'))
+
+  // -------------------------------------------------
+  // Jobs
+  // -------------------------------------------------
+  async function loadJobs() {
+    const { data, error } = await supabase
+      .from('jobs')
+      .select('id, job_code, job_name')
+      .eq('active', true)
+      .order('job_code')
+
+    const select = document.getElementById('job-select')
+    select.innerHTML = ''
+
+    if (error || !data || data.length === 0) {
+      select.innerHTML = '<option value="">No active jobs – ask admin to add some</option>'
+      return
+    }
+
+    select.innerHTML = '<option value="">Select a job...</option>'
+    data.forEach(job => {
+      const opt = document.createElement('option')
+      opt.value = job.id
+      opt.textContent = `${job.job_code} – ${job.job_name}`
+      select.appendChild(opt)
+    })
+  }
+
+  // -------------------------------------------------
+  // Submit hours
+  // -------------------------------------------------
+  document.getElementById('submit-btn').addEventListener('click', async () => {
+    const jobId = document.getElementById('job-select').value
+    const workDate = document.getElementById('work-date').value
+    const hours = parseFloat(document.getElementById('hours').value)
+    const description = document.getElementById('description').value.trim()
+    const msg = document.getElementById('submit-msg')
+
+    msg.classList.add('hidden')
+
+    if (!jobId || !workDate || !hours || hours <= 0) {
+      msg.textContent = 'Please fill in job, date and hours'
+      msg.className = 'error'
+      msg.classList.remove('hidden')
+      return
+    }
+
+    document.getElementById('submit-btn').disabled = true
+
+    const { error } = await supabase.from('time_entries').insert({
+      user_id: currentUser.id,
+      job_id: jobId,
+      work_date: workDate,
+      hours: hours,
+      description: description || null
+    })
+
+    document.getElementById('submit-btn').disabled = false
+
+    if (error) {
+      msg.textContent = 'Error: ' + error.message
+      msg.className = 'error'
+    } else {
+      msg.textContent = 'Hours saved successfully!'
+      msg.className = 'success'
+      document.getElementById('hours').value = ''
+      document.getElementById('description').value = ''
+    }
+    msg.classList.remove('hidden')
+  })
+
+  // -------------------------------------------------
+  // My Entries (with Edit + Delete)
+  // -------------------------------------------------
+  async function loadMyEntries() {
+    const { data, error } = await supabase
+      .from('time_entries')
+      .select(`
+        id, work_date, hours, description,
+        jobs (job_code, job_name)
+      `)
+      .eq('user_id', currentUser.id)
+      .order('work_date', { ascending: false })
+      .limit(30)
+
+    const list = document.getElementById('entries-list')
+
+    if (error) {
+      list.innerHTML = '<p class="error">Error loading entries</p>'
+      return
+    }
+
+    if (!data || data.length === 0) {
+      list.innerHTML = '<p style="color:var(--muted)">No entries yet.</p>'
+      return
+    }
+
+    list.innerHTML = data.map(entry => `
+      <div class="entry" id="entry-${entry.id}">
+        <div class="entry-header">
+          <span class="entry-job">${entry.jobs?.job_code || '—'} – ${entry.jobs?.job_name || ''}</span>
+          <span>${entry.hours}h</span>
+        </div>
+        <div class="entry-meta">${entry.work_date}${entry.description ? ' • ' + entry.description : ''}</div>
+        <div style="margin-top:10px;">
+          <button class="small secondary" onclick="editEntry('${entry.id}', ${entry.hours}, '${(entry.description || '').replace(/'/g, "\\'")}')">Edit</button>
+          <button class="small danger" onclick="deleteEntry('${entry.id}')">Delete</button>
+        </div>
+      </div>
+    `).join('')
+  }
+
+  window.editEntry = async (id, currentHours, currentDesc) => {
+    const newHours = prompt('New hours:', currentHours)
+    if (newHours === null) return
+    const hours = parseFloat(newHours)
+    if (!hours || hours <= 0) return alert('Invalid hours')
+
+    const newDesc = prompt('Description (optional):', currentDesc || '')
+
+    const { error } = await supabase
+      .from('time_entries')
+      .update({ hours, description: newDesc || null })
+      .eq('id', id)
+
+    if (error) alert('Error updating: ' + error.message)
+    else loadMyEntries()
+  }
+
+  window.deleteEntry = async (id) => {
+    if (!confirm('Delete this entry?')) return
+
+    const { error } = await supabase
+      .from('time_entries')
+      .delete()
+      .eq('id', id)
+
+    if (error) alert('Error deleting: ' + error.message)
+    else loadMyEntries()
+  }
+
+  // -------------------------------------------------
+  // Start
+  // -------------------------------------------------
+  checkSession()
+</script>
+</body>
+</html>
