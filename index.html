@@ -9,7 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <style>
     :root {
-      color-scheme: light;
+      color-scheme: light dark;
       --bg:#f4f7fb; --surface:#fff; --surface-2:#f8faff; --text:#17233b;
       --muted:#71809a; --border:#e5ebf4; --navy:#101a33; --navy-2:#182747;
       --blue:#4776f6; --blue-soft:#edf2ff; --teal:#18b6a4; --teal-soft:#e7faf6;
@@ -129,7 +129,7 @@
       <form id="loginForm">
         <div class="field"><label for="email">Email address</label><input id="email" type="email" autocomplete="username" required placeholder="you@company.com"></div>
         <div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required placeholder="Enter your password"></div>
-        <button class="primary-btn" type="submit" style="width:100%;padding:12px">Sign in <span>â</span></button>
+        <button class="primary-btn" type="submit" style="width:100%;padding:12px">Sign in <span>-></span></button>
       </form>
       <p class="small muted" style="margin:17px 0 0">Secure access for your team. Contact your administrator if you need an account.</p>
     </div>
@@ -139,51 +139,51 @@
     <aside class="sidebar">
       <div class="brand"><div class="brand-mark">F</div><div><div class="brand-name">HVAC Hours Tracker</div><div class="brand-sub">HVAC team workspace</div></div></div>
       <div><div class="nav-label">Workspace</div><nav class="nav" id="sideNav">
-        <button data-page="log" class="active"><span class="nav-icon">ï¼</span>Log hours</button>
-        <button data-page="entries"><span class="nav-icon">â¤</span>My entries</button>
-        <button data-page="reports" class="admin-only hidden"><span class="nav-icon">â¥</span>Reports & insights</button>
-        <button data-page="jobs" class="admin-only hidden"><span class="nav-icon">â</span>Job management</button>
+        <button data-page="log" class="active"><span class="nav-icon">+</span>Log hours</button>
+        <button data-page="entries"><span class="nav-icon">[ ]</span>My entries</button>
+        <button data-page="reports" class="admin-only hidden"><span class="nav-icon">[R]</span>Reports & insights</button>
+        <button data-page="jobs" class="admin-only hidden"><span class="nav-icon">[J]</span>Job management</button>
       </nav></div>
-      <div class="sidebar-bottom"><div class="secure-note"><span>â</span><span>Built for field teams<br><span style="opacity:.7">Hours, jobs and reporting in one place.</span></span></div></div>
+      <div class="sidebar-bottom"><div class="secure-note"><span>*</span><span>Built for field teams<br><span style="opacity:.7">Hours, jobs and reporting in one place.</span></span></div></div>
     </aside>
     <main class="main">
       <header class="topbar">
         <div><div class="eyebrow" id="pageEyebrow">FIELD WORKSPACE</div><h1 id="pageTitle">Log your hours</h1><p class="subtitle" id="pageSubtitle">A quick entry now means less paperwork later.</p></div>
-        <div class="top-actions"><button class="icon-btn" id="themeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">â¾</button><div class="user-chip"><div class="avatar" id="userAvatar">F</div><div><div class="user-name" id="userName">Team member</div><div class="user-role" id="userRole">Technician</div></div></div><button class="secondary-btn" id="logoutBtn">Sign out</button></div>
+        <div class="top-actions"><div class="user-chip"><div class="avatar" id="userAvatar">F</div><div><div class="user-name" id="userName">Team member</div><div class="user-role" id="userRole">Technician</div></div></div><button class="secondary-btn" id="logoutBtn">Sign out</button></div>
       </header>
 
       <section id="page-log" class="page active">
         <div class="grid stats">
-          <div class="stat-card"><div class="stat-top"><span>Hours this week</span><span class="stat-icon blue">â·</span></div><div class="stat-value" id="weekHours">â</div><div class="stat-note">Your recorded hours, Monday to Sunday</div></div>
-          <div class="stat-card"><div class="stat-top"><span>Entries this week</span><span class="stat-icon teal">â¤</span></div><div class="stat-value" id="weekEntries">â</div><div class="stat-note">Submitted time entries</div></div>
-          <div class="stat-card"><div class="stat-top"><span>Active jobs</span><span class="stat-icon purple">â</span></div><div class="stat-value" id="activeJobsStat">â</div><div class="stat-note">Jobs available to select</div></div>
-          <div class="stat-card"><div class="stat-top"><span>Last entry</span><span class="stat-icon orange">â</span></div><div class="stat-value" id="lastEntryStat" style="font-size:19px">â</div><div class="stat-note">Most recent work date</div></div>
+          <div class="stat-card"><div class="stat-top"><span>Hours this week</span><span class="stat-icon blue">H</span></div><div class="stat-value" id="weekHours">-</div><div class="stat-note">Your recorded hours, Monday to Sunday</div></div>
+          <div class="stat-card"><div class="stat-top"><span>Entries this week</span><span class="stat-icon teal">[ ]</span></div><div class="stat-value" id="weekEntries">-</div><div class="stat-note">Submitted time entries</div></div>
+          <div class="stat-card"><div class="stat-top"><span>Active jobs</span><span class="stat-icon purple">[J]</span></div><div class="stat-value" id="activeJobsStat">-</div><div class="stat-note">Jobs available to select</div></div>
+          <div class="stat-card"><div class="stat-top"><span>Last entry</span><span class="stat-icon orange">OK</span></div><div class="stat-value" id="lastEntryStat" style="font-size:19px">-</div><div class="stat-note">Most recent work date</div></div>
         </div>
         <div class="grid two-col">
           <section class="panel">
-            <div class="panel-head"><div><h2 class="panel-title" id="entryFormTitle">Record your hours</h2><p class="panel-description">Choose the job and enter your time. Thatâs it.</p></div><span class="pill">Quick entry</span></div>
+            <div class="panel-head"><div><h2 class="panel-title" id="entryFormTitle">Record your hours</h2><p class="panel-description">Choose the job and enter your time. That's it.</p></div><span class="pill">Quick entry</span></div>
             <div id="entryNotice" class="notice hidden"></div>
             <form id="entryForm">
               <input id="entryId" type="hidden">
               <div class="form-grid">
-                <div class="field full"><label for="jobSelect">Job / work order *</label><select id="jobSelect" required><option value="">Loading jobsâ¦</option></select></div>
+                <div class="field full"><label for="jobSelect">Job / work order *</label><select id="jobSelect" required><option value="">Loading jobs...</option></select></div>
                 <div class="field"><label for="workDate">Work date *</label><input id="workDate" type="date" required></div>
                 <div class="field"><label for="hours">Hours worked *</label><input id="hours" type="number" min="0.25" max="24" step="0.25" required placeholder="e.g. 8"></div>
                 <div class="field full"><label for="description">Work performed (optional)</label><textarea id="description" maxlength="500" placeholder="e.g. Furnace maintenance, unit 204"></textarea></div>
               </div>
-              <div class="form-actions"><button class="secondary-btn hidden" type="button" id="cancelEditBtn">Cancel edit</button><button class="primary-btn" type="submit" id="saveEntryBtn">Submit hours â</button></div>
+              <div class="form-actions"><button class="secondary-btn hidden" type="button" id="cancelEditBtn">Cancel edit</button><button class="primary-btn" type="submit" id="saveEntryBtn">Submit hours -></button></div>
             </form>
           </section>
           <section class="panel">
             <div class="panel-head"><div><h2 class="panel-title">Recent activity</h2><p class="panel-description">A quick look at your latest time entries.</p></div><button class="secondary-btn" data-go="entries">View all</button></div>
-            <div id="recentActivity"><div class="empty"><strong>Loading your entriesâ¦</strong></div></div>
+            <div id="recentActivity"><div class="empty"><strong>Loading your entries...</strong></div></div>
           </section>
         </div>
       </section>
 
       <section id="page-entries" class="page">
         <section class="panel">
-          <div class="panel-head"><div><h2 class="panel-title">My time entries</h2><p class="panel-description">Review, edit or remove your recorded hours.</p></div><button class="primary-btn" data-go="log">ï¼ Log hours</button></div>
+          <div class="panel-head"><div><h2 class="panel-title">My time entries</h2><p class="panel-description">Review, edit or remove your recorded hours.</p></div><button class="primary-btn" data-go="log">+ Log hours</button></div>
           <div id="entriesNotice" class="notice hidden"></div>
           <div class="toolbar"><div class="field"><label for="entrySearch">Search</label><input id="entrySearch" placeholder="Search job or description"></div><div class="field date"><label for="entriesFrom">From</label><input id="entriesFrom" type="date"></div><div class="field date"><label for="entriesTo">To</label><input id="entriesTo" type="date"></div></div>
           <div id="entriesTable"></div>
@@ -192,13 +192,13 @@
 
       <section id="page-reports" class="page">
         <div class="grid stats">
-          <div class="stat-card"><div class="stat-top"><span>Total hours</span><span class="stat-icon blue">â·</span></div><div class="stat-value" id="reportHours">0</div><div class="stat-note">For selected date range</div></div>
-          <div class="stat-card"><div class="stat-top"><span>Time entries</span><span class="stat-icon teal">â¤</span></div><div class="stat-value" id="reportEntries">0</div><div class="stat-note">Individual submissions</div></div>
-          <div class="stat-card"><div class="stat-top"><span>Technicians</span><span class="stat-icon purple">â</span></div><div class="stat-value" id="reportTechs">0</div><div class="stat-note">With recorded hours</div></div>
-          <div class="stat-card"><div class="stat-top"><span>Jobs worked</span><span class="stat-icon orange">â</span></div><div class="stat-value" id="reportJobs">0</div><div class="stat-note">With recorded hours</div></div>
+          <div class="stat-card"><div class="stat-top"><span>Total hours</span><span class="stat-icon blue">H</span></div><div class="stat-value" id="reportHours">0</div><div class="stat-note">For selected date range</div></div>
+          <div class="stat-card"><div class="stat-top"><span>Time entries</span><span class="stat-icon teal">[ ]</span></div><div class="stat-value" id="reportEntries">0</div><div class="stat-note">Individual submissions</div></div>
+          <div class="stat-card"><div class="stat-top"><span>Technicians</span><span class="stat-icon purple">[U]</span></div><div class="stat-value" id="reportTechs">0</div><div class="stat-note">With recorded hours</div></div>
+          <div class="stat-card"><div class="stat-top"><span>Jobs worked</span><span class="stat-icon orange">[J]</span></div><div class="stat-value" id="reportJobs">0</div><div class="stat-note">With recorded hours</div></div>
         </div>
         <section class="panel">
-          <div class="panel-head"><div><h2 class="panel-title">Reports & insights</h2><p class="panel-description">Filter the data, review the workload and export a report.</p></div><button class="primary-btn" id="exportCsvBtn">â Export CSV</button></div>
+          <div class="panel-head"><div><h2 class="panel-title">Reports & insights</h2><p class="panel-description">Filter the data, review the workload and export a report.</p></div><button class="primary-btn" id="exportCsvBtn">v Export CSV</button></div>
           <div id="reportNotice" class="notice hidden"></div>
           <div class="toolbar">
             <div class="field date"><label for="reportFrom">From date</label><input id="reportFrom" type="date"></div>
@@ -223,7 +223,7 @@
         <div class="grid two-col">
           <section class="panel"><div class="panel-head"><div><h2 class="panel-title">Add a job</h2><p class="panel-description">Keep job codes and names consistent for the field team.</p></div></div>
             <div id="jobNotice" class="notice hidden"></div>
-            <form id="jobForm"><div class="form-grid"><div class="field"><label for="jobCode">Job code *</label><input id="jobCode" required maxlength="80" placeholder="e.g. HVAC-1042"></div><div class="field"><label for="jobName">Job name *</label><input id="jobName" required maxlength="180" placeholder="e.g. Main Street service call"></div></div><div class="form-actions"><button class="primary-btn" type="submit">ï¼ Add job</button></div></form>
+            <form id="jobForm"><div class="form-grid"><div class="field"><label for="jobCode">Job code *</label><input id="jobCode" required maxlength="80" placeholder="e.g. HVAC-1042"></div><div class="field"><label for="jobName">Job name *</label><input id="jobName" required maxlength="180" placeholder="e.g. Main Street service call"></div></div><div class="form-actions"><button class="primary-btn" type="submit">+ Add job</button></div></form>
           </section>
           <section class="panel"><div class="panel-head"><div><h2 class="panel-title">Job directory</h2><p class="panel-description">Active jobs appear in the technician entry form.</p></div><span class="pill" id="jobCountPill">0 jobs</span></div><div id="jobList"></div></section>
         </div>
@@ -234,10 +234,10 @@
       </section>
     </main>
     <nav class="mobile-nav" id="mobileNav">
-      <button data-page="log" class="active"><span class="nav-icon">ï¼</span>Log</button>
-      <button data-page="entries"><span class="nav-icon">â¤</span>Entries</button>
-      <button data-page="reports" class="admin-only hidden"><span class="nav-icon">â¥</span>Reports</button>
-      <button data-page="jobs" class="admin-only hidden"><span class="nav-icon">â</span>Jobs</button>
+      <button data-page="log" class="active"><span class="nav-icon">+</span>Log</button>
+      <button data-page="entries"><span class="nav-icon">[ ]</span>Entries</button>
+      <button data-page="reports" class="admin-only hidden"><span class="nav-icon">[R]</span>Reports</button>
+      <button data-page="jobs" class="admin-only hidden"><span class="nav-icon">[J]</span>Jobs</button>
     </nav>
   </div>
 
@@ -259,12 +259,12 @@
   const dateISO = d => { const x = new Date(d); return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`; };
   const today = () => dateISO(new Date());
   const weekStart = () => { const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() - ((d.getDay()+6)%7)); return dateISO(d); };
-  const fmtDate = value => value ? new Date(`${value}T12:00:00`).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}) : 'â';
+  const fmtDate = value => value ? new Date(`${value}T12:00:00`).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}) : '-';
   const fmtHours = value => `${Number(value || 0).toLocaleString(undefined,{maximumFractionDigits:2})}`;
   const showNotice = (id, message, type='') => { const el=$(id); el.textContent=message; el.className=`notice ${type}`.trim(); el.classList.remove('hidden'); };
   const hideNotice = id => $(id).classList.add('hidden');
   const initials = value => (String(value||'F').trim().split(/\s+/).slice(0,2).map(s=>s[0]).join('').toUpperCase() || 'F');
-  const jobLabel = j => `${j.job_code || 'No code'} â ${j.job_name || 'Unnamed job'}`;
+  const jobLabel = j => `${j.job_code || 'No code'} - ${j.job_name || 'Unnamed job'}`;
   const friendlyError = error => {
     const msg = error?.message || String(error || 'Unknown error');
     if (/infinite recursion/i.test(msg)) return 'A database access policy is blocking this request. Please review the profiles row-level security policy.';
@@ -287,7 +287,7 @@
     if(error) throw error;
     state.jobs=data||[];
     const active=state.jobs.filter(j=>j.active!==false);
-    $('jobSelect').innerHTML='<option value="">Choose a jobâ¦</option>'+active.map(j=>`<option value="${esc(j.id)}">${esc(jobLabel(j))}</option>`).join('');
+    $('jobSelect').innerHTML='<option value="">Choose a job...</option>'+active.map(j=>`<option value="${esc(j.id)}">${esc(jobLabel(j))}</option>`).join('');
     $('activeJobsStat').textContent=active.length;
     $('jobCountPill').textContent=`${state.jobs.length} job${state.jobs.length===1?'':'s'}`;
     $('jobList').innerHTML=state.jobs.length?`<div class="table-wrap"><table><thead><tr><th>Job code</th><th>Job name</th><th>Status</th><th>Action</th></tr></thead><tbody>${state.jobs.map(j=>`<tr><td><strong>${esc(j.job_code)}</strong></td><td>${esc(j.job_name)}</td><td><span class="pill" style="${j.active===false?'background:var(--surface-2);color:var(--muted)':''}">${j.active===false?'Inactive':'Active'}</span></td><td><button class="secondary-btn toggle-job" data-id="${esc(j.id)}" data-active="${j.active===false?'false':'true'}">${j.active===false?'Activate':'Deactivate'}</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty"><strong>No jobs yet</strong>Add a job code and name to get started.</div>';
@@ -334,16 +334,16 @@
 
   function entryRow(e,adminReport=false) {
     const job=e._job||{};
-    return `<tr><td>${esc(fmtDate(e.work_date))}</td>${adminReport?`<td>${esc(e._tech)}</td>`:''}<td><strong>${esc(job.job_code||'â')}</strong><div class="small muted">${esc(job.job_name||'Job unavailable')}</div></td><td><strong>${esc(fmtHours(e.hours))} h</strong></td><td style="max-width:240px;white-space:normal">${esc(e.description||'â')}</td>${adminReport?'':`<td><div style="display:flex;gap:6px"><button class="secondary-btn edit-entry" data-id="${esc(e.id)}">Edit</button><button class="danger-btn delete-entry" data-id="${esc(e.id)}">Delete</button></div></td>`}</tr>`;
+    return `<tr><td>${esc(fmtDate(e.work_date))}</td>${adminReport?`<td>${esc(e._tech)}</td>`:''}<td><strong>${esc(job.job_code||'-')}</strong><div class="small muted">${esc(job.job_name||'Job unavailable')}</div></td><td><strong>${esc(fmtHours(e.hours))} h</strong></td><td style="max-width:240px;white-space:normal">${esc(e.description||'-')}</td>${adminReport?'':`<td><div style="display:flex;gap:6px"><button class="secondary-btn edit-entry" data-id="${esc(e.id)}">Edit</button><button class="danger-btn delete-entry" data-id="${esc(e.id)}">Delete</button></div></td>`}</tr>`;
   }
   function renderRecent() {
     const rows=state.entries.filter(e=>e.user_id===state.user.id).slice(0,5);
-    $('recentActivity').innerHTML=rows.length?`<div style="display:grid;gap:0">${rows.map(e=>`<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)"><div class="stat-icon blue">â·</div><div style="flex:1;min-width:0"><div style="font-weight:800;font-size:12px;overflow:hidden;text-overflow:ellipsis">${esc(e._job.job_code||'Job')} Â· ${esc(e._job.job_name||'Unnamed job')}</div><div class="small muted">${esc(fmtDate(e.work_date))}${e.description?' Â· '+esc(e.description):''}</div></div><div style="font-weight:850;white-space:nowrap">${esc(fmtHours(e.hours))} h</div></div>`).join('')}</div>`:'<div class="empty"><strong>No hours recorded yet</strong>Your latest entries will show up here.</div>';
+    $('recentActivity').innerHTML=rows.length?`<div style="display:grid;gap:0">${rows.map(e=>`<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)"><div class="stat-icon blue">H</div><div style="flex:1;min-width:0"><div style="font-weight:800;font-size:12px;overflow:hidden;text-overflow:ellipsis">${esc(e._job.job_code||'Job')}  -  ${esc(e._job.job_name||'Unnamed job')}</div><div class="small muted">${esc(fmtDate(e.work_date))}${e.description?'  -  '+esc(e.description):''}</div></div><div style="font-weight:850;white-space:nowrap">${esc(fmtHours(e.hours))} h</div></div>`).join('')}</div>`:'<div class="empty"><strong>No hours recorded yet</strong>Your latest entries will show up here.</div>';
   }
   function renderEntriesTable() {
     const search=$('entrySearch').value.trim().toLowerCase(), from=$('entriesFrom').value, to=$('entriesTo').value;
     const rows=state.entries.filter(e=>e.user_id===state.user.id&&(!from||e.work_date>=from)&&(!to||e.work_date<=to)&&(!search||`${e._job.job_code} ${e._job.job_name} ${e.description||''}`.toLowerCase().includes(search)));
-    $('entriesTable').innerHTML=rows.length?`<div class="table-wrap"><table><thead><tr><th>Work date</th><th>Job</th><th>Hours</th><th>Description</th><th>Actions</th></tr></thead><tbody>${rows.map(e=>entryRow(e)).join('')}</tbody></table></div><p class="small muted">${rows.length} entr${rows.length===1?'y':'ies'} shown Â· up to 500 most recent records loaded.</p>`:'<div class="empty"><strong>No matching entries</strong>Try changing your search or date filters.</div>';
+    $('entriesTable').innerHTML=rows.length?`<div class="table-wrap"><table><thead><tr><th>Work date</th><th>Job</th><th>Hours</th><th>Description</th><th>Actions</th></tr></thead><tbody>${rows.map(e=>entryRow(e)).join('')}</tbody></table></div><p class="small muted">${rows.length} entr${rows.length===1?'y':'ies'} shown  -  up to 500 most recent records loaded.</p>`:'<div class="empty"><strong>No matching entries</strong>Try changing your search or date filters.</div>';
   }
 
   function goPage(page) {
@@ -366,7 +366,7 @@
     const id=$('entryId').value, payload={job_id:$('jobSelect').value,work_date:$('workDate').value,hours:Number($('hours').value),description:$('description').value.trim()||null};
     if(!payload.job_id){showNotice('entryNotice','Please choose a job.','error');return;}
     if(!payload.work_date||!Number.isFinite(payload.hours)||payload.hours<=0||payload.hours>24){showNotice('entryNotice','Enter a valid work date and hours between 0.25 and 24.','error');return;}
-    $('saveEntryBtn').disabled=true; $('saveEntryBtn').textContent='Savingâ¦';
+    $('saveEntryBtn').disabled=true; $('saveEntryBtn').textContent='Saving...';
     try {
       let result;
       if(id) result=await sb.from('time_entries').update(payload).eq('id',id).eq('user_id',state.user.id);
@@ -375,11 +375,11 @@
       resetEntryForm(); showNotice('entryNotice',id?'Your entry has been updated.':'Hours submitted successfully.','success');
       await loadEntries(); goPage('log');
     } catch(e){showNotice('entryNotice',friendlyError(e),'error');}
-    finally{$('saveEntryBtn').disabled=false;$('saveEntryBtn').textContent=$('entryId').value?'Save changes':'Submit hours â';}
+    finally{$('saveEntryBtn').disabled=false;$('saveEntryBtn').textContent=$('entryId').value?'Save changes':'Submit hours ->';}
   }
 
   function resetEntryForm() {
-    $('entryForm').reset(); $('entryId').value=''; $('workDate').value=today(); $('entryFormTitle').textContent='Record your hours'; $('saveEntryBtn').textContent='Submit hours â'; $('cancelEditBtn').classList.add('hidden');
+    $('entryForm').reset(); $('entryId').value=''; $('workDate').value=today(); $('entryFormTitle').textContent='Record your hours'; $('saveEntryBtn').textContent='Submit hours ->'; $('cancelEditBtn').classList.add('hidden');
   }
   function startEdit(id) {
     const e=state.entries.find(r=>String(r.id)===String(id)&&r.user_id===state.user.id); if(!e)return;
@@ -420,7 +420,7 @@
   function renderCharts(rows) {
     const colors=chartColors(), byTech={},byJob={},byWeek={},byMix={};
     rows.forEach(r=>{
-      const h=Number(r.hours||0), tech=r._tech||`User ${String(r.user_id).slice(0,8)}`, j=r._job||{}, job=`${j.job_code||'No code'} Â· ${j.job_name||'Unnamed job'}`;
+      const h=Number(r.hours||0), tech=r._tech||`User ${String(r.user_id).slice(0,8)}`, j=r._job||{}, job=`${j.job_code||'No code'}  -  ${j.job_name||'Unnamed job'}`;
       byTech[tech]=(byTech[tech]||0)+h;byJob[job]=(byJob[job]||0)+h;byMix[job]=(byMix[job]||0)+h;
       const d=new Date(`${r.work_date}T12:00:00`);d.setDate(d.getDate()-((d.getDay()+6)%7));const wk=dateISO(d);byWeek[wk]=(byWeek[wk]||0)+h;
     });
@@ -433,7 +433,7 @@
   }
   function renderReportTable(rows) {
     const sorted=[...rows].sort((a,b)=>String(b.work_date).localeCompare(String(a.work_date)));
-    $('reportTable').innerHTML=sorted.length?`<div class="table-wrap"><table><thead><tr><th>Work date</th><th>Technician</th><th>Job code / name</th><th>Hours</th><th>Description</th></tr></thead><tbody>${sorted.map(e=>entryRow(e,true)).join('')}</tbody></table></div><p class="small muted">${sorted.length} entries shown Â· report query is limited to 5,000 most recent matching rows.</p>`:'<div class="empty"><strong>No hours found</strong>Try a wider date range or remove a filter.</div>';
+    $('reportTable').innerHTML=sorted.length?`<div class="table-wrap"><table><thead><tr><th>Work date</th><th>Technician</th><th>Job code / name</th><th>Hours</th><th>Description</th></tr></thead><tbody>${sorted.map(e=>entryRow(e,true)).join('')}</tbody></table></div><p class="small muted">${sorted.length} entries shown  -  report query is limited to 5,000 most recent matching rows.</p>`:'<div class="empty"><strong>No hours found</strong>Try a wider date range or remove a filter.</div>';
   }
 
   function exportCsv() {
@@ -484,8 +484,12 @@
     const del=e.target.closest('.delete-entry');if(del)deleteEntry(del.dataset.id).catch(err=>showNotice('entriesNotice',friendlyError(err),'error'));
     const toggle=e.target.closest('.toggle-job');if(toggle)toggleJob(toggle.dataset.id,toggle.dataset.active==='true').catch(err=>showNotice('jobNotice',friendlyError(err),'error'));
   });
-  $('themeToggle').addEventListener('click',()=>{const dark=document.documentElement.dataset.theme!=='dark';document.documentElement.dataset.theme=dark?'dark':'light';$('themeToggle').textContent=dark?'â':'â¾';try{localStorage.setItem('hvac-hours-theme',dark?'dark':'light')}catch{};if($('page-reports').classList.contains('active'))renderCharts(state.reportRows);});
-  try {const theme=localStorage.getItem('hvac-hours-theme');if(theme==='dark'){document.documentElement.dataset.theme='dark';$('themeToggle').textContent='â';}}catch{}
+  // Follow the device/browser appearance setting automatically; no manual toggle.
+  const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
+  const applySystemTheme = () => { document.documentElement.dataset.theme = systemTheme.matches ? 'dark' : 'light'; };
+  applySystemTheme();
+  if (systemTheme.addEventListener) systemTheme.addEventListener('change', applySystemTheme);
+  else if (systemTheme.addListener) systemTheme.addListener(applySystemTheme);
   sb.auth.getSession().then(({data})=>{if(data.session)openApp(data.session.user);});
   sb.auth.onAuthStateChange((_event,session)=>{if(session&&session.user&&!state.user)openApp(session.user);});
 })();
