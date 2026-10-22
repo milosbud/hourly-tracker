@@ -1,853 +1,493 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light dark">
-  <title>HVAC Hours Tracker</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#101a33" />
+  <title>HVAC Hours Tracker | HVAC Time Tracking</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <style>
     :root {
-      color-scheme: light dark;
-      --primary:#2563eb; --bg:#f8fafc; --card:#fff;
-      --text:#1e293b; --muted:#64748b; --danger:#dc2626;
-      --success:#16a34a; --border:#e2e8f0;
-      --field:#fff; --shadow:0 2px 8px #0000000b;
+      color-scheme: light;
+      --bg:#f4f7fb; --surface:#fff; --surface-2:#f8faff; --text:#17233b;
+      --muted:#71809a; --border:#e5ebf4; --navy:#101a33; --navy-2:#182747;
+      --blue:#4776f6; --blue-soft:#edf2ff; --teal:#18b6a4; --teal-soft:#e7faf6;
+      --purple:#8b6df2; --orange:#f4a340; --red:#e45d6b; --shadow:0 12px 32px rgba(28,47,82,.07);
+      --radius:18px;
     }
-    @media(prefers-color-scheme:dark) {
-      :root {
-        --primary:#3b82f6; --bg:#0f172a; --card:#1e293b;
-        --text:#f1f5f9; --muted:#94a3b8; --danger:#f87171;
-        --success:#4ade80; --border:#475569; --field:#0f172a;
-        --shadow:0 2px 8px #00000020;
-      }
+    [data-theme="dark"] {
+      color-scheme:dark; --bg:#0b1220; --surface:#111c2e; --surface-2:#16243a; --text:#e8eefb;
+      --muted:#9aa9c2; --border:#273751; --blue-soft:#1c2c50; --teal-soft:#133b3a;
+      --shadow:0 12px 32px rgba(0,0,0,.2);
     }
-    * { box-sizing:border-box; }
-    body {
-      margin:0 auto; padding:16px; max-width:760px; min-height:100vh;
-      font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      background:var(--bg); color:var(--text);
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    button,input,select,textarea{font:inherit}
+    button{cursor:pointer}
+    .app{min-height:100vh;display:grid;grid-template-columns:248px minmax(0,1fr)}
+    .sidebar{background:linear-gradient(165deg,var(--navy),#172746 75%,#20375a);color:#fff;padding:25px 16px;display:flex;flex-direction:column;gap:26px}
+    .brand{display:flex;align-items:center;gap:11px;padding:0 9px}
+    .brand-mark{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#5c88ff,#24cbb5);display:grid;place-items:center;font-weight:900;font-size:17px;box-shadow:0 7px 20px #4776f655}
+    .brand-name{font-size:17px;font-weight:800;letter-spacing:-.4px}
+    .brand-sub{font-size:11px;color:#9eafcd;margin-top:1px}
+    .nav-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#8294b6;padding:0 12px;margin-bottom:8px;font-weight:800}
+    .nav{display:grid;gap:5px}
+    .nav button{border:0;background:transparent;color:#bac7df;padding:12px 13px;border-radius:11px;text-align:left;display:flex;align-items:center;gap:12px;transition:.18s}
+    .nav button:hover{background:#ffffff12;color:#fff}
+    .nav button.active{background:linear-gradient(90deg,#4776f6,#4c82f0);color:#fff;box-shadow:0 7px 18px #4776f633}
+    .nav-icon{width:19px;text-align:center;font-size:16px}
+    .sidebar-bottom{margin-top:auto;border-top:1px solid #ffffff1a;padding:17px 8px 0;color:#a9b8d2;font-size:12px}
+    .secure-note{display:flex;gap:8px;align-items:flex-start}
+    .main{min-width:0;padding:28px clamp(16px,3vw,42px) 42px}
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:26px}
+    .eyebrow{font-size:11px;color:var(--blue);font-weight:800;letter-spacing:1.3px;text-transform:uppercase}
+    h1{font-size:clamp(25px,3vw,32px);letter-spacing:-1px;margin:3px 0 4px;line-height:1.2}
+    .subtitle{color:var(--muted);margin:0}
+    .top-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+    .icon-btn,.secondary-btn,.primary-btn,.danger-btn{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:11px;padding:10px 13px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+    .icon-btn{width:42px;height:42px;padding:0;font-size:17px}
+    .primary-btn{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 5px 14px #4776f626}
+    .primary-btn:hover{filter:brightness(1.05)}
+    .secondary-btn:hover,.icon-btn:hover{border-color:var(--blue)}
+    .danger-btn{color:var(--red)}
+    .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;margin-bottom:20px;min-width:0}
+    .panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:18px}
+    .panel-title{font-size:16px;font-weight:800;letter-spacing:-.25px;margin:0}
+    .panel-description{font-size:12px;color:var(--muted);margin:4px 0 0}
+    .grid{display:grid;gap:18px}
+    .stats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:20px}
+    .stat-card{position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--border);border-radius:17px;padding:19px;box-shadow:var(--shadow)}
+    .stat-top{display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--muted);font-size:12px;font-weight:700}
+    .stat-icon{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;font-size:17px}
+    .stat-value{font-size:28px;font-weight:850;letter-spacing:-1px;margin:14px 0 2px}
+    .stat-note{font-size:11px;color:var(--muted)}
+    .blue{background:var(--blue-soft);color:var(--blue)} .teal{background:var(--teal-soft);color:var(--teal)}
+    .purple{background:#f1edff;color:var(--purple)} .orange{background:#fff3e1;color:#c47b19}
+    [data-theme="dark"] .purple{background:#2b244a} [data-theme="dark"] .orange{background:#3a2c1a}
+    .two-col{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr)}
+    .three-col{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .field{display:flex;flex-direction:column;gap:6px;min-width:0}
+    .field.full{grid-column:1/-1}
+    label{font-size:12px;font-weight:750;color:var(--text)}
+    input,select,textarea{width:100%;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:11px 12px;outline:none;min-width:0}
+    input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4776f61c}
+    textarea{resize:vertical;min-height:78px}
+    .form-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:17px;flex-wrap:wrap}
+    .notice{padding:12px 14px;border-radius:11px;background:var(--blue-soft);color:var(--blue);font-size:12px;margin-bottom:15px}
+    .notice.error{background:#fff0f1;color:#bd3446} .notice.success{background:var(--teal-soft);color:#087f72}
+    [data-theme="dark"] .notice.error{background:#3c1d29;color:#ff9ba7}
+    .table-wrap{overflow:auto;border:1px solid var(--border);border-radius:12px}
+    table{width:100%;border-collapse:collapse;min-width:620px}
+    th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--border);white-space:nowrap}
+    th{background:var(--surface-2);font-size:10px;letter-spacing:.9px;text-transform:uppercase;color:var(--muted)}
+    td{font-size:12px} tr:last-child td{border-bottom:0}
+    .pill{display:inline-flex;align-items:center;padding:4px 8px;border-radius:99px;font-size:11px;font-weight:800;background:var(--teal-soft);color:#078879}
+    .muted{color:var(--muted)} .small{font-size:11px}
+    .toolbar{display:flex;gap:10px;align-items:end;flex-wrap:wrap;margin-bottom:16px}
+    .toolbar .field{flex:1;min-width:130px}
+    .toolbar .field.date{flex:0 1 155px}
+    .chart-box{height:260px;position:relative}
+    .chart-box.short{height:220px}
+    .empty{padding:30px 15px;text-align:center;color:var(--muted);font-size:13px}
+    .empty strong{display:block;color:var(--text);font-size:14px;margin-bottom:4px}
+    .page{display:none}.page.active{display:block}
+    .login-wrap{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 15% 10%,#dfe9ff 0,transparent 35%),var(--bg)}
+    [data-theme="dark"] .login-wrap{background:radial-gradient(circle at 15% 10%,#1b2d51 0,transparent 35%),var(--bg)}
+    .login-card{width:min(100%,430px);background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:30px;box-shadow:var(--shadow)}
+    .login-card .brand{padding:0;margin-bottom:28px;color:var(--text)}
+    .login-card .brand-sub{color:var(--muted)}
+    .login-card h1{font-size:26px;margin-bottom:7px}
+    .login-card .subtitle{margin-bottom:23px}
+    .login-card .field{margin-bottom:15px}
+    .hidden{display:none!important}
+    .user-chip{display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:7px 10px 7px 7px}
+    .avatar{width:32px;height:32px;border-radius:10px;background:var(--blue-soft);color:var(--blue);display:grid;place-items:center;font-weight:900}
+    .user-name{font-weight:800;font-size:12px}.user-role{font-size:10px;color:var(--muted)}
+    .mobile-nav{display:none}
+    @media(max-width:1050px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.two-col{grid-template-columns:1fr}}
+    @media(max-width:760px){
+      .app{display:block}.sidebar{display:none}.main{padding:19px 14px 92px}.topbar{align-items:flex-start;margin-bottom:20px}.topbar .top-actions{justify-content:flex-end}.user-chip{display:none}
+      .mobile-nav{position:fixed;z-index:20;left:10px;right:10px;bottom:10px;display:flex;justify-content:space-around;gap:3px;background:var(--navy);border:1px solid #ffffff20;border-radius:16px;padding:7px;box-shadow:0 12px 30px #09142a55}
+      .mobile-nav button{flex:1;border:0;background:transparent;color:#aab8d2;border-radius:10px;padding:9px 3px;font-size:10px;display:grid;justify-items:center;gap:3px}
+      .mobile-nav button.active{background:#4776f6;color:white}.mobile-nav .nav-icon{font-size:17px}
+      .stats{gap:10px}.stat-card{padding:14px}.stat-value{font-size:24px}.stat-icon{width:30px;height:30px}
+      .panel{padding:16px;margin-bottom:14px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.three-col{grid-template-columns:1fr}
+      .topbar h1{font-size:25px}.subtitle{font-size:12px}.topbar .icon-btn{width:38px;height:38px}
+      .toolbar{display:grid;grid-template-columns:1fr 1fr}.toolbar .field{min-width:0}.toolbar .field.date{min-width:0}
     }
-    h1 { font-size:1.55rem; margin:0 0 6px; }
-    h2 { font-size:1.2rem; margin:0 0 16px; }
-    h3 { font-size:1rem; margin:0 0 10px; }
-    p { overflow-wrap:anywhere; }
-    .card {
-      background:var(--card); border:1px solid var(--border);
-      border-radius:14px; padding:20px; margin-bottom:16px;
-      box-shadow:var(--shadow);
-    }
-    label { display:block; font-size:.9rem; font-weight:600; margin-bottom:5px; }
-    input,select,textarea {
-      display:block; width:100%; min-height:46px; padding:11px;
-      margin:0 0 14px; border:1px solid var(--border);
-      border-radius:8px; background:var(--field); color:var(--text);
-      font:inherit;
-    }
-    textarea { min-height:78px; resize:vertical; }
-    button {
-      min-height:44px; padding:10px 14px; border:0; border-radius:8px;
-      background:var(--primary); color:white; font:inherit;
-      font-weight:600; cursor:pointer;
-    }
-    button:disabled { opacity:.55; cursor:not-allowed; }
-    button.secondary { background:var(--border); color:var(--text); }
-    button.danger { background:var(--danger); color:white; }
-    button.small { min-height:36px; padding:7px 10px; font-size:.88rem; }
-    .nav { display:flex; flex-wrap:wrap; gap:8px; margin:16px 0; }
-    .nav button { flex:1 1 auto; }
-    .hidden { display:none!important; }
-    .muted,.entry-meta { color:var(--muted); }
-    .muted { font-size:.9rem; }
-    .user-info { overflow-wrap:anywhere; margin-bottom:12px; }
-    .entry {
-      padding:13px; margin:10px 0; border:1px solid var(--border);
-      border-radius:9px; background:var(--bg);
-    }
-    .entry-header {
-      display:flex; flex-wrap:wrap; justify-content:space-between;
-      gap:6px; margin-bottom:5px;
-    }
-    .entry-job { font-weight:650; overflow-wrap:anywhere; }
-    .entry-meta { font-size:.88rem; overflow-wrap:anywhere; }
-    .entry-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
-    .error,.success { margin-top:10px; overflow-wrap:anywhere; font-size:.9rem; }
-    .error { color:var(--danger); }
-    .success { color:var(--success); }
-    .total-box {
-      padding:17px; margin-bottom:16px; border-radius:10px;
-      background:var(--primary); color:white; text-align:center;
-      font-size:1.25rem; font-weight:700;
-    }
-    .filter-row { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
-    .stats { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-bottom:16px; }
-    .stat { border:1px solid var(--border); border-radius:10px; padding:13px; background:var(--bg); }
-    .stat strong { display:block; font-size:1.4rem; }
-    .stat span { color:var(--muted); font-size:.85rem; }
-    .chart { margin:12px 0 22px; }
-    .bar-row { display:grid; grid-template-columns:minmax(75px,1fr) 3fr 45px; gap:8px; align-items:center; margin:9px 0; }
-    .bar-label { overflow-wrap:anywhere; font-size:.84rem; }
-    .bar-track { height:13px; background:var(--border); border-radius:8px; overflow:hidden; }
-    .bar-fill { height:100%; background:var(--primary); border-radius:8px; }
-    .section-gap { margin-top:24px; }
-    @media(max-width:420px) {
-      body { padding:10px; }
-      .card { padding:15px; }
-      .filter-row { grid-template-columns:1fr; gap:0; }
-      .nav button { flex:1 1 40%; }
-    }
+    @media(max-width:390px){.stats{grid-template-columns:1fr 1fr}.stat-value{font-size:21px}.top-actions{gap:5px}.icon-btn{width:36px;height:36px}}
   </style>
 </head>
 <body>
-  <div id="login-screen">
-    <div class="card">
-      <h1>HVAC Hours</h1>
-      <p class="muted">Log in to track your hours.</p>
-      <form id="login-form">
-        <label for="email">Email</label>
-        <input id="email" type="email" autocomplete="username" required>
-        <label for="password">Password</label>
-        <input id="password" type="password" autocomplete="current-password" required>
-        <button id="login-btn" type="submit" style="width:100%">Log In</button>
-        <p id="login-error" class="error hidden" role="alert"></p>
+  <div id="loginView" class="login-wrap">
+    <div class="login-card">
+      <div class="brand"><div class="brand-mark">F</div><div><div class="brand-name">HVAC Hours Tracker</div><div class="brand-sub">Simple time tracking for the field</div></div></div>
+      <h1>Welcome back</h1><p class="subtitle">Sign in to record hours and keep every job on track.</p>
+      <div id="loginNotice" class="notice hidden"></div>
+      <form id="loginForm">
+        <div class="field"><label for="email">Email address</label><input id="email" type="email" autocomplete="username" required placeholder="you@company.com"></div>
+        <div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required placeholder="Enter your password"></div>
+        <button class="primary-btn" type="submit" style="width:100%;padding:12px">Sign in <span>â</span></button>
       </form>
+      <p class="small muted" style="margin:17px 0 0">Secure access for your team. Contact your administrator if you need an account.</p>
     </div>
   </div>
 
-  <div id="app" class="hidden">
-    <div class="user-info">
-      Logged in as <strong id="user-email"></strong>
-      <button id="logout-btn" class="small secondary" style="float:right">Log out</button>
-      <div style="clear:both"></div>
-    </div>
+  <div id="appView" class="app hidden">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-mark">F</div><div><div class="brand-name">HVAC Hours Tracker</div><div class="brand-sub">HVAC team workspace</div></div></div>
+      <div><div class="nav-label">Workspace</div><nav class="nav" id="sideNav">
+        <button data-page="log" class="active"><span class="nav-icon">ï¼</span>Log hours</button>
+        <button data-page="entries"><span class="nav-icon">â¤</span>My entries</button>
+        <button data-page="reports" class="admin-only hidden"><span class="nav-icon">â¥</span>Reports & insights</button>
+        <button data-page="jobs" class="admin-only hidden"><span class="nav-icon">â</span>Job management</button>
+      </nav></div>
+      <div class="sidebar-bottom"><div class="secure-note"><span>â</span><span>Built for field teams<br><span style="opacity:.7">Hours, jobs and reporting in one place.</span></span></div></div>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <div><div class="eyebrow" id="pageEyebrow">FIELD WORKSPACE</div><h1 id="pageTitle">Log your hours</h1><p class="subtitle" id="pageSubtitle">A quick entry now means less paperwork later.</p></div>
+        <div class="top-actions"><button class="icon-btn" id="themeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">â¾</button><div class="user-chip"><div class="avatar" id="userAvatar">F</div><div><div class="user-name" id="userName">Team member</div><div class="user-role" id="userRole">Technician</div></div></div><button class="secondary-btn" id="logoutBtn">Sign out</button></div>
+      </header>
 
-    <nav class="nav" aria-label="Main navigation">
-      <button id="nav-log" class="secondary" data-screen="screen-log">Log Hours</button>
-      <button id="nav-my" class="secondary" data-screen="screen-my">My Entries</button>
-      <button id="nav-admin" class="secondary hidden" data-screen="screen-admin">Admin</button>
-      <button id="nav-reports" class="secondary hidden" data-screen="screen-reports">Reports</button>
+      <section id="page-log" class="page active">
+        <div class="grid stats">
+          <div class="stat-card"><div class="stat-top"><span>Hours this week</span><span class="stat-icon blue">â·</span></div><div class="stat-value" id="weekHours">â</div><div class="stat-note">Your recorded hours, Monday to Sunday</div></div>
+          <div class="stat-card"><div class="stat-top"><span>Entries this week</span><span class="stat-icon teal">â¤</span></div><div class="stat-value" id="weekEntries">â</div><div class="stat-note">Submitted time entries</div></div>
+          <div class="stat-card"><div class="stat-top"><span>Active jobs</span><span class="stat-icon purple">â</span></div><div class="stat-value" id="activeJobsStat">â</div><div class="stat-note">Jobs available to select</div></div>
+          <div class="stat-card"><div class="stat-top"><span>Last entry</span><span class="stat-icon orange">â</span></div><div class="stat-value" id="lastEntryStat" style="font-size:19px">â</div><div class="stat-note">Most recent work date</div></div>
+        </div>
+        <div class="grid two-col">
+          <section class="panel">
+            <div class="panel-head"><div><h2 class="panel-title" id="entryFormTitle">Record your hours</h2><p class="panel-description">Choose the job and enter your time. Thatâs it.</p></div><span class="pill">Quick entry</span></div>
+            <div id="entryNotice" class="notice hidden"></div>
+            <form id="entryForm">
+              <input id="entryId" type="hidden">
+              <div class="form-grid">
+                <div class="field full"><label for="jobSelect">Job / work order *</label><select id="jobSelect" required><option value="">Loading jobsâ¦</option></select></div>
+                <div class="field"><label for="workDate">Work date *</label><input id="workDate" type="date" required></div>
+                <div class="field"><label for="hours">Hours worked *</label><input id="hours" type="number" min="0.25" max="24" step="0.25" required placeholder="e.g. 8"></div>
+                <div class="field full"><label for="description">Work performed (optional)</label><textarea id="description" maxlength="500" placeholder="e.g. Furnace maintenance, unit 204"></textarea></div>
+              </div>
+              <div class="form-actions"><button class="secondary-btn hidden" type="button" id="cancelEditBtn">Cancel edit</button><button class="primary-btn" type="submit" id="saveEntryBtn">Submit hours â</button></div>
+            </form>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><div><h2 class="panel-title">Recent activity</h2><p class="panel-description">A quick look at your latest time entries.</p></div><button class="secondary-btn" data-go="entries">View all</button></div>
+            <div id="recentActivity"><div class="empty"><strong>Loading your entriesâ¦</strong></div></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="page-entries" class="page">
+        <section class="panel">
+          <div class="panel-head"><div><h2 class="panel-title">My time entries</h2><p class="panel-description">Review, edit or remove your recorded hours.</p></div><button class="primary-btn" data-go="log">ï¼ Log hours</button></div>
+          <div id="entriesNotice" class="notice hidden"></div>
+          <div class="toolbar"><div class="field"><label for="entrySearch">Search</label><input id="entrySearch" placeholder="Search job or description"></div><div class="field date"><label for="entriesFrom">From</label><input id="entriesFrom" type="date"></div><div class="field date"><label for="entriesTo">To</label><input id="entriesTo" type="date"></div></div>
+          <div id="entriesTable"></div>
+        </section>
+      </section>
+
+      <section id="page-reports" class="page">
+        <div class="grid stats">
+          <div class="stat-card"><div class="stat-top"><span>Total hours</span><span class="stat-icon blue">â·</span></div><div class="stat-value" id="reportHours">0</div><div class="stat-note">For selected date range</div></div>
+          <div class="stat-card"><div class="stat-top"><span>Time entries</span><span class="stat-icon teal">â¤</span></div><div class="stat-value" id="reportEntries">0</div><div class="stat-note">Individual submissions</div></div>
+          <div class="stat-card"><div class="stat-top"><span>Technicians</span><span class="stat-icon purple">â</span></div><div class="stat-value" id="reportTechs">0</div><div class="stat-note">With recorded hours</div></div>
+          <div class="stat-card"><div class="stat-top"><span>Jobs worked</span><span class="stat-icon orange">â</span></div><div class="stat-value" id="reportJobs">0</div><div class="stat-note">With recorded hours</div></div>
+        </div>
+        <section class="panel">
+          <div class="panel-head"><div><h2 class="panel-title">Reports & insights</h2><p class="panel-description">Filter the data, review the workload and export a report.</p></div><button class="primary-btn" id="exportCsvBtn">â Export CSV</button></div>
+          <div id="reportNotice" class="notice hidden"></div>
+          <div class="toolbar">
+            <div class="field date"><label for="reportFrom">From date</label><input id="reportFrom" type="date"></div>
+            <div class="field date"><label for="reportTo">To date</label><input id="reportTo" type="date"></div>
+            <div class="field"><label for="reportTech">Technician</label><select id="reportTech"><option value="">All technicians</option></select></div>
+            <div class="field"><label for="reportJob">Job</label><select id="reportJob"><option value="">All jobs</option></select></div>
+            <button class="secondary-btn" id="clearReportFilters">Reset</button>
+          </div>
+        </section>
+        <div class="grid two-col">
+          <section class="panel"><div class="panel-head"><div><h2 class="panel-title">Hours by technician</h2><p class="panel-description">Who has logged time in this period?</p></div></div><div class="chart-box"><canvas id="techChart"></canvas></div></section>
+          <section class="panel"><div class="panel-head"><div><h2 class="panel-title">Hours by job</h2><p class="panel-description">Job code and name, ranked by hours.</p></div></div><div class="chart-box"><canvas id="jobChart"></canvas></div></section>
+        </div>
+        <div class="grid two-col">
+          <section class="panel"><div class="panel-head"><div><h2 class="panel-title">Hours by week</h2><p class="panel-description">Weekly time trends across the selected period.</p></div></div><div class="chart-box short"><canvas id="weekChart"></canvas></div></section>
+          <section class="panel"><div class="panel-head"><div><h2 class="panel-title">Hours by job mix</h2><p class="panel-description">Share of recorded hours for each job.</p></div></div><div class="chart-box short"><canvas id="mixChart"></canvas></div></section>
+        </div>
+        <section class="panel"><div class="panel-head"><div><h2 class="panel-title">Detailed time report</h2><p class="panel-description">Includes technician, job code, job name, work date and notes.</p></div></div><div id="reportTable"></div></section>
+      </section>
+
+      <section id="page-jobs" class="page">
+        <div class="grid two-col">
+          <section class="panel"><div class="panel-head"><div><h2 class="panel-title">Add a job</h2><p class="panel-description">Keep job codes and names consistent for the field team.</p></div></div>
+            <div id="jobNotice" class="notice hidden"></div>
+            <form id="jobForm"><div class="form-grid"><div class="field"><label for="jobCode">Job code *</label><input id="jobCode" required maxlength="80" placeholder="e.g. HVAC-1042"></div><div class="field"><label for="jobName">Job name *</label><input id="jobName" required maxlength="180" placeholder="e.g. Main Street service call"></div></div><div class="form-actions"><button class="primary-btn" type="submit">ï¼ Add job</button></div></form>
+          </section>
+          <section class="panel"><div class="panel-head"><div><h2 class="panel-title">Job directory</h2><p class="panel-description">Active jobs appear in the technician entry form.</p></div><span class="pill" id="jobCountPill">0 jobs</span></div><div id="jobList"></div></section>
+        </div>
+        <section class="panel"><div class="panel-head"><div><h2 class="panel-title">Admin time entry</h2><p class="panel-description">This form is available to admins once the database policy allows admins to create entries for other technicians.</p></div></div>
+          <div class="notice">The admin entry form is intentionally not enabled in this version because the current database permissions have not been verified. This avoids presenting a feature that may fail or weaken access controls. The existing technician entry workflow remains unchanged.</div>
+          <p class="small muted">Next step: verify the current <code>time_entries</code> row-level security policies, then add the narrow admin-only insert/update policy before enabling this form.</p>
+        </section>
+      </section>
+    </main>
+    <nav class="mobile-nav" id="mobileNav">
+      <button data-page="log" class="active"><span class="nav-icon">ï¼</span>Log</button>
+      <button data-page="entries"><span class="nav-icon">â¤</span>Entries</button>
+      <button data-page="reports" class="admin-only hidden"><span class="nav-icon">â¥</span>Reports</button>
+      <button data-page="jobs" class="admin-only hidden"><span class="nav-icon">â</span>Jobs</button>
     </nav>
-
-    <section id="screen-log" class="card screen">
-      <h2>Log Hours</h2>
-      <form id="hours-form">
-        <label for="job-select">Job</label>
-        <select id="job-select" required><option value="">Loading jobs...</option></select>
-        <label for="work-date">Date</label>
-        <input id="work-date" type="date" required>
-        <label for="hours">Hours worked</label>
-        <input id="hours" type="number" step="0.25" min="0.25" max="24" required placeholder="e.g. 4.5">
-        <label for="description">Description (optional)</label>
-        <textarea id="description" maxlength="2000" placeholder="What did you do?"></textarea>
-        <button id="submit-btn" type="submit" style="width:100%">Submit Hours</button>
-        <p id="submit-msg" class="hidden" role="status"></p>
-      </form>
-    </section>
-
-    <section id="screen-my" class="card screen hidden">
-      <h2>My Recent Entries</h2>
-      <p class="muted">Your 40 most recent entries.</p>
-      <div id="entries-list">Open this tab to load entries.</div>
-    </section>
-
-    <section id="screen-admin" class="card screen hidden">
-      <h2>Admin — Manage Jobs</h2>
-      <form id="add-job-form">
-        <h3>Add New Job</h3>
-        <label for="new-job-code">Job Code</label>
-        <input id="new-job-code" maxlength="50" required placeholder="e.g. JO-1006">
-        <label for="new-job-name">Job Name</label>
-        <input id="new-job-name" maxlength="200" required placeholder="Client name — Work description">
-        <button id="add-job-btn" type="submit" style="width:100%">Add Job</button>
-        <p id="add-job-msg" class="hidden" role="status"></p>
-      </form>
-      <h3 class="section-gap">Current Jobs</h3>
-      <div id="admin-jobs-list">Open Admin to load jobs.</div>
-    </section>
-
-    <section id="screen-reports" class="card screen hidden">
-      <h2>Reports</h2>
-      <div class="filter-row">
-        <div>
-          <label for="report-from">From</label>
-          <input id="report-from" type="date">
-        </div>
-        <div>
-          <label for="report-to">To</label>
-          <input id="report-to" type="date">
-        </div>
-      </div>
-      <label for="report-user">Technician</label>
-      <select id="report-user"><option value="">All technicians</option></select>
-      <label for="report-job">Job</label>
-      <select id="report-job"><option value="">All jobs</option></select>
-      <button id="run-report-btn" style="width:100%">Run Report</button>
-      <p id="report-msg" class="hidden" role="status"></p>
-      <div id="report-summary" class="hidden">
-        <div class="stats">
-          <div class="stat"><span>Total hours</span><strong id="stat-hours">0</strong></div>
-          <div class="stat"><span>Entries</span><strong id="stat-entries">0</strong></div>
-          <div class="stat"><span>Technicians</span><strong id="stat-users">0</strong></div>
-          <div class="stat"><span>Jobs worked</span><strong id="stat-jobs">0</strong></div>
-        </div>
-        <h3>Hours by Technician</h3>
-        <div id="chart-users" class="chart"></div>
-        <h3>Hours by Job</h3>
-        <div id="chart-jobs" class="chart"></div>
-        <h3>Hours by Week</h3>
-        <div id="chart-weeks" class="chart"></div>
-        <button id="export-btn" class="secondary" style="width:100%;margin-bottom:14px">Export CSV</button>
-      </div>
-      <h3>Entries</h3>
-      <div id="report-results"></div>
-    </section>
   </div>
 
 <script>
 (() => {
-  'use strict';
-
-  // Supabase project configuration. The anon/publishable key is intended
-  // for browser use. Protect your data with correctly configured RLS.
+  // Use your existing Supabase project URL and anon/publishable key here.
   const SUPABASE_URL = 'https://bnryuusnqfjltstwwqaa.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJucnl1dXNucWZqbHRzdHd3cWFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MTcyMzIsImV4cCI6MjEwODE5MzIzMn0.Xsko4Pv7wMyeaSm0TKVX97TC1spBWkDWSJ7rrnYVOUY';
-
-  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  let currentUser = null;
-  let isAdmin = false;
-  let latestReport = [];
-  let profilesById = {};
-  let jobsById = {};
-
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   const $ = id => document.getElementById(id);
-
-  function message(id, text, type = 'error') {
-    const el = $(id);
-    el.textContent = text;
-    el.className = type;
-  }
-
-  function clearMessage(id) {
-    $(id).textContent = '';
-    $(id).className = 'hidden';
-  }
-
-  function el(tag, text, className) {
-    const node = document.createElement(tag);
-    if (text !== undefined && text !== null) node.textContent = String(text);
-    if (className) node.className = className;
-    return node;
-  }
-
-  function option(value, text) {
-    const o = document.createElement('option');
-    o.value = value;
-    o.textContent = text;
-    return o;
-  }
-
-  function setButtonBusy(id, busy, busyText) {
-    const b = $(id);
-    if (busy) {
-      b.dataset.originalText = b.textContent;
-      b.textContent = busyText;
-    } else {
-      b.textContent = b.dataset.originalText || b.textContent;
-    }
-    b.disabled = busy;
-  }
-
-  function setNavPermissions() {
-    $('nav-admin').classList.toggle('hidden', !isAdmin);
-    $('nav-reports').classList.toggle('hidden', !isAdmin);
-  }
-
-  function showLogin() {
-    $('login-screen').classList.remove('hidden');
-    $('app').classList.add('hidden');
-  }
-
-  function showScreen(id) {
-    if (!currentUser) return showLogin();
-    if ((id === 'screen-admin' || id === 'screen-reports') && !isAdmin) {
-      showScreen('screen-log');
-      return;
-    }
-
-    $('login-screen').classList.add('hidden');
-    $('app').classList.remove('hidden');
-    document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-    $(id).classList.remove('hidden');
-
-    if (id === 'screen-log') loadJobs();
-    if (id === 'screen-my') loadMyEntries();
-    if (id === 'screen-admin') loadAdminJobs();
-    if (id === 'screen-reports') prepareReportFilters();
-  }
+  const state = { user:null, profile:null, isAdmin:false, jobs:[], entries:[], reportRows:[], techChart:null, jobChart:null, weekChart:null, mixChart:null };
+  const pageMeta = {
+    log:['FIELD WORKSPACE','Log your hours','A quick entry now means less paperwork later.'],
+    entries:['YOUR ACTIVITY','My time entries','Keep your submitted hours accurate and up to date.'],
+    reports:['MANAGEMENT OVERVIEW','Reports & insights','A clearer view of hours across technicians and jobs.'],
+    jobs:['ADMIN WORKSPACE','Job management','Manage job codes and names used by your team.']
+  };
+  const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const dateISO = d => { const x = new Date(d); return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`; };
+  const today = () => dateISO(new Date());
+  const weekStart = () => { const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() - ((d.getDay()+6)%7)); return dateISO(d); };
+  const fmtDate = value => value ? new Date(`${value}T12:00:00`).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}) : 'â';
+  const fmtHours = value => `${Number(value || 0).toLocaleString(undefined,{maximumFractionDigits:2})}`;
+  const showNotice = (id, message, type='') => { const el=$(id); el.textContent=message; el.className=`notice ${type}`.trim(); el.classList.remove('hidden'); };
+  const hideNotice = id => $(id).classList.add('hidden');
+  const initials = value => (String(value||'F').trim().split(/\s+/).slice(0,2).map(s=>s[0]).join('').toUpperCase() || 'F');
+  const jobLabel = j => `${j.job_code || 'No code'} â ${j.job_name || 'Unnamed job'}`;
+  const friendlyError = error => {
+    const msg = error?.message || String(error || 'Unknown error');
+    if (/infinite recursion/i.test(msg)) return 'A database access policy is blocking this request. Please review the profiles row-level security policy.';
+    if (/row-level security|permission denied|not allowed/i.test(msg)) return 'You do not have permission to complete this action. If this is an admin task, check the Supabase row-level security policies.';
+    return msg;
+  };
 
   async function loadProfile() {
-    isAdmin = false;
-    setNavPermissions();
-
-    const { data, error } = await db
-      .from('profiles')
-      .select('id, is_admin, full_name')
-      .eq('id', currentUser.id)
-      .maybeSingle();
-
-    if (error) {
-      console.error('Profile lookup failed:', error);
-      throw new Error(`Could not load your profile: ${error.message} (${error.code || 'unknown code'})`);
-    }
-
-    if (!data) {
-      throw new Error('No profile exists for this account. Check that profiles.id matches your Auth user UUID.');
-    }
-
-    isAdmin = data.is_admin === true;
-    setNavPermissions();
-    return data;
+    const {data,error}=await sb.from('profiles').select('id,is_admin,full_name').eq('id',state.user.id).single();
+    if(error) throw error;
+    state.profile=data; state.isAdmin=!!data.is_admin;
+    $('userName').textContent=data.full_name || state.user.email || 'Team member';
+    $('userAvatar').textContent=initials(data.full_name || state.user.email);
+    $('userRole').textContent=state.isAdmin?'Administrator':'Technician';
+    document.querySelectorAll('.admin-only').forEach(el=>el.classList.toggle('hidden',!state.isAdmin));
   }
-
-  async function startApp(user) {
-    currentUser = user;
-    isAdmin = false;
-    setNavPermissions();
-    $('user-email').textContent = user.email || '';
-    try {
-      await loadProfile();
-      showScreen('screen-log');
-    } catch (error) {
-      console.error(error);
-      alert(error.message);
-      await db.auth.signOut();
-      currentUser = null;
-      isAdmin = false;
-      setNavPermissions();
-      showLogin();
-    }
-  }
-
-  async function checkSession() {
-    const { data, error } = await db.auth.getSession();
-    if (error) {
-      console.error('Session lookup failed:', error);
-      showLogin();
-      return;
-    }
-    if (data.session?.user) await startApp(data.session.user);
-    else showLogin();
-  }
-
-  $('login-form').addEventListener('submit', async event => {
-    event.preventDefault();
-    clearMessage('login-error');
-    setButtonBusy('login-btn', true, 'Logging in...');
-    try {
-      const { data, error } = await db.auth.signInWithPassword({
-        email: $('email').value.trim(),
-        password: $('password').value
-      });
-      if (error) throw error;
-      await startApp(data.user);
-    } catch (error) {
-      console.error('Login failed:', error);
-      message('login-error', error.message || 'Login failed');
-    } finally {
-      setButtonBusy('login-btn', false);
-    }
-  });
-
-  $('logout-btn').addEventListener('click', async () => {
-    const { error } = await db.auth.signOut();
-    if (error) {
-      alert('Could not log out: ' + error.message);
-      return;
-    }
-    currentUser = null;
-    isAdmin = false;
-    latestReport = [];
-    setNavPermissions();
-    showLogin();
-  });
-
-  db.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_OUT') {
-      currentUser = null;
-      isAdmin = false;
-      setNavPermissions();
-      showLogin();
-    }
-  });
-
-  document.querySelectorAll('[data-screen]').forEach(button => {
-    button.addEventListener('click', () => showScreen(button.dataset.screen));
-  });
 
   async function loadJobs() {
-    const select = $('job-select');
-    select.replaceChildren(option('', 'Loading jobs...'));
-
-    const { data, error } = await db.from('jobs')
-      .select('id, job_code, job_name')
-      .eq('active', true)
-      .order('job_code');
-
-    if (error) {
-      console.error('Jobs lookup failed:', error);
-      select.replaceChildren(option('', 'Could not load jobs'));
-      message('submit-msg', `Could not load jobs: ${error.message} (${error.code || 'unknown code'})`);
-      return;
-    }
-
-    select.replaceChildren(option('', 'Select a job...'));
-    (data || []).forEach(job => {
-      jobsById[job.id] = job;
-      select.appendChild(option(job.id, `${job.job_code} – ${job.job_name}`));
-    });
-
-    if (!data?.length) select.replaceChildren(option('', 'No active jobs'));
+    const {data,error}=await sb.from('jobs').select('id,job_code,job_name,active').order('job_code');
+    if(error) throw error;
+    state.jobs=data||[];
+    const active=state.jobs.filter(j=>j.active!==false);
+    $('jobSelect').innerHTML='<option value="">Choose a jobâ¦</option>'+active.map(j=>`<option value="${esc(j.id)}">${esc(jobLabel(j))}</option>`).join('');
+    $('activeJobsStat').textContent=active.length;
+    $('jobCountPill').textContent=`${state.jobs.length} job${state.jobs.length===1?'':'s'}`;
+    $('jobList').innerHTML=state.jobs.length?`<div class="table-wrap"><table><thead><tr><th>Job code</th><th>Job name</th><th>Status</th><th>Action</th></tr></thead><tbody>${state.jobs.map(j=>`<tr><td><strong>${esc(j.job_code)}</strong></td><td>${esc(j.job_name)}</td><td><span class="pill" style="${j.active===false?'background:var(--surface-2);color:var(--muted)':''}">${j.active===false?'Inactive':'Active'}</span></td><td><button class="secondary-btn toggle-job" data-id="${esc(j.id)}" data-active="${j.active===false?'false':'true'}">${j.active===false?'Activate':'Deactivate'}</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty"><strong>No jobs yet</strong>Add a job code and name to get started.</div>';
+    $('reportJob').innerHTML='<option value="">All jobs</option>'+state.jobs.map(j=>`<option value="${esc(j.id)}">${esc(jobLabel(j))}</option>`).join('');
   }
 
-  $('hours-form').addEventListener('submit', async event => {
-    event.preventDefault();
-    clearMessage('submit-msg');
-
-    const jobId = $('job-select').value;
-    const workDate = $('work-date').value;
-    const hours = Number($('hours').value);
-    const description = $('description').value.trim();
-
-    if (!jobId || !workDate || !Number.isFinite(hours) ||
-        hours < 0.25 || hours > 24 || Math.round(hours * 4) !== hours * 4) {
-      message('submit-msg', 'Select a job and date, and enter 0.25–24 hours in quarter-hour increments.');
-      return;
-    }
-
-    setButtonBusy('submit-btn', true, 'Saving...');
-    try {
-      const { error } = await db.from('time_entries').insert({
-        user_id: currentUser.id,
-        job_id: jobId,
-        work_date: workDate,
-        hours,
-        description: description || null
-      });
-      if (error) throw error;
-
-      message('submit-msg', 'Hours saved successfully!', 'success');
-      $('hours').value = '';
-      $('description').value = '';
-    } catch (error) {
-      console.error('Saving hours failed:', error);
-      message('submit-msg', `Could not save hours: ${error.message} (${error.code || 'unknown code'})`);
-    } finally {
-      setButtonBusy('submit-btn', false);
-    }
-  });
-
-  // Fetch related records separately to avoid depending on implicit
-  // PostgREST relationship joins or ambiguous foreign-key names.
-  async function getRelatedRecords(entries) {
-    const jobIds = [...new Set(entries.map(e => e.job_id).filter(Boolean))];
-    const userIds = [...new Set(entries.map(e => e.user_id).filter(Boolean))];
-
-    const jobsPromise = jobIds.length
-      ? db.from('jobs').select('id, job_code, job_name, active').in('id', jobIds)
-      : Promise.resolve({ data: [], error: null });
-
-    const profilesPromise = userIds.length
-      ? db.from('profiles').select('id, full_name').in('id', userIds)
-      : Promise.resolve({ data: [], error: null });
-
-    const [jobsResult, profilesResult] = await Promise.all([jobsPromise, profilesPromise]);
-
-    if (jobsResult.error) throw new Error(`Could not load related jobs: ${jobsResult.error.message} (${jobsResult.error.code || 'unknown code'})`);
-    if (profilesResult.error) throw new Error(`Could not load related profiles: ${profilesResult.error.message} (${profilesResult.error.code || 'unknown code'})`);
-
-    const jobs = Object.fromEntries((jobsResult.data || []).map(j => [j.id, j]));
-    const profiles = Object.fromEntries((profilesResult.data || []).map(p => [p.id, p]));
-
-    return entries.map(entry => ({
-      ...entry,
-      job: jobs[entry.job_id] || null,
-      profile: profiles[entry.user_id] || null
-    }));
+  async function loadEntries() {
+    let q=sb.from('time_entries').select('id,user_id,job_id,work_date,hours,description').order('work_date',{ascending:false}).limit(500);
+    if(!state.isAdmin) q=q.eq('user_id',state.user.id);
+    const {data,error}=await q;
+    if(error) throw error;
+    state.entries=data||[];
+    await attachLabels(state.entries);
+    renderEntryStats(); renderRecent(); renderEntriesTable();
   }
 
-  function renderEntries(container, entries, allowEdit) {
-    container.replaceChildren();
-
-    if (!entries.length) {
-      container.appendChild(el('p', 'No entries found.', 'muted'));
-      return;
+  async function attachLabels(rows) {
+    const jobIds=[...new Set(rows.map(r=>r.job_id).filter(Boolean))];
+    const userIds=[...new Set(rows.map(r=>r.user_id).filter(Boolean))];
+    const jobMap=new Map(state.jobs.map(j=>[String(j.id),j]));
+    if(jobIds.length && !state.jobs.length) {
+      const {data}=await sb.from('jobs').select('id,job_code,job_name,active').in('id',jobIds);
+      (data||[]).forEach(j=>jobMap.set(String(j.id),j));
     }
-
-    entries.forEach(entry => {
-      const card = el('div', undefined, 'entry');
-      const header = el('div', undefined, 'entry-header');
-      const job = entry.job;
-      header.appendChild(el('span',
-        `${job?.job_code || 'Unknown job'}${job?.job_name ? ' – ' + job.job_name : ''}`,
-        'entry-job'));
-      header.appendChild(el('strong', `${Number(entry.hours).toFixed(2)} h`));
-      card.appendChild(header);
-
-      const meta = [
-        entry.work_date,
-        entry.profile?.full_name || (entry.user_id === currentUser?.id ? currentUser.email : 'Unknown technician'),
-        entry.description
-      ].filter(Boolean).join(' • ');
-      card.appendChild(el('div', meta, 'entry-meta'));
-
-      if (allowEdit && entry.user_id === currentUser.id) {
-        const actions = el('div', undefined, 'entry-actions');
-        const edit = el('button', 'Edit', 'small secondary');
-        edit.addEventListener('click', () => editEntry(entry));
-        const del = el('button', 'Delete', 'small danger');
-        del.addEventListener('click', () => deleteEntry(entry.id));
-        actions.append(edit, del);
-        card.appendChild(actions);
-      }
-      container.appendChild(card);
+    let profiles=[];
+    if(state.isAdmin && userIds.length) {
+      const {data,error}=await sb.from('profiles').select('id,full_name').in('id',userIds);
+      if(!error) profiles=data||[];
+    }
+    const profileMap=new Map(profiles.map(p=>[p.id,p.full_name]));
+    rows.forEach(r=>{
+      r._job=jobMap.get(String(r.job_id))||{};
+      r._tech=profileMap.get(r.user_id)||(r.user_id===state.user.id?(state.profile?.full_name||state.user.email):`User ${String(r.user_id||'').slice(0,8)}`);
     });
   }
 
-  async function loadMyEntries() {
-    const list = $('entries-list');
-    list.textContent = 'Loading entries...';
+  function renderEntryStats() {
+    const from=weekStart(), mine=state.entries.filter(e=>e.user_id===state.user.id && e.work_date>=from && e.work_date<=today());
+    $('weekHours').textContent=fmtHours(mine.reduce((s,e)=>s+Number(e.hours||0),0));
+    $('weekEntries').textContent=mine.length;
+    const sorted=[...state.entries.filter(e=>e.user_id===state.user.id)].sort((a,b)=>String(b.work_date).localeCompare(String(a.work_date)));
+    $('lastEntryStat').textContent=sorted.length?fmtDate(sorted[0].work_date):'None yet';
+  }
 
+  function entryRow(e,adminReport=false) {
+    const job=e._job||{};
+    return `<tr><td>${esc(fmtDate(e.work_date))}</td>${adminReport?`<td>${esc(e._tech)}</td>`:''}<td><strong>${esc(job.job_code||'â')}</strong><div class="small muted">${esc(job.job_name||'Job unavailable')}</div></td><td><strong>${esc(fmtHours(e.hours))} h</strong></td><td style="max-width:240px;white-space:normal">${esc(e.description||'â')}</td>${adminReport?'':`<td><div style="display:flex;gap:6px"><button class="secondary-btn edit-entry" data-id="${esc(e.id)}">Edit</button><button class="danger-btn delete-entry" data-id="${esc(e.id)}">Delete</button></div></td>`}</tr>`;
+  }
+  function renderRecent() {
+    const rows=state.entries.filter(e=>e.user_id===state.user.id).slice(0,5);
+    $('recentActivity').innerHTML=rows.length?`<div style="display:grid;gap:0">${rows.map(e=>`<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)"><div class="stat-icon blue">â·</div><div style="flex:1;min-width:0"><div style="font-weight:800;font-size:12px;overflow:hidden;text-overflow:ellipsis">${esc(e._job.job_code||'Job')} Â· ${esc(e._job.job_name||'Unnamed job')}</div><div class="small muted">${esc(fmtDate(e.work_date))}${e.description?' Â· '+esc(e.description):''}</div></div><div style="font-weight:850;white-space:nowrap">${esc(fmtHours(e.hours))} h</div></div>`).join('')}</div>`:'<div class="empty"><strong>No hours recorded yet</strong>Your latest entries will show up here.</div>';
+  }
+  function renderEntriesTable() {
+    const search=$('entrySearch').value.trim().toLowerCase(), from=$('entriesFrom').value, to=$('entriesTo').value;
+    const rows=state.entries.filter(e=>e.user_id===state.user.id&&(!from||e.work_date>=from)&&(!to||e.work_date<=to)&&(!search||`${e._job.job_code} ${e._job.job_name} ${e.description||''}`.toLowerCase().includes(search)));
+    $('entriesTable').innerHTML=rows.length?`<div class="table-wrap"><table><thead><tr><th>Work date</th><th>Job</th><th>Hours</th><th>Description</th><th>Actions</th></tr></thead><tbody>${rows.map(e=>entryRow(e)).join('')}</tbody></table></div><p class="small muted">${rows.length} entr${rows.length===1?'y':'ies'} shown Â· up to 500 most recent records loaded.</p>`:'<div class="empty"><strong>No matching entries</strong>Try changing your search or date filters.</div>';
+  }
+
+  function goPage(page) {
+    if(!pageMeta[page] || (['reports','jobs'].includes(page)&&!state.isAdmin)) page='log';
+    document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+    $(`page-${page}`).classList.add('active');
+    document.querySelectorAll('[data-page]').forEach(el=>el.classList.toggle('active',el.dataset.page===page));
+    $('pageEyebrow').textContent=pageMeta[page][0]; $('pageTitle').textContent=pageMeta[page][1]; $('pageSubtitle').textContent=pageMeta[page][2];
+    if(page==='reports') loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));
+    if(page==='jobs') loadJobs().catch(e=>showNotice('jobNotice',friendlyError(e),'error'));
+  }
+
+  function setTodayDefaults() {
+    $('workDate').value=today(); $('reportTo').value=today();
+    const start=new Date(); start.setDate(start.getDate()-29); $('reportFrom').value=dateISO(start);
+  }
+
+  async function saveEntry(event) {
+    event.preventDefault(); hideNotice('entryNotice');
+    const id=$('entryId').value, payload={job_id:$('jobSelect').value,work_date:$('workDate').value,hours:Number($('hours').value),description:$('description').value.trim()||null};
+    if(!payload.job_id){showNotice('entryNotice','Please choose a job.','error');return;}
+    if(!payload.work_date||!Number.isFinite(payload.hours)||payload.hours<=0||payload.hours>24){showNotice('entryNotice','Enter a valid work date and hours between 0.25 and 24.','error');return;}
+    $('saveEntryBtn').disabled=true; $('saveEntryBtn').textContent='Savingâ¦';
     try {
-      const { data, error } = await db.from('time_entries')
-        .select('id, user_id, job_id, work_date, hours, description')
-        .eq('user_id', currentUser.id)
-        .order('work_date', { ascending: false })
-        .limit(40);
-
-      if (error) throw error;
-
-      console.log('My Entries base query succeeded:', {
-        userId: currentUser.id,
-        count: data?.length || 0
-      });
-
-      const entries = await getRelatedRecords(data || []);
-      renderEntries(list, entries, true);
-    } catch (error) {
-      console.error('My Entries failed:', {
-        message: error.message,
-        code: error.code,
-        details: error.details,
-        hint: error.hint,
-        userId: currentUser?.id
-      });
-      list.replaceChildren();
-      list.appendChild(el('p',
-        `Error loading entries: ${error.message} (code: ${error.code || 'unknown'}). Check the browser console for details.`,
-        'error'));
-    }
+      let result;
+      if(id) result=await sb.from('time_entries').update(payload).eq('id',id).eq('user_id',state.user.id);
+      else result=await sb.from('time_entries').insert({...payload,user_id:state.user.id});
+      if(result.error) throw result.error;
+      resetEntryForm(); showNotice('entryNotice',id?'Your entry has been updated.':'Hours submitted successfully.','success');
+      await loadEntries(); goPage('log');
+    } catch(e){showNotice('entryNotice',friendlyError(e),'error');}
+    finally{$('saveEntryBtn').disabled=false;$('saveEntryBtn').textContent=$('entryId').value?'Save changes':'Submit hours â';}
   }
 
-  async function editEntry(entry) {
-    const newHours = prompt('Enter hours (0.25–24):', entry.hours);
-    if (newHours === null) return;
-    const hours = Number(newHours);
-    if (!Number.isFinite(hours) || hours < 0.25 || hours > 24 ||
-        Math.round(hours * 4) !== hours * 4) {
-      alert('Enter a valid number from 0.25 to 24 in quarter-hour increments.');
-      return;
-    }
-
-    const newDesc = prompt('Description (optional):', entry.description || '');
-    if (newDesc === null) return;
-
-    const { error } = await db.from('time_entries')
-      .update({ hours, description: newDesc.trim() || null })
-      .eq('id', entry.id)
-      .eq('user_id', currentUser.id);
-
-    if (error) {
-      console.error('Edit failed:', error);
-      alert(`Could not update entry: ${error.message} (${error.code || 'unknown code'})`);
-    } else {
-      await loadMyEntries();
-    }
+  function resetEntryForm() {
+    $('entryForm').reset(); $('entryId').value=''; $('workDate').value=today(); $('entryFormTitle').textContent='Record your hours'; $('saveEntryBtn').textContent='Submit hours â'; $('cancelEditBtn').classList.add('hidden');
   }
-
+  function startEdit(id) {
+    const e=state.entries.find(r=>String(r.id)===String(id)&&r.user_id===state.user.id); if(!e)return;
+    $('entryId').value=e.id; $('jobSelect').value=e.job_id; $('workDate').value=e.work_date; $('hours').value=e.hours; $('description').value=e.description||'';
+    $('entryFormTitle').textContent='Edit time entry'; $('saveEntryBtn').textContent='Save changes'; $('cancelEditBtn').classList.remove('hidden'); goPage('log'); window.scrollTo({top:0,behavior:'smooth'});
+  }
   async function deleteEntry(id) {
-    if (!confirm('Delete this time entry? This cannot be undone.')) return;
-    const { error } = await db.from('time_entries').delete()
-      .eq('id', id)
-      .eq('user_id', currentUser.id);
-
-    if (error) {
-      console.error('Delete failed:', error);
-      alert(`Could not delete entry: ${error.message} (${error.code || 'unknown code'})`);
-    } else {
-      await loadMyEntries();
-    }
+    const e=state.entries.find(r=>String(r.id)===String(id)); if(!e||e.user_id!==state.user.id)return;
+    if(!confirm(`Delete the ${e.hours}-hour entry for ${fmtDate(e.work_date)}? This cannot be undone.`))return;
+    const {error}=await sb.from('time_entries').delete().eq('id',id).eq('user_id',state.user.id);
+    if(error){showNotice('entriesNotice',friendlyError(error),'error');return;}
+    await loadEntries(); showNotice('entriesNotice','Entry deleted.','success');
   }
 
-  async function loadAdminJobs() {
-    if (!isAdmin) return;
-
-    const list = $('admin-jobs-list');
-    list.textContent = 'Loading jobs...';
-
-    const { data, error } = await db.from('jobs')
-      .select('id, job_code, job_name, active')
-      .order('job_code');
-
-    if (error) {
-      console.error('Admin job query failed:', error);
-      list.textContent = `Could not load jobs: ${error.message} (${error.code || 'unknown code'})`;
-      return;
-    }
-
-    list.replaceChildren();
-    if (!data?.length) {
-      list.appendChild(el('p', 'No jobs found.', 'muted'));
-      return;
-    }
-
-    data.forEach(job => {
-      const card = el('div', undefined, 'entry');
-      const header = el('div', undefined, 'entry-header');
-      header.appendChild(el('strong', job.job_code));
-      header.appendChild(el('span', job.active ? 'Active' : 'Inactive', 'entry-meta'));
-      card.appendChild(header);
-      card.appendChild(el('div', job.job_name, 'entry-meta'));
-      list.appendChild(card);
+  async function loadReport() {
+    hideNotice('reportNotice');
+    let q=sb.from('time_entries').select('id,user_id,job_id,work_date,hours,description').gte('work_date',$('reportFrom').value||'1900-01-01').lte('work_date',$('reportTo').value||today()).order('work_date',{ascending:false}).limit(5000);
+    const {data,error}=await q;if(error)throw error;
+    const rows=data||[]; await attachLabels(rows);
+    const techFilter=$('reportTech').value, jobFilter=$('reportJob').value;
+    const filtered=rows.filter(r=>(!techFilter||r.user_id===techFilter)&&(!jobFilter||String(r.job_id)===String(jobFilter)));
+    state.reportRows=filtered;
+    const total=filtered.reduce((s,r)=>s+Number(r.hours||0),0);
+    $('reportHours').textContent=fmtHours(total); $('reportEntries').textContent=filtered.length;
+    $('reportTechs').textContent=new Set(filtered.map(r=>r.user_id)).size; $('reportJobs').textContent=new Set(filtered.map(r=>r.job_id)).size;
+    await populateTechFilter(rows);
+    renderCharts(filtered); renderReportTable(filtered);
+  }
+  async function populateTechFilter(rows) {
+    const old=$('reportTech').value, ids=[...new Set(rows.map(r=>r.user_id).filter(Boolean))];
+    let names=new Map();
+    if(ids.length){const {data,error}=await sb.from('profiles').select('id,full_name').in('id',ids);if(!error)(data||[]).forEach(p=>names.set(p.id,p.full_name));}
+    $('reportTech').innerHTML='<option value="">All technicians</option>'+ids.map(id=>`<option value="${esc(id)}">${esc(names.get(id)||`User ${id.slice(0,8)}`)}</option>`).join('');
+    $('reportTech').value=ids.includes(old)?old:'';
+  }
+  function chartColors(){return ['#4776f6','#18b6a4','#8b6df2','#f4a340','#e45d6b','#36a2eb','#e879c8','#7dbd55','#e6c84f','#6d82a8'];}
+  function makeChart(old,canvas,type,data,options) { if(old)old.destroy(); return new Chart($(canvas),{type,data,options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:type==='doughnut',position:'bottom',labels:{color:getComputedStyle(document.body).getPropertyValue('--muted'),usePointStyle:true,boxWidth:8,padding:15}},tooltip:{callbacks:{label:c=>`${c.dataset.label?c.dataset.label+': ':''}${Number(c.raw||0).toLocaleString()} hours`}}},scales:type==='doughnut'?{}:{x:{ticks:{color:getComputedStyle(document.body).getPropertyValue('--muted')},grid:{color:'rgba(120,140,170,.12)'}},y:{beginAtZero:true,ticks:{color:getComputedStyle(document.body).getPropertyValue('--muted')},grid:{color:'rgba(120,140,170,.12)'}}},...options}}); }
+  function renderCharts(rows) {
+    const colors=chartColors(), byTech={},byJob={},byWeek={},byMix={};
+    rows.forEach(r=>{
+      const h=Number(r.hours||0), tech=r._tech||`User ${String(r.user_id).slice(0,8)}`, j=r._job||{}, job=`${j.job_code||'No code'} Â· ${j.job_name||'Unnamed job'}`;
+      byTech[tech]=(byTech[tech]||0)+h;byJob[job]=(byJob[job]||0)+h;byMix[job]=(byMix[job]||0)+h;
+      const d=new Date(`${r.work_date}T12:00:00`);d.setDate(d.getDate()-((d.getDay()+6)%7));const wk=dateISO(d);byWeek[wk]=(byWeek[wk]||0)+h;
     });
+    const tech=Object.entries(byTech).sort((a,b)=>b[1]-a[1]).slice(0,12), jobs=Object.entries(byJob).sort((a,b)=>b[1]-a[1]).slice(0,12), weeks=Object.entries(byWeek).sort((a,b)=>a[0].localeCompare(b[0]));
+    state.techChart=makeChart(state.techChart,'techChart','bar',{labels:tech.map(x=>x[0]),datasets:[{label:'Hours',data:tech.map(x=>x[1]),backgroundColor:colors[0],borderRadius:6}]},{indexAxis:'y',plugins:{legend:{display:false}}});
+    state.jobChart=makeChart(state.jobChart,'jobChart','bar',{labels:jobs.map(x=>x[0]),datasets:[{label:'Hours',data:jobs.map(x=>x[1]),backgroundColor:jobs.map((_,i)=>colors[i%colors.length]),borderRadius:6}]},{indexAxis:'y',plugins:{legend:{display:false}}});
+    state.weekChart=makeChart(state.weekChart,'weekChart','line',{labels:weeks.map(x=>fmtDate(x[0])),datasets:[{label:'Hours',data:weeks.map(x=>x[1]),borderColor:colors[1],backgroundColor:colors[1]+'22',fill:true,tension:.3,pointRadius:3}]},{plugins:{legend:{display:false}}});
+    const mix=Object.entries(byMix).sort((a,b)=>b[1]-a[1]).slice(0,8);
+    state.mixChart=makeChart(state.mixChart,'mixChart','doughnut',{labels:mix.map(x=>x[0]),datasets:[{data:mix.map(x=>x[1]),backgroundColor:mix.map((_,i)=>colors[i%colors.length]),borderWidth:0}]},{scales:{},cutout:'64%'});
+  }
+  function renderReportTable(rows) {
+    const sorted=[...rows].sort((a,b)=>String(b.work_date).localeCompare(String(a.work_date)));
+    $('reportTable').innerHTML=sorted.length?`<div class="table-wrap"><table><thead><tr><th>Work date</th><th>Technician</th><th>Job code / name</th><th>Hours</th><th>Description</th></tr></thead><tbody>${sorted.map(e=>entryRow(e,true)).join('')}</tbody></table></div><p class="small muted">${sorted.length} entries shown Â· report query is limited to 5,000 most recent matching rows.</p>`:'<div class="empty"><strong>No hours found</strong>Try a wider date range or remove a filter.</div>';
   }
 
-  $('add-job-form').addEventListener('submit', async event => {
-    event.preventDefault();
-    if (!isAdmin) return alert('Admin access is required.');
+  function exportCsv() {
+    const rows=state.reportRows;if(!rows.length){showNotice('reportNotice','There are no report rows to export.','error');return;}
+    const quote=v=>`"${String(v??'').replace(/"/g,'""')}"`;
+    const lines=[['Work date','Technician','User ID','Job code','Job name','Hours','Description'],...rows.map(r=>[r.work_date,r._tech,r.user_id,r._job.job_code||'',r._job.job_name||'',r.hours,r.description||''])];
+    const csv='\uFEFF'+lines.map(row=>row.map(quote).join(',')).join('\r\n');
+    const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'})),a=document.createElement('a');a.href=url;a.download=`hvac-hours-report-${today()}.csv`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+  }
 
-    clearMessage('add-job-msg');
-    const code = $('new-job-code').value.trim();
-    const name = $('new-job-name').value.trim();
-    if (!code || !name) {
-      message('add-job-msg', 'Both fields are required.');
-      return;
-    }
+  async function addJob(event) {
+    event.preventDefault();hideNotice('jobNotice');
+    const payload={job_code:$('jobCode').value.trim(),job_name:$('jobName').value.trim(),active:true};
+    if(!payload.job_code||!payload.job_name)return;
+    const {error}=await sb.from('jobs').insert(payload);
+    if(error){showNotice('jobNotice',friendlyError(error),'error');return;}
+    $('jobForm').reset();showNotice('jobNotice','Job added successfully.','success');await loadJobs();
+  }
+  async function toggleJob(id,active) {
+    const {error}=await sb.from('jobs').update({active:!active}).eq('id',id);
+    if(error){showNotice('jobNotice',friendlyError(error),'error');return;}
+    await loadJobs();showNotice('jobNotice',`Job ${active?'deactivated':'activated'}.`,'success');
+  }
 
-    setButtonBusy('add-job-btn', true, 'Adding...');
+  async function openApp(user) {
+    state.user=user;
+    $('loginView').classList.add('hidden');$('appView').classList.remove('hidden');
     try {
-      const { error } = await db.from('jobs').insert({
-        job_code: code,
-        job_name: name,
-        active: true
-      });
-      if (error) throw error;
-
-      message('add-job-msg', 'Job added successfully!', 'success');
-      $('new-job-code').value = '';
-      $('new-job-name').value = '';
-      await Promise.all([loadAdminJobs(), loadJobs()]);
-    } catch (error) {
-      console.error('Add job failed:', error);
-      message('add-job-msg', `Could not add job: ${error.message} (${error.code || 'unknown code'})`);
-    } finally {
-      setButtonBusy('add-job-btn', false);
+      await loadProfile(); await loadJobs(); await loadEntries(); setTodayDefaults(); goPage('log');
+    } catch(e) {
+      console.error(e);
+      $('appView').classList.add('hidden');$('loginView').classList.remove('hidden');
+      showNotice('loginNotice',`Unable to load your workspace: ${friendlyError(e)}`,'error');
     }
+  }
+  async function signOut() { await sb.auth.signOut();state.user=null;state.profile=null;state.isAdmin=false;$('appView').classList.add('hidden');$('loginView').classList.remove('hidden'); }
+  $('loginForm').addEventListener('submit',async e=>{e.preventDefault();hideNotice('loginNotice');const {data,error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error){showNotice('loginNotice',friendlyError(error),'error');return;}await openApp(data.user);});
+  $('logoutBtn').addEventListener('click',signOut);
+  $('entryForm').addEventListener('submit',saveEntry);$('cancelEditBtn').addEventListener('click',resetEntryForm);
+  $('entrySearch').addEventListener('input',renderEntriesTable);$('entriesFrom').addEventListener('change',renderEntriesTable);$('entriesTo').addEventListener('change',renderEntriesTable);
+  $('exportCsvBtn').addEventListener('click',exportCsv);$('jobForm').addEventListener('submit',addJob);
+  $('clearReportFilters').addEventListener('click',()=>{setTodayDefaults();$('reportTech').value='';$('reportJob').value='';loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));});
+  ['reportFrom','reportTo','reportTech','reportJob'].forEach(id=>$(id).addEventListener('change',()=>loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'))));
+  document.querySelectorAll('[data-page]').forEach(el=>el.addEventListener('click',()=>goPage(el.dataset.page)));
+  document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',()=>goPage(el.dataset.go)));
+  document.addEventListener('click',e=>{
+    const edit=e.target.closest('.edit-entry');if(edit)startEdit(edit.dataset.id);
+    const del=e.target.closest('.delete-entry');if(del)deleteEntry(del.dataset.id).catch(err=>showNotice('entriesNotice',friendlyError(err),'error'));
+    const toggle=e.target.closest('.toggle-job');if(toggle)toggleJob(toggle.dataset.id,toggle.dataset.active==='true').catch(err=>showNotice('jobNotice',friendlyError(err),'error'));
   });
-
-  async function prepareReportFilters() {
-    if (!isAdmin) return;
-
-    const to = new Date();
-    const from = new Date();
-    from.setDate(from.getDate() - 30);
-
-    $('report-to').value = to.toISOString().slice(0, 10);
-    $('report-from').value = from.toISOString().slice(0, 10);
-
-    clearMessage('report-msg');
-    $('report-summary').classList.add('hidden');
-    $('report-results').replaceChildren();
-
-    try {
-      const [usersResult, jobsResult] = await Promise.all([
-        db.from('profiles').select('id, full_name').order('full_name'),
-        db.from('jobs').select('id, job_code, job_name').order('job_code')
-      ]);
-
-      if (usersResult.error) throw new Error(`Could not load technicians: ${usersResult.error.message}`);
-      if (jobsResult.error) throw new Error(`Could not load jobs: ${jobsResult.error.message}`);
-
-      const userSelect = $('report-user');
-      userSelect.replaceChildren(option('', 'All technicians'));
-      (usersResult.data || []).forEach(user => {
-        profilesById[user.id] = user;
-        userSelect.appendChild(option(user.id, user.full_name || user.id.slice(0, 8)));
-      });
-
-      const jobSelect = $('report-job');
-      jobSelect.replaceChildren(option('', 'All jobs'));
-      (jobsResult.data || []).forEach(job => {
-        jobsById[job.id] = job;
-        jobSelect.appendChild(option(job.id, `${job.job_code} – ${job.job_name}`));
-      });
-    } catch (error) {
-      console.error('Report filter setup failed:', error);
-      message('report-msg', error.message);
-    }
-  }
-
-  function groupHours(entries, keyFn, labelFn) {
-    const groups = {};
-    entries.forEach(entry => {
-      const key = keyFn(entry);
-      groups[key] = (groups[key] || 0) + Number(entry.hours || 0);
-    });
-    return Object.entries(groups)
-      .map(([key, hours]) => ({ label: labelFn(key), hours }))
-      .sort((a, b) => b.hours - a.hours);
-  }
-
-  function renderBars(containerId, rows) {
-    const container = $(containerId);
-    container.replaceChildren();
-
-    if (!rows.length) {
-      container.appendChild(el('p', 'No data for this chart.', 'muted'));
-      return;
-    }
-
-    const max = Math.max(...rows.map(r => r.hours), 0.01);
-    rows.slice(0, 10).forEach(row => {
-      const line = el('div', undefined, 'bar-row');
-      line.appendChild(el('div', row.label, 'bar-label'));
-
-      const track = el('div', undefined, 'bar-track');
-      const fill = el('div', undefined, 'bar-fill');
-      fill.style.width = `${Math.max(0, row.hours / max * 100)}%`;
-      track.appendChild(fill);
-      line.appendChild(track);
-      line.appendChild(el('div', row.hours.toFixed(1), 'bar-label'));
-      container.appendChild(line);
-    });
-  }
-
-  function weekStart(dateString) {
-    const d = new Date(dateString + 'T12:00:00Z');
-    const day = d.getUTCDay();
-    d.setUTCDate(d.getUTCDate() - ((day + 6) % 7));
-    return d.toISOString().slice(0, 10);
-  }
-
-  $('run-report-btn').addEventListener('click', runReport);
-
-  async function runReport() {
-    if (!isAdmin) return alert('Admin access is required.');
-
-    clearMessage('report-msg');
-    const from = $('report-from').value;
-    const to = $('report-to').value;
-    const userId = $('report-user').value;
-    const jobId = $('report-job').value;
-
-    if (from && to && from > to) {
-      message('report-msg', 'The From date must be on or before the To date.');
-      return;
-    }
-
-    setButtonBusy('run-report-btn', true, 'Running report...');
-    $('report-summary').classList.add('hidden');
-    $('report-results').replaceChildren();
-
-    try {
-      let query = db.from('time_entries')
-        .select('id, user_id, job_id, work_date, hours, description')
-        .order('work_date', { ascending: false });
-
-      if (from) query = query.gte('work_date', from);
-      if (to) query = query.lte('work_date', to);
-      if (userId) query = query.eq('user_id', userId);
-      if (jobId) query = query.eq('job_id', jobId);
-
-      // Supabase can cap the number of rows returned. Use range pagination
-      // so report totals aren't silently based on only the first page.
-      const pageSize = 1000;
-      let rows = [];
-      for (let offset = 0; ; offset += pageSize) {
-        const { data, error } = await query.range(offset, offset + pageSize - 1);
-        if (error) throw error;
-        rows = rows.concat(data || []);
-        if (!data || data.length < pageSize) break;
-      }
-
-      const entries = await getRelatedRecords(rows);
-      latestReport = entries;
-
-      const total = entries.reduce((sum, e) => sum + Number(e.hours || 0), 0);
-      $('stat-hours').textContent = total.toFixed(2);
-      $('stat-entries').textContent = String(entries.length);
-      $('stat-users').textContent = String(new Set(entries.map(e => e.user_id)).size);
-      $('stat-jobs').textContent = String(new Set(entries.map(e => e.job_id)).size);
-
-      const byUser = groupHours(
-        entries,
-        e => e.user_id || 'unknown',
-        id => profilesById[id]?.full_name || entries.find(e => e.user_id === id)?.profile?.full_name || id.slice(0, 8)
-      );
-      const byJob = groupHours(
-        entries,
-        e => e.job_id || 'unknown',
-        id => jobsById[id]?.job_code || entries.find(e => e.job_id === id)?.job?.job_code || 'Unknown job'
-      );
-      const byWeek = groupHours(
-        entries,
-        e => weekStart(e.work_date),
-        week => week
-      ).sort((a, b) => a.label.localeCompare(b.label));
-
-      renderBars('chart-users', byUser);
-      renderBars('chart-jobs', byJob);
-      renderBars('chart-weeks', byWeek);
-      $('report-summary').classList.remove('hidden');
-      renderEntries($('report-results'), entries, false);
-
-      if (!entries.length) message('report-msg', 'No entries matched these filters.', 'success');
-      else message('report-msg', `Report loaded: ${entries.length} entries.`, 'success');
-    } catch (error) {
-      console.error('Report failed:', error);
-      message('report-msg', `Report failed: ${error.message} (${error.code || 'unknown code'}).`);
-    } finally {
-      setButtonBusy('run-report-btn', false);
-    }
-  }
-
-  $('export-btn').addEventListener('click', () => {
-    if (!latestReport.length) return alert('There are no report entries to export.');
-
-    const columns = ['Date', 'Technician', 'Job Code', 'Job Name', 'Hours', 'Description'];
-    const quote = value => '"' + String(value ?? '').replace(/"/g, '""') + '"';
-    const rows = latestReport.map(e => [
-      e.work_date,
-      e.profile?.full_name || e.user_id,
-      e.job?.job_code || '',
-      e.job?.job_name || '',
-      Number(e.hours).toFixed(2),
-      e.description || ''
-    ]);
-    const csv = [columns, ...rows].map(row => row.map(quote).join(',')).join('\r\n');
-    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `hvac-hours-${new Date().toISOString().slice(0, 10)}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  });
-
-  $('work-date').value = new Date().toISOString().slice(0, 10);
-  checkSession();
+  $('themeToggle').addEventListener('click',()=>{const dark=document.documentElement.dataset.theme!=='dark';document.documentElement.dataset.theme=dark?'dark':'light';$('themeToggle').textContent=dark?'â':'â¾';try{localStorage.setItem('hvac-hours-theme',dark?'dark':'light')}catch{};if($('page-reports').classList.contains('active'))renderCharts(state.reportRows);});
+  try {const theme=localStorage.getItem('hvac-hours-theme');if(theme==='dark'){document.documentElement.dataset.theme='dark';$('themeToggle').textContent='â';}}catch{}
+  sb.auth.getSession().then(({data})=>{if(data.session)openApp(data.session.user);});
+  sb.auth.onAuthStateChange((_event,session)=>{if(session&&session.user&&!state.user)openApp(session.user);});
 })();
 </script>
 </body>
