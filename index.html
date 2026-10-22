@@ -9,7 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <style>
     :root {
-      color-scheme: light;
+      color-scheme: light dark;
       --bg:#f4f7fb; --surface:#fff; --surface-2:#f8faff; --text:#17233b;
       --muted:#71809a; --border:#e5ebf4; --navy:#101a33; --navy-2:#182747;
       --blue:#4776f6; --blue-soft:#edf2ff; --teal:#18b6a4; --teal-soft:#e7faf6;
@@ -263,7 +263,7 @@
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJucnl1dXNucWZqbHRzdHd3cWFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MTcyMzIsImV4cCI6MjEwODE5MzIzMn0.Xsko4Pv7wMyeaSm0TKVX97TC1spBWkDWSJ7rrnYVOUY';
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   const $ = id => document.getElementById(id);
-  const state = { user:null, profile:null, isAdmin:false, jobs:[], entries:[], reportRows:[], techChart:null, jobChart:null, weekChart:null, mixChart:null, calendarMonth:new Date(new Date().getFullYear(),new Date().getMonth(),1), calendarSelected:today() };
+  const state = { user:null, profile:null, isAdmin:false, jobs:[], entries:[], reportRows:[], techChart:null, jobChart:null, weekChart:null, mixChart:null, calendarMonth:new Date(new Date().getFullYear(),new Date().getMonth(),1), calendarSelected:null };
   const pageMeta = {
     log:['FIELD WORKSPACE','Log your hours','A quick entry now means less paperwork later.'],
     entries:['YOUR ACTIVITY','My time entries','Keep your submitted hours accurate and up to date.'],
@@ -273,6 +273,7 @@
   const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const dateISO = d => { const x = new Date(d); return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`; };
   const today = () => dateISO(new Date());
+  state.calendarSelected = today();
   const weekStart = () => { const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() - ((d.getDay()+6)%7)); return dateISO(d); };
   const fmtDate = value => value ? new Date(`${value}T12:00:00`).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}) : '-';
   const fmtHours = value => `${Number(value || 0).toLocaleString(undefined,{maximumFractionDigits:2})}`;
@@ -515,15 +516,30 @@
         await loadProfile(); await loadJobs(); await loadEntries(); setTodayDefaults(); goPage('log');
       } catch(e) {
         console.error('Unable to load HVAC Hours Tracker workspace:', e);
+        // Clear the local user state so a failed workspace load can be retried.
+        state.user=null; state.profile=null; state.isAdmin=false;
         $('appView').classList.add('hidden');$('loginView').classList.remove('hidden');
-        showNotice('loginNotice',`Unable to load your workspace: ${friendlyError(e)}`,'error');
+        showNotice('loginNotice',`Signed in, but the workspace could not load: ${friendlyError(e)}`,'error');
       }
     })();
     try { await workspaceLoadPromise; }
     finally { workspaceLoadPromise = null; workspaceLoadingUserId = null; }
   }
   async function signOut() { await sb.auth.signOut();state.user=null;state.profile=null;state.isAdmin=false;$('appView').classList.add('hidden');$('loginView').classList.remove('hidden'); }
-  $('loginForm').addEventListener('submit',async e=>{e.preventDefault();hideNotice('loginNotice');const {data,error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error){showNotice('loginNotice',friendlyError(error),'error');return;}await openApp(data.user);});
+  $('loginForm').addEventListener('submit',async e=>{
+    e.preventDefault(); hideNotice('loginNotice');
+    const button=$('loginForm').querySelector('button[type="submit"]');
+    const originalText=button.innerHTML; button.disabled=true; button.textContent='Signing in…';
+    try {
+      const {data,error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});
+      if(error){showNotice('loginNotice',friendlyError(error),'error');return;}
+      if(!data?.user){showNotice('loginNotice','Sign-in completed, but no user session was returned. Please try again.','error');return;}
+      await openApp(data.user);
+    } catch(err) {
+      console.error('Sign-in failed:',err);
+      showNotice('loginNotice',`Unable to sign in: ${friendlyError(err)}`,'error');
+    } finally { button.disabled=false; button.innerHTML=originalText; }
+  });
   $('logoutBtn').addEventListener('click',signOut);
   $('entryForm').addEventListener('submit',saveEntry);$('cancelEditBtn').addEventListener('click',resetEntryForm);
   $('calendarPrev').addEventListener('click',()=>{state.calendarMonth=new Date(state.calendarMonth.getFullYear(),state.calendarMonth.getMonth()-1,1);renderCalendar();});
@@ -541,13 +557,20 @@
     const toggle=e.target.closest('.toggle-job');if(toggle)toggleJob(toggle.dataset.id,toggle.dataset.active==='true').catch(err=>showNotice('jobNotice',friendlyError(err),'error'));
   });
   // Follow the device/browser appearance setting automatically; no manual toggle.
-  const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
-  const applySystemTheme = () => { document.documentElement.dataset.theme = systemTheme.matches ? 'dark' : 'light'; };
+  const systemTheme = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+  const applySystemTheme = () => {
+    const dark = !!(systemTheme && systemTheme.matches);
+    document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+    document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+  };
   applySystemTheme();
-  if (systemTheme.addEventListener) systemTheme.addEventListener('change', applySystemTheme);
-  else if (systemTheme.addListener) systemTheme.addListener(applySystemTheme);
-  sb.auth.getSession().then(({data})=>{if(data.session)openApp(data.session.user);});
-  sb.auth.onAuthStateChange((_event,session)=>{if(session&&session.user&&!state.user)openApp(session.user);});
+  if (systemTheme && systemTheme.addEventListener) systemTheme.addEventListener('change', applySystemTheme);
+  else if (systemTheme && systemTheme.addListener) systemTheme.addListener(applySystemTheme);
+  sb.auth.getSession().then(({data,error})=>{
+    if(error) { console.error('Unable to restore session:',error); return; }
+    if(data?.session) openApp(data.session.user);
+  }).catch(err=>console.error('Unable to restore session:',err));
+  sb.auth.onAuthStateChange((_event,session)=>{if(session&&session.user&&(!state.user || state.user.id!==session.user.id))openApp(session.user);});
 })();
 </script>
 </body>
