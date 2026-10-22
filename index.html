@@ -9,7 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <style>
     :root {
-      color-scheme: light dark;
+      color-scheme: light;
       --bg:#f4f7fb; --surface:#fff; --surface-2:#f8faff; --text:#17233b;
       --muted:#71809a; --border:#e5ebf4; --navy:#101a33; --navy-2:#182747;
       --blue:#4776f6; --blue-soft:#edf2ff; --teal:#18b6a4; --teal-soft:#e7faf6;
@@ -106,6 +106,24 @@
     .avatar{width:32px;height:32px;border-radius:10px;background:var(--blue-soft);color:var(--blue);display:grid;place-items:center;font-weight:900}
     .user-name{font-weight:800;font-size:12px}.user-role{font-size:10px;color:var(--muted)}
     .mobile-nav{display:none}
+    .calendar-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+    .calendar-title{font-size:17px;font-weight:800;letter-spacing:-.3px}
+    .calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+    .calendar-weekday{text-align:center;color:var(--muted);font-size:10px;font-weight:800;padding:5px 0;text-transform:uppercase}
+    .calendar-day{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:10px;min-height:68px;padding:7px 4px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
+    .calendar-day.outside{opacity:.38;background:var(--surface-2)}
+    .calendar-day.today{border-color:var(--blue)}
+    .calendar-day.selected{background:var(--blue-soft);border-color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
+    .calendar-day.has-entry .day-number{font-weight:900}
+    .day-number{font-size:12px;font-weight:700}
+    .day-hours{font-size:10px;color:var(--teal);font-weight:850;line-height:1.1}
+    .day-dot{width:6px;height:6px;border-radius:50%;background:var(--teal)}
+    .calendar-legend{display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:11px;margin-top:12px}
+    .calendar-legend span{display:inline-flex;align-items:center;gap:6px}
+    .legend-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);display:inline-block}
+    .calendar-detail{margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
+    .calendar-detail-title{font-weight:800;font-size:13px;margin-bottom:8px}
+    @media(max-width:760px){input,select,textarea{font-size:16px!important}.calendar-grid{gap:3px}.calendar-day{min-height:54px;border-radius:8px;padding:5px 1px}.day-hours{font-size:9px}.calendar-weekday{font-size:9px}.calendar-title{font-size:15px}.calendar-toolbar .secondary-btn{padding:8px 10px}}
     @media(max-width:1050px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.two-col{grid-template-columns:1fr}}
     @media(max-width:760px){
       .app{display:block}.sidebar{display:none}.main{padding:19px 14px 92px}.topbar{align-items:flex-start;margin-bottom:20px}.topbar .top-actions{justify-content:flex-end}.user-chip{display:none}
@@ -153,15 +171,9 @@
       </header>
 
       <section id="page-log" class="page active">
-        <div class="grid stats">
-          <div class="stat-card"><div class="stat-top"><span>Hours this week</span><span class="stat-icon blue">H</span></div><div class="stat-value" id="weekHours">-</div><div class="stat-note">Your recorded hours, Monday to Sunday</div></div>
-          <div class="stat-card"><div class="stat-top"><span>Entries this week</span><span class="stat-icon teal">[ ]</span></div><div class="stat-value" id="weekEntries">-</div><div class="stat-note">Submitted time entries</div></div>
-          <div class="stat-card"><div class="stat-top"><span>Active jobs</span><span class="stat-icon purple">[J]</span></div><div class="stat-value" id="activeJobsStat">-</div><div class="stat-note">Jobs available to select</div></div>
-          <div class="stat-card"><div class="stat-top"><span>Last entry</span><span class="stat-icon orange">OK</span></div><div class="stat-value" id="lastEntryStat" style="font-size:19px">-</div><div class="stat-note">Most recent work date</div></div>
-        </div>
-        <div class="grid two-col">
+        <div class="grid two-col log-layout">
           <section class="panel">
-            <div class="panel-head"><div><h2 class="panel-title" id="entryFormTitle">Record your hours</h2><p class="panel-description">Choose the job and enter your time. That's it.</p></div><span class="pill">Quick entry</span></div>
+            <div class="panel-head"><div><h2 class="panel-title" id="entryFormTitle">Submit your time</h2><p class="panel-description">Choose a job, enter your hours, and submit.</p></div><span class="pill">Quick entry</span></div>
             <div id="entryNotice" class="notice hidden"></div>
             <form id="entryForm">
               <input id="entryId" type="hidden">
@@ -171,12 +183,15 @@
                 <div class="field"><label for="hours">Hours worked *</label><input id="hours" type="number" min="0.25" max="24" step="0.25" required placeholder="e.g. 8"></div>
                 <div class="field full"><label for="description">Work performed (optional)</label><textarea id="description" maxlength="500" placeholder="e.g. Furnace maintenance, unit 204"></textarea></div>
               </div>
-              <div class="form-actions"><button class="secondary-btn hidden" type="button" id="cancelEditBtn">Cancel edit</button><button class="primary-btn" type="submit" id="saveEntryBtn">Submit hours -></button></div>
+              <div class="form-actions"><button class="secondary-btn hidden" type="button" id="cancelEditBtn">Cancel edit</button><button class="primary-btn" type="submit" id="saveEntryBtn">Submit hours</button></div>
             </form>
           </section>
           <section class="panel">
-            <div class="panel-head"><div><h2 class="panel-title">Recent activity</h2><p class="panel-description">A quick look at your latest time entries.</p></div><button class="secondary-btn" data-go="entries">View all</button></div>
-            <div id="recentActivity"><div class="empty"><strong>Loading your entries...</strong></div></div>
+            <div class="panel-head"><div><h2 class="panel-title">Your month at a glance</h2><p class="panel-description">Days with recorded hours are marked in teal. Tap any day to review it.</p></div></div>
+            <div class="calendar-toolbar"><button class="secondary-btn" id="calendarPrev" type="button" aria-label="Previous month">Previous</button><div class="calendar-title" id="calendarMonthTitle">This month</div><button class="secondary-btn" id="calendarNext" type="button" aria-label="Next month">Next</button></div>
+            <div id="calendarGrid" class="calendar-grid" aria-label="Monthly time entry calendar"></div>
+            <div class="calendar-legend"><span><i class="legend-dot"></i> Hours recorded</span><span><i class="legend-dot" style="background:var(--blue)"></i> Today / selected day</span></div>
+            <div class="calendar-detail" id="calendarDayDetail"><div class="muted small">Select a day to see its entries.</div></div>
           </section>
         </div>
       </section>
@@ -248,7 +263,7 @@
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJucnl1dXNucWZqbHRzdHd3cWFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MTcyMzIsImV4cCI6MjEwODE5MzIzMn0.Xsko4Pv7wMyeaSm0TKVX97TC1spBWkDWSJ7rrnYVOUY';
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   const $ = id => document.getElementById(id);
-  const state = { user:null, profile:null, isAdmin:false, jobs:[], entries:[], reportRows:[], techChart:null, jobChart:null, weekChart:null, mixChart:null };
+  const state = { user:null, profile:null, isAdmin:false, jobs:[], entries:[], reportRows:[], techChart:null, jobChart:null, weekChart:null, mixChart:null, calendarMonth:new Date(new Date().getFullYear(),new Date().getMonth(),1), calendarSelected:today() };
   const pageMeta = {
     log:['FIELD WORKSPACE','Log your hours','A quick entry now means less paperwork later.'],
     entries:['YOUR ACTIVITY','My time entries','Keep your submitted hours accurate and up to date.'],
@@ -301,7 +316,7 @@
     if(error) throw error;
     state.entries=data||[];
     await attachLabels(state.entries);
-    renderEntryStats(); renderRecent(); renderEntriesTable();
+    renderEntryStats(); renderRecent(); renderEntriesTable(); renderCalendar();
   }
 
   async function attachLabels(rows) {
@@ -340,6 +355,33 @@
     const rows=state.entries.filter(e=>e.user_id===state.user.id).slice(0,5);
     $('recentActivity').innerHTML=rows.length?`<div style="display:grid;gap:0">${rows.map(e=>`<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)"><div class="stat-icon blue">H</div><div style="flex:1;min-width:0"><div style="font-weight:800;font-size:12px;overflow:hidden;text-overflow:ellipsis">${esc(e._job.job_code||'Job')}  -  ${esc(e._job.job_name||'Unnamed job')}</div><div class="small muted">${esc(fmtDate(e.work_date))}${e.description?'  -  '+esc(e.description):''}</div></div><div style="font-weight:850;white-space:nowrap">${esc(fmtHours(e.hours))} h</div></div>`).join('')}</div>`:'<div class="empty"><strong>No hours recorded yet</strong>Your latest entries will show up here.</div>';
   }
+  function renderCalendar() {
+    const month=state.calendarMonth;
+    const year=month.getFullYear(), monthIndex=month.getMonth();
+    $('calendarMonthTitle').textContent=month.toLocaleDateString(undefined,{month:'long',year:'numeric'});
+    const mine=state.entries.filter(e=>e.user_id===state.user.id);
+    const byDate=new Map();
+    mine.forEach(e=>{const key=String(e.work_date||'');if(!key)return;const item=byDate.get(key)||{count:0,hours:0,entries:[]};item.count++;item.hours+=Number(e.hours||0);item.entries.push(e);byDate.set(key,item);});
+    const first=new Date(year,monthIndex,1); const offset=(first.getDay()+6)%7;
+    const daysInMonth=new Date(year,monthIndex+1,0).getDate();
+    const totalCells=Math.ceil((offset+daysInMonth)/7)*7;
+    const weekdays=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    let html=weekdays.map(d=>`<div class="calendar-weekday">${d}</div>`).join('');
+    for(let i=0;i<totalCells;i++){
+      const dayNum=i-offset+1; const date=new Date(year,monthIndex,dayNum); const key=dateISO(date); const inMonth=dayNum>=1&&dayNum<=daysInMonth; const info=byDate.get(key); const classes=['calendar-day',!inMonth?'outside':'',key===today()?'today':'',key===state.calendarSelected?'selected':'',info?'has-entry':''].filter(Boolean).join(' ');
+      html+=`<button type="button" class="${classes}" data-calendar-date="${key}" aria-label="${key}${info?`, ${fmtHours(info.hours)} hours recorded`: ', no hours recorded'}"><span class="day-number">${date.getDate()}</span>${info?`<span class="day-hours">${esc(fmtHours(info.hours))}h</span><span class="day-dot"></span>`:''}</button>`;
+    }
+    $('calendarGrid').innerHTML=html;
+    renderCalendarDayDetail();
+  }
+  function renderCalendarDayDetail() {
+    const key=state.calendarSelected||today();
+    const rows=state.entries.filter(e=>e.user_id===state.user.id&&e.work_date===key);
+    const total=rows.reduce((sum,e)=>sum+Number(e.hours||0),0);
+    $('calendarDayDetail').innerHTML=`<div class="calendar-detail-title">${esc(fmtDate(key))} · ${esc(fmtHours(total))} hours</div>`+(rows.length?rows.map(e=>{const j=e._job||{};return `<div style="padding:9px 0;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:10px"><div style="min-width:0"><div style="font-weight:750;font-size:12px;overflow-wrap:anywhere">${esc(j.job_code||'Job')} - ${esc(j.job_name||'Job details unavailable')}</div><div class="small muted">${esc(e.description||'No description')}</div></div><div style="white-space:nowrap;font-weight:800">${esc(fmtHours(e.hours))} h</div></div>`}).join(''):'<div class="small muted">No time entries recorded for this day yet.</div>')+`<button type="button" class="secondary-btn" id="useCalendarDate" style="margin-top:10px">Use this date</button>`;
+    const useDate=$('useCalendarDate'); if(useDate)useDate.addEventListener('click',()=>{$('workDate').value=key;$('workDate').focus();});
+  }
+
   function renderEntriesTable() {
     const search=$('entrySearch').value.trim().toLowerCase(), from=$('entriesFrom').value, to=$('entriesTo').value;
     const rows=state.entries.filter(e=>e.user_id===state.user.id&&(!from||e.work_date>=from)&&(!to||e.work_date<=to)&&(!search||`${(e._job||{}).job_code||''} ${(e._job||{}).job_name||''} ${e.description||''}`.toLowerCase().includes(search)));
@@ -375,11 +417,11 @@
       resetEntryForm(); showNotice('entryNotice',id?'Your entry has been updated.':'Hours submitted successfully.','success');
       await loadEntries(); goPage('log');
     } catch(e){showNotice('entryNotice',friendlyError(e),'error');}
-    finally{$('saveEntryBtn').disabled=false;$('saveEntryBtn').textContent=$('entryId').value?'Save changes':'Submit hours ->';}
+    finally{$('saveEntryBtn').disabled=false;$('saveEntryBtn').textContent=$('entryId').value?'Save changes':'Submit hours';}
   }
 
   function resetEntryForm() {
-    $('entryForm').reset(); $('entryId').value=''; $('workDate').value=today(); $('entryFormTitle').textContent='Record your hours'; $('saveEntryBtn').textContent='Submit hours ->'; $('cancelEditBtn').classList.add('hidden');
+    $('entryForm').reset(); $('entryId').value=''; $('workDate').value=today(); $('entryFormTitle').textContent='Submit your time'; $('saveEntryBtn').textContent='Submit hours'; $('cancelEditBtn').classList.add('hidden');
   }
   function startEdit(id) {
     const e=state.entries.find(r=>String(r.id)===String(id)&&r.user_id===state.user.id); if(!e)return;
@@ -484,6 +526,9 @@
   $('loginForm').addEventListener('submit',async e=>{e.preventDefault();hideNotice('loginNotice');const {data,error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error){showNotice('loginNotice',friendlyError(error),'error');return;}await openApp(data.user);});
   $('logoutBtn').addEventListener('click',signOut);
   $('entryForm').addEventListener('submit',saveEntry);$('cancelEditBtn').addEventListener('click',resetEntryForm);
+  $('calendarPrev').addEventListener('click',()=>{state.calendarMonth=new Date(state.calendarMonth.getFullYear(),state.calendarMonth.getMonth()-1,1);renderCalendar();});
+  $('calendarNext').addEventListener('click',()=>{state.calendarMonth=new Date(state.calendarMonth.getFullYear(),state.calendarMonth.getMonth()+1,1);renderCalendar();});
+  $('calendarGrid').addEventListener('click',e=>{const day=e.target.closest('[data-calendar-date]');if(!day)return;state.calendarSelected=day.dataset.calendarDate;renderCalendar();});
   $('entrySearch').addEventListener('input',renderEntriesTable);$('entriesFrom').addEventListener('change',renderEntriesTable);$('entriesTo').addEventListener('change',renderEntriesTable);
   $('exportCsvBtn').addEventListener('click',exportCsv);$('jobForm').addEventListener('submit',addJob);
   $('clearReportFilters').addEventListener('click',()=>{setTodayDefaults();$('reportTech').value='';$('reportJob').value='';loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));});
