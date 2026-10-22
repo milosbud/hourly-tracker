@@ -146,14 +146,14 @@
   </div>
 
 <script>
-alert('JavaScript is running');
   // -------------------------------------------------
   // 1. PUT YOUR SUPABASE CREDENTIALS HERE
   // -------------------------------------------------
   const SUPABASE_URL = 'https://bnryuusnqfjltstwwqaa.supabase.co'
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJucnl1dXNucWZqbHRzdHd3cWFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MTcyMzIsImV4cCI6MjEwODE5MzIzMn0.Xsko4Pv7wMyeaSm0TKVX97TC1spBWkDWSJ7rrnYVOUY'
 
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  // Fixed: use a different variable name to avoid conflict
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
   // -------------------------------------------------
   // State
@@ -184,14 +184,13 @@ alert('JavaScript is running');
   // Auth
   // -------------------------------------------------
   async function checkSession() {
-    const { data: { session } } = await supabase.auth.getSession()
+    const { data: { session } } = await supabaseClient.auth.getSession()
     if (session) {
       currentUser = session.user
       await loadProfile()
       document.getElementById('user-email').textContent = currentUser.email
       show('screen-log')
       loadJobs()
-      // set today's date
       document.getElementById('work-date').valueAsDate = new Date()
     } else {
       showLogin()
@@ -199,7 +198,7 @@ alert('JavaScript is running');
   }
 
   async function loadProfile() {
-    const { data } = await supabase
+    const { data } = await supabaseClient
       .from('profiles')
       .select('is_admin, full_name')
       .eq('id', currentUser.id)
@@ -212,9 +211,6 @@ alert('JavaScript is running');
   }
 
   document.getElementById('login-btn').addEventListener('click', async () => {
-    alert('Button clicked')                                 // ← add this
-    alert('Key starts with: ' + SUPABASE_ANON_KEY.substring(0, 20))  // ← add this
-    
     const email = document.getElementById('email').value.trim()
     const password = document.getElementById('password').value
     const errorEl = document.getElementById('login-error')
@@ -222,7 +218,7 @@ alert('JavaScript is running');
     errorEl.classList.add('hidden')
     document.getElementById('login-btn').disabled = true
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password })
 
     document.getElementById('login-btn').disabled = false
 
@@ -241,7 +237,7 @@ alert('JavaScript is running');
   })
 
   document.getElementById('logout-btn').addEventListener('click', async () => {
-    await supabase.auth.signOut()
+    await supabaseClient.auth.signOut()
     currentUser = null
     isAdmin = false
     showLogin()
@@ -261,7 +257,7 @@ alert('JavaScript is running');
   // Jobs
   // -------------------------------------------------
   async function loadJobs() {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('jobs')
       .select('id, job_code, job_name')
       .eq('active', true)
@@ -305,7 +301,7 @@ alert('JavaScript is running');
 
     document.getElementById('submit-btn').disabled = true
 
-    const { error } = await supabase.from('time_entries').insert({
+    const { error } = await supabaseClient.from('time_entries').insert({
       user_id: currentUser.id,
       job_id: jobId,
       work_date: workDate,
@@ -331,7 +327,7 @@ alert('JavaScript is running');
   // My Entries (with Edit + Delete)
   // -------------------------------------------------
   async function loadMyEntries() {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('time_entries')
       .select(`
         id, work_date, hours, description,
@@ -376,7 +372,7 @@ alert('JavaScript is running');
 
     const newDesc = prompt('Description (optional):', currentDesc || '')
 
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from('time_entries')
       .update({ hours, description: newDesc || null })
       .eq('id', id)
@@ -388,7 +384,7 @@ alert('JavaScript is running');
   window.deleteEntry = async (id) => {
     if (!confirm('Delete this entry?')) return
 
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from('time_entries')
       .delete()
       .eq('id', id)
