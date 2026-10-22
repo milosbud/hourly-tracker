@@ -304,7 +304,8 @@
     state.jobs=data||[];
     const active=state.jobs.filter(j=>j.active!==false);
     $('jobSelect').innerHTML='<option value="">Choose a job...</option>'+active.map(j=>`<option value="${esc(j.id)}">${esc(jobLabel(j))}</option>`).join('');
-    $('activeJobsStat').textContent=active.length;
+    const activeJobsStat = $('activeJobsStat');
+    if (activeJobsStat) activeJobsStat.textContent = active.length;
     $('jobCountPill').textContent=`${state.jobs.length} job${state.jobs.length===1?'':'s'}`;
     $('jobList').innerHTML=state.jobs.length?`<div class="table-wrap"><table><thead><tr><th>Job code</th><th>Job name</th><th>Status</th><th>Action</th></tr></thead><tbody>${state.jobs.map(j=>`<tr><td><strong>${esc(j.job_code)}</strong></td><td>${esc(j.job_name)}</td><td><span class="pill" style="${j.active===false?'background:var(--surface-2);color:var(--muted)':''}">${j.active===false?'Inactive':'Active'}</span></td><td><button class="secondary-btn toggle-job" data-id="${esc(j.id)}" data-active="${j.active===false?'false':'true'}">${j.active===false?'Activate':'Deactivate'}</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty"><strong>No jobs yet</strong>Add a job code and name to get started.</div>';
     $('reportJob').innerHTML='<option value="">All jobs</option>'+state.jobs.map(j=>`<option value="${esc(j.id)}">${esc(jobLabel(j))}</option>`).join('');
@@ -341,11 +342,35 @@
   }
 
   function renderEntryStats() {
-    const from=weekStart(), mine=state.entries.filter(e=>e.user_id===state.user.id && e.work_date>=from && e.work_date<=today());
-    $('weekHours').textContent=fmtHours(mine.reduce((s,e)=>s+Number(e.hours||0),0));
-    $('weekEntries').textContent=mine.length;
-    const sorted=[...state.entries.filter(e=>e.user_id===state.user.id)].sort((a,b)=>String(b.work_date).localeCompare(String(a.work_date)));
-    $('lastEntryStat').textContent=sorted.length?fmtDate(sorted[0].work_date):'None yet';
+    const from = weekStart();
+    const mine = state.entries.filter(
+      e => e.user_id === state.user.id &&
+           e.work_date >= from &&
+           e.work_date <= today()
+    );
+
+    const weekHours = $('weekHours');
+    if (weekHours) {
+      weekHours.textContent = fmtHours(
+        mine.reduce((sum, e) => sum + Number(e.hours || 0), 0)
+      );
+    }
+
+    const weekEntries = $('weekEntries');
+    if (weekEntries) weekEntries.textContent = mine.length;
+
+    const sorted = [...state.entries.filter(
+      e => e.user_id === state.user.id
+    )].sort((a, b) =>
+      String(b.work_date).localeCompare(String(a.work_date))
+    );
+
+    const lastEntryStat = $('lastEntryStat');
+    if (lastEntryStat) {
+      lastEntryStat.textContent = sorted.length
+        ? fmtDate(sorted[0].work_date)
+        : 'None yet';
+    }
   }
 
   function entryRow(e,adminReport=false) {
@@ -353,9 +378,21 @@
     return `<tr><td>${esc(fmtDate(e.work_date))}</td>${adminReport?`<td>${esc(e._tech)}</td>`:''}<td><strong>${esc(job.job_code||'-')}</strong><div class="small muted">${esc(job.job_name||'Job unavailable')}</div></td><td><strong>${esc(fmtHours(e.hours))} h</strong></td><td style="max-width:240px;white-space:normal">${esc(e.description||'-')}</td>${adminReport?'':`<td><div style="display:flex;gap:6px"><button class="secondary-btn edit-entry" data-id="${esc(e.id)}">Edit</button><button class="danger-btn delete-entry" data-id="${esc(e.id)}">Delete</button></div></td>`}</tr>`;
   }
   function renderRecent() {
-    const rows=state.entries.filter(e=>e.user_id===state.user.id).slice(0,5);
-    $('recentActivity').innerHTML=rows.length?`<div style="display:grid;gap:0">${rows.map(e=>`<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)"><div class="stat-icon blue">H</div><div style="flex:1;min-width:0"><div style="font-weight:800;font-size:12px;overflow:hidden;text-overflow:ellipsis">${esc(e._job.job_code||'Job')}  -  ${esc(e._job.job_name||'Unnamed job')}</div><div class="small muted">${esc(fmtDate(e.work_date))}${e.description?'  -  '+esc(e.description):''}</div></div><div style="font-weight:850;white-space:nowrap">${esc(fmtHours(e.hours))} h</div></div>`).join('')}</div>`:'<div class="empty"><strong>No hours recorded yet</strong>Your latest entries will show up here.</div>';
+    const recentActivity = $('recentActivity');
+
+    // This panel is not present in the current HTML layout.
+    // Skip it safely when the element does not exist.
+    if (!recentActivity) return;
+
+    const rows = state.entries
+      .filter(e => e.user_id === state.user.id)
+      .slice(0, 5);
+
+    recentActivity.innerHTML = rows.length
+      ? `<div style="display:grid;gap:0">${rows.map(e => `<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)"><div class="stat-icon blue">H</div><div style="flex:1;min-width:0"><div style="font-weight:800;font-size:12px;overflow:hidden;text-overflow:ellipsis">${esc(e._job.job_code || 'Job')} - ${esc(e._job.job_name || 'Unnamed job')}</div><div class="small muted">${esc(fmtDate(e.work_date))}${e.description ? ' - ' + esc(e.description) : ''}</div></div><div style="font-weight:850;white-space:nowrap">${esc(fmtHours(e.hours))} h</div></div>`).join('')}</div>`
+      : '<div class="empty"><strong>No hours recorded yet</strong>Your latest entries will show up here.</div>';
   }
+
   function renderCalendar() {
     const month=state.calendarMonth;
     const year=month.getFullYear(), monthIndex=month.getMonth();
