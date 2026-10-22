@@ -211,6 +211,9 @@
   }
 
   document.getElementById('login-btn').addEventListener('click', async () => {
+    alert('Button clicked')                                 // ← add this
+    alert('Key starts with: ' + SUPABASE_ANON_KEY.substring(0, 20))  // ← add this
+    
     const email = document.getElementById('email').value.trim()
     const password = document.getElementById('password').value
     const errorEl = document.getElementById('login-error')
