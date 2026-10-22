@@ -14,7 +14,22 @@
       --muted: #64748b;
       --danger: #dc2626;
       --success: #16a34a;
+      --border: #e2e8f0;
     }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --primary: #3b82f6;
+        --bg: #0f172a;
+        --card: #1e293b;
+        --text: #f1f5f9;
+        --muted: #94a3b8;
+        --danger: #ef4444;
+        --success: #22c55e;
+        --border: #334155;
+      }
+    }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -22,26 +37,30 @@
       color: var(--text);
       line-height: 1.5;
       padding: 16px;
-      max-width: 480px;
+      max-width: 520px;
       margin: 0 auto;
+      min-height: 100vh;
     }
     h1 { font-size: 1.5rem; margin-bottom: 8px; }
-    h2 { font-size: 1.2rem; margin: 24px 0 12px; }
+    h2 { font-size: 1.2rem; margin: 0 0 16px; }
     .card {
       background: var(--card);
       border-radius: 12px;
       padding: 20px;
       margin-bottom: 16px;
       box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      border: 1px solid var(--border);
     }
     label { display: block; font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; }
     input, select, textarea {
       width: 100%;
       padding: 12px;
-      border: 1px solid #cbd5e1;
+      border: 1px solid var(--border);
       border-radius: 8px;
       font-size: 1rem;
       margin-bottom: 14px;
+      background: var(--bg);
+      color: var(--text);
     }
     textarea { resize: vertical; min-height: 70px; }
     button {
@@ -56,16 +75,16 @@
       color: white;
     }
     button:disabled { opacity: 0.6; cursor: not-allowed; }
-    button.secondary { background: #e2e8f0; color: var(--text); }
+    button.secondary { background: var(--border); color: var(--text); }
     button.danger { background: var(--danger); }
-    button.small { width: auto; padding: 8px 14px; font-size: 0.9rem; margin-right: 8px; }
+    button.small { width: auto; padding: 8px 14px; font-size: 0.9rem; margin-right: 8px; margin-bottom: 6px; }
     .hidden { display: none !important; }
     .entry {
-      border: 1px solid #e2e8f0;
+      border: 1px solid var(--border);
       border-radius: 8px;
       padding: 12px;
       margin-bottom: 10px;
-      background: #f8fafc;
+      background: var(--bg);
     }
     .entry-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
     .entry-job { font-weight: 600; }
@@ -73,8 +92,20 @@
     .error { color: var(--danger); font-size: 0.9rem; margin-top: 8px; }
     .success { color: var(--success); font-size: 0.9rem; margin-top: 8px; }
     .nav { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-    .nav button { width: auto; padding: 10px 16px; font-size: 0.95rem; }
-    .user-info { font-size: 0.9rem; color: var(--muted); margin-bottom: 16px; }
+    .nav button { width: auto; padding: 10px 14px; font-size: 0.9rem; }
+    .user-info { font-size: 0.9rem; color: var(--muted); margin-bottom: 16px; overflow: hidden; }
+    .total-box {
+      background: var(--primary);
+      color: white;
+      padding: 16px;
+      border-radius: 10px;
+      text-align: center;
+      margin-bottom: 16px;
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+    .filter-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+    .filter-row > * { flex: 1; min-width: 120px; }
   </style>
 </head>
 <body>
@@ -84,13 +115,10 @@
     <div class="card">
       <h1>HVAC Hours</h1>
       <p style="color:var(--muted); margin-bottom:20px;">Log in to track your hours</p>
-
       <label>Email</label>
       <input type="email" id="email" placeholder="you@example.com" />
-
       <label>Password</label>
       <input type="password" id="password" placeholder="Password" />
-
       <button id="login-btn">Log In</button>
       <p id="login-error" class="error hidden"></p>
     </div>
@@ -107,26 +135,20 @@
       <button id="nav-log" class="secondary">Log Hours</button>
       <button id="nav-my" class="secondary">My Entries</button>
       <button id="nav-admin" class="secondary hidden">Admin</button>
+      <button id="nav-reports" class="secondary hidden">Reports</button>
     </div>
 
     <!-- LOG HOURS -->
     <div id="screen-log" class="card">
       <h2>Log Hours</h2>
-
       <label>Job</label>
-      <select id="job-select">
-        <option value="">Loading jobs...</option>
-      </select>
-
+      <select id="job-select"><option value="">Loading jobs...</option></select>
       <label>Date</label>
       <input type="date" id="work-date" />
-
       <label>Hours worked</label>
       <input type="number" id="hours" step="0.25" min="0.25" max="24" placeholder="e.g. 4.5" />
-
       <label>Description (optional)</label>
       <textarea id="description" placeholder="What did you do?"></textarea>
-
       <button id="submit-btn">Submit Hours</button>
       <p id="submit-msg" class="hidden"></p>
     </div>
@@ -137,27 +159,61 @@
       <div id="entries-list">Loading...</div>
     </div>
 
-    <!-- ADMIN (placeholder for now) -->
+    <!-- ADMIN -->
     <div id="screen-admin" class="card hidden">
-      <h2>Admin</h2>
-      <p>Admin tools will go here (Manage Jobs, Manage Users, View All Entries, Export CSV).</p>
-      <p style="margin-top:12px; color:var(--muted);">We will add these next.</p>
+      <h2>Admin – Manage Jobs</h2>
+      
+      <div style="margin-bottom: 24px;">
+        <h3 style="font-size:1rem; margin-bottom:10px;">Add New Job</h3>
+        <label>Job Code (easy ID)</label>
+        <input type="text" id="new-job-code" placeholder="e.g. JO-1006" />
+        <label>Job Name</label>
+        <input type="text" id="new-job-name" placeholder="e.g. Client Name – Work Description" />
+        <button id="add-job-btn">Add Job</button>
+        <p id="add-job-msg" class="hidden"></p>
+      </div>
+
+      <h3 style="font-size:1rem; margin-bottom:10px;">Current Jobs</h3>
+      <div id="admin-jobs-list">Loading...</div>
+    </div>
+
+    <!-- REPORTS -->
+    <div id="screen-reports" class="card hidden">
+      <h2>Reports</h2>
+
+      <div class="filter-row">
+        <div>
+          <label>From</label>
+          <input type="date" id="report-from" />
+        </div>
+        <div>
+          <label>To</label>
+          <input type="date" id="report-to" />
+        </div>
+      </div>
+
+      <label>Technician</label>
+      <select id="report-user"><option value="">All technicians</option></select>
+
+      <label>Job</label>
+      <select id="report-job"><option value="">All jobs</option></select>
+
+      <button id="run-report-btn" style="margin-bottom:16px;">Run Report</button>
+
+      <div id="report-total" class="total-box hidden">Total: 0 hours</div>
+      <div id="report-results"></div>
     </div>
   </div>
 
 <script>
   // -------------------------------------------------
-  // 1. PUT YOUR SUPABASE CREDENTIALS HERE
+  // CREDENTIALS
   // -------------------------------------------------
   const SUPABASE_URL = 'https://bnryuusnqfjltstwwqaa.supabase.co'
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJucnl1dXNucWZqbHRzdHd3cWFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MTcyMzIsImV4cCI6MjEwODE5MzIzMn0.Xsko4Pv7wMyeaSm0TKVX97TC1spBWkDWSJ7rrnYVOUY'
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJucnl1dXNucWZqbHRzdHd3cWFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MTcyMzIsImV4cCI6MjEwODE5MzIzMn0.Xsko4Pv7wMyeaSm0TKVX97TC1spBWkDWSJ7rrnYVOUY'  // ← put your key here
 
-  // Fixed: use a different variable name to avoid conflict
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-  // -------------------------------------------------
-  // State
-  // -------------------------------------------------
   let currentUser = null
   let isAdmin = false
 
@@ -167,11 +223,9 @@
   function show(id) {
     document.getElementById('login-screen').classList.add('hidden')
     document.getElementById('app').classList.remove('hidden')
-
-    document.getElementById('screen-log').classList.add('hidden')
-    document.getElementById('screen-my').classList.add('hidden')
-    document.getElementById('screen-admin').classList.add('hidden')
-
+    ;['screen-log','screen-my','screen-admin','screen-reports'].forEach(s => {
+      document.getElementById(s).classList.add('hidden')
+    })
     document.getElementById(id).classList.remove('hidden')
   }
 
@@ -207,6 +261,7 @@
     isAdmin = data?.is_admin === true
     if (isAdmin) {
       document.getElementById('nav-admin').classList.remove('hidden')
+      document.getElementById('nav-reports').classList.remove('hidden')
     }
   }
 
@@ -214,12 +269,10 @@
     const email = document.getElementById('email').value.trim()
     const password = document.getElementById('password').value
     const errorEl = document.getElementById('login-error')
-
     errorEl.classList.add('hidden')
     document.getElementById('login-btn').disabled = true
 
     const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password })
-
     document.getElementById('login-btn').disabled = false
 
     if (error) {
@@ -246,15 +299,25 @@
   // -------------------------------------------------
   // Navigation
   // -------------------------------------------------
-  document.getElementById('nav-log').addEventListener('click', () => show('screen-log'))
+  document.getElementById('nav-log').addEventListener('click', () => {
+    show('screen-log')
+    loadJobs()
+  })
   document.getElementById('nav-my').addEventListener('click', () => {
     show('screen-my')
     loadMyEntries()
   })
-  document.getElementById('nav-admin').addEventListener('click', () => show('screen-admin'))
+  document.getElementById('nav-admin').addEventListener('click', () => {
+    show('screen-admin')
+    loadAdminJobs()
+  })
+  document.getElementById('nav-reports').addEventListener('click', () => {
+    show('screen-reports')
+    prepareReportFilters()
+  })
 
   // -------------------------------------------------
-  // Jobs
+  // Jobs (for logging)
   // -------------------------------------------------
   async function loadJobs() {
     const { data, error } = await supabaseClient
@@ -266,8 +329,8 @@
     const select = document.getElementById('job-select')
     select.innerHTML = ''
 
-    if (error || !data || data.length === 0) {
-      select.innerHTML = '<option value="">No active jobs – ask admin to add some</option>'
+    if (error || !data?.length) {
+      select.innerHTML = '<option value="">No active jobs</option>'
       return
     }
 
@@ -289,7 +352,6 @@
     const hours = parseFloat(document.getElementById('hours').value)
     const description = document.getElementById('description').value.trim()
     const msg = document.getElementById('submit-msg')
-
     msg.classList.add('hidden')
 
     if (!jobId || !workDate || !hours || hours <= 0) {
@@ -300,22 +362,20 @@
     }
 
     document.getElementById('submit-btn').disabled = true
-
     const { error } = await supabaseClient.from('time_entries').insert({
       user_id: currentUser.id,
       job_id: jobId,
       work_date: workDate,
-      hours: hours,
+      hours,
       description: description || null
     })
-
     document.getElementById('submit-btn').disabled = false
 
     if (error) {
       msg.textContent = 'Error: ' + error.message
       msg.className = 'error'
     } else {
-      msg.textContent = 'Hours saved successfully!'
+      msg.textContent = 'Hours saved!'
       msg.className = 'success'
       document.getElementById('hours').value = ''
       document.getElementById('description').value = ''
@@ -324,40 +384,35 @@
   })
 
   // -------------------------------------------------
-  // My Entries (with Edit + Delete)
+  // My Entries
   // -------------------------------------------------
   async function loadMyEntries() {
     const { data, error } = await supabaseClient
       .from('time_entries')
-      .select(`
-        id, work_date, hours, description,
-        jobs (job_code, job_name)
-      `)
+      .select(`id, work_date, hours, description, jobs (job_code, job_name)`)
       .eq('user_id', currentUser.id)
       .order('work_date', { ascending: false })
-      .limit(30)
+      .limit(40)
 
     const list = document.getElementById('entries-list')
-
     if (error) {
       list.innerHTML = '<p class="error">Error loading entries</p>'
       return
     }
-
-    if (!data || data.length === 0) {
+    if (!data?.length) {
       list.innerHTML = '<p style="color:var(--muted)">No entries yet.</p>'
       return
     }
 
     list.innerHTML = data.map(entry => `
-      <div class="entry" id="entry-${entry.id}">
+      <div class="entry">
         <div class="entry-header">
           <span class="entry-job">${entry.jobs?.job_code || '—'} – ${entry.jobs?.job_name || ''}</span>
           <span>${entry.hours}h</span>
         </div>
         <div class="entry-meta">${entry.work_date}${entry.description ? ' • ' + entry.description : ''}</div>
         <div style="margin-top:10px;">
-          <button class="small secondary" onclick="editEntry('${entry.id}', ${entry.hours}, '${(entry.description || '').replace(/'/g, "\\'")}')">Edit</button>
+          <button class="small secondary" onclick="editEntry('${entry.id}', ${entry.hours}, \`${(entry.description || '').replace(/`/g, '')}\`)">Edit</button>
           <button class="small danger" onclick="deleteEntry('${entry.id}')">Delete</button>
         </div>
       </div>
@@ -369,7 +424,6 @@
     if (newHours === null) return
     const hours = parseFloat(newHours)
     if (!hours || hours <= 0) return alert('Invalid hours')
-
     const newDesc = prompt('Description (optional):', currentDesc || '')
 
     const { error } = await supabaseClient
@@ -377,21 +431,171 @@
       .update({ hours, description: newDesc || null })
       .eq('id', id)
 
-    if (error) alert('Error updating: ' + error.message)
+    if (error) alert('Error: ' + error.message)
     else loadMyEntries()
   }
 
   window.deleteEntry = async (id) => {
     if (!confirm('Delete this entry?')) return
-
-    const { error } = await supabaseClient
-      .from('time_entries')
-      .delete()
-      .eq('id', id)
-
-    if (error) alert('Error deleting: ' + error.message)
+    const { error } = await supabaseClient.from('time_entries').delete().eq('id', id)
+    if (error) alert('Error: ' + error.message)
     else loadMyEntries()
   }
+
+  // -------------------------------------------------
+  // Admin – Manage Jobs
+  // -------------------------------------------------
+  async function loadAdminJobs() {
+    const { data, error } = await supabaseClient
+      .from('jobs')
+      .select('*')
+      .order('job_code')
+
+    const list = document.getElementById('admin-jobs-list')
+    if (error || !data?.length) {
+      list.innerHTML = '<p style="color:var(--muted)">No jobs yet</p>'
+      return
+    }
+
+    list.innerHTML = data.map(job => `
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-job">${job.job_code}</span>
+          <span style="font-size:0.85rem; color:var(--muted)">${job.active ? 'Active' : 'Inactive'}</span>
+        </div>
+        <div class="entry-meta">${job.job_name}</div>
+      </div>
+    `).join('')
+  }
+
+  document.getElementById('add-job-btn').addEventListener('click', async () => {
+    const code = document.getElementById('new-job-code').value.trim()
+    const name = document.getElementById('new-job-name').value.trim()
+    const msg = document.getElementById('add-job-msg')
+
+    if (!code || !name) {
+      msg.textContent = 'Both fields are required'
+      msg.className = 'error'
+      msg.classList.remove('hidden')
+      return
+    }
+
+    const { error } = await supabaseClient.from('jobs').insert({
+      job_code: code,
+      job_name: name,
+      active: true
+    })
+
+    if (error) {
+      msg.textContent = 'Error: ' + error.message
+      msg.className = 'error'
+    } else {
+      msg.textContent = 'Job added!'
+      msg.className = 'success'
+      document.getElementById('new-job-code').value = ''
+      document.getElementById('new-job-name').value = ''
+      loadAdminJobs()
+      loadJobs()
+    }
+    msg.classList.remove('hidden')
+  })
+
+  // -------------------------------------------------
+  // Reports
+  // -------------------------------------------------
+  async function prepareReportFilters() {
+    // Set default dates (last 30 days)
+    const to = new Date()
+    const from = new Date()
+    from.setDate(from.getDate() - 30)
+    document.getElementById('report-to').valueAsDate = to
+    document.getElementById('report-from').valueAsDate = from
+
+    // Load users
+    const { data: users } = await supabaseClient
+      .from('profiles')
+      .select('id, full_name')
+      .order('full_name')
+
+    const userSelect = document.getElementById('report-user')
+    userSelect.innerHTML = '<option value="">All technicians</option>'
+    ;(users || []).forEach(u => {
+      const opt = document.createElement('option')
+      opt.value = u.id
+      opt.textContent = u.full_name || u.id.substring(0, 8)
+      userSelect.appendChild(opt)
+    })
+
+    // Load jobs
+    const { data: jobs } = await supabaseClient
+      .from('jobs')
+      .select('id, job_code, job_name')
+      .order('job_code')
+
+    const jobSelect = document.getElementById('report-job')
+    jobSelect.innerHTML = '<option value="">All jobs</option>'
+    ;(jobs || []).forEach(j => {
+      const opt = document.createElement('option')
+      opt.value = j.id
+      opt.textContent = `${j.job_code} – ${j.job_name}`
+      jobSelect.appendChild(opt)
+    })
+  }
+
+  document.getElementById('run-report-btn').addEventListener('click', async () => {
+    const from = document.getElementById('report-from').value
+    const to = document.getElementById('report-to').value
+    const userId = document.getElementById('report-user').value
+    const jobId = document.getElementById('report-job').value
+
+    let query = supabaseClient
+      .from('time_entries')
+      .select(`
+        id, work_date, hours, description,
+        jobs (job_code, job_name),
+        profiles:user_id (full_name)
+      `)
+      .order('work_date', { ascending: false })
+
+    if (from) query = query.gte('work_date', from)
+    if (to) query = query.lte('work_date', to)
+    if (userId) query = query.eq('user_id', userId)
+    if (jobId) query = query.eq('job_id', jobId)
+
+    const { data, error } = await query
+
+    const results = document.getElementById('report-results')
+    const totalBox = document.getElementById('report-total')
+
+    if (error) {
+      results.innerHTML = `<p class="error">Error: ${error.message}</p>`
+      totalBox.classList.add('hidden')
+      return
+    }
+
+    if (!data?.length) {
+      results.innerHTML = '<p style="color:var(--muted)">No entries found for these filters.</p>'
+      totalBox.classList.add('hidden')
+      return
+    }
+
+    const totalHours = data.reduce((sum, e) => sum + Number(e.hours), 0)
+    totalBox.textContent = `Total: ${totalHours.toFixed(2)} hours`
+    totalBox.classList.remove('hidden')
+
+    results.innerHTML = data.map(e => `
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-job">${e.jobs?.job_code || '—'} – ${e.jobs?.job_name || ''}</span>
+          <span>${e.hours}h</span>
+        </div>
+        <div class="entry-meta">
+          ${e.work_date} • ${e.profiles?.full_name || 'Unknown'}
+          ${e.description ? ' • ' + e.description : ''}
+        </div>
+      </div>
+    `).join('')
+  })
 
   // -------------------------------------------------
   // Start
