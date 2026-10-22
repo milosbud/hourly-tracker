@@ -1,606 +1,854 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
   <title>HVAC Hours Tracker</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
-      --primary: #2563eb;
-      --bg: #f8fafc;
-      --card: #ffffff;
-      --text: #1e293b;
-      --muted: #64748b;
-      --danger: #dc2626;
-      --success: #16a34a;
-      --border: #e2e8f0;
+      color-scheme: light dark;
+      --primary:#2563eb; --bg:#f8fafc; --card:#fff;
+      --text:#1e293b; --muted:#64748b; --danger:#dc2626;
+      --success:#16a34a; --border:#e2e8f0;
+      --field:#fff; --shadow:0 2px 8px #0000000b;
     }
-
-    @media (prefers-color-scheme: dark) {
+    @media(prefers-color-scheme:dark) {
       :root {
-        --primary: #3b82f6;
-        --bg: #0f172a;
-        --card: #1e293b;
-        --text: #f1f5f9;
-        --muted: #94a3b8;
-        --danger: #ef4444;
-        --success: #22c55e;
-        --border: #334155;
+        --primary:#3b82f6; --bg:#0f172a; --card:#1e293b;
+        --text:#f1f5f9; --muted:#94a3b8; --danger:#f87171;
+        --success:#4ade80; --border:#475569; --field:#0f172a;
+        --shadow:0 2px 8px #00000020;
       }
     }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing:border-box; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-      padding: 16px;
-      max-width: 520px;
-      margin: 0 auto;
-      min-height: 100vh;
+      margin:0 auto; padding:16px; max-width:760px; min-height:100vh;
+      font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:var(--bg); color:var(--text);
     }
-    h1 { font-size: 1.5rem; margin-bottom: 8px; }
-    h2 { font-size: 1.2rem; margin: 0 0 16px; }
+    h1 { font-size:1.55rem; margin:0 0 6px; }
+    h2 { font-size:1.2rem; margin:0 0 16px; }
+    h3 { font-size:1rem; margin:0 0 10px; }
+    p { overflow-wrap:anywhere; }
     .card {
-      background: var(--card);
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 16px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-      border: 1px solid var(--border);
+      background:var(--card); border:1px solid var(--border);
+      border-radius:14px; padding:20px; margin-bottom:16px;
+      box-shadow:var(--shadow);
     }
-    label { display: block; font-size: 0.9rem; font-weight: 500; margin-bottom: 4px; }
-    input, select, textarea {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 1rem;
-      margin-bottom: 14px;
-      background: var(--bg);
-      color: var(--text);
+    label { display:block; font-size:.9rem; font-weight:600; margin-bottom:5px; }
+    input,select,textarea {
+      display:block; width:100%; min-height:46px; padding:11px;
+      margin:0 0 14px; border:1px solid var(--border);
+      border-radius:8px; background:var(--field); color:var(--text);
+      font:inherit;
     }
-    textarea { resize: vertical; min-height: 70px; }
+    textarea { min-height:78px; resize:vertical; }
     button {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      background: var(--primary);
-      color: white;
+      min-height:44px; padding:10px 14px; border:0; border-radius:8px;
+      background:var(--primary); color:white; font:inherit;
+      font-weight:600; cursor:pointer;
     }
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
-    button.secondary { background: var(--border); color: var(--text); }
-    button.danger { background: var(--danger); }
-    button.small { width: auto; padding: 8px 14px; font-size: 0.9rem; margin-right: 8px; margin-bottom: 6px; }
-    .hidden { display: none !important; }
+    button:disabled { opacity:.55; cursor:not-allowed; }
+    button.secondary { background:var(--border); color:var(--text); }
+    button.danger { background:var(--danger); color:white; }
+    button.small { min-height:36px; padding:7px 10px; font-size:.88rem; }
+    .nav { display:flex; flex-wrap:wrap; gap:8px; margin:16px 0; }
+    .nav button { flex:1 1 auto; }
+    .hidden { display:none!important; }
+    .muted,.entry-meta { color:var(--muted); }
+    .muted { font-size:.9rem; }
+    .user-info { overflow-wrap:anywhere; margin-bottom:12px; }
     .entry {
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 10px;
-      background: var(--bg);
+      padding:13px; margin:10px 0; border:1px solid var(--border);
+      border-radius:9px; background:var(--bg);
     }
-    .entry-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-    .entry-job { font-weight: 600; }
-    .entry-meta { font-size: 0.85rem; color: var(--muted); }
-    .error { color: var(--danger); font-size: 0.9rem; margin-top: 8px; }
-    .success { color: var(--success); font-size: 0.9rem; margin-top: 8px; }
-    .nav { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-    .nav button { width: auto; padding: 10px 14px; font-size: 0.9rem; }
-    .user-info { font-size: 0.9rem; color: var(--muted); margin-bottom: 16px; overflow: hidden; }
+    .entry-header {
+      display:flex; flex-wrap:wrap; justify-content:space-between;
+      gap:6px; margin-bottom:5px;
+    }
+    .entry-job { font-weight:650; overflow-wrap:anywhere; }
+    .entry-meta { font-size:.88rem; overflow-wrap:anywhere; }
+    .entry-actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+    .error,.success { margin-top:10px; overflow-wrap:anywhere; font-size:.9rem; }
+    .error { color:var(--danger); }
+    .success { color:var(--success); }
     .total-box {
-      background: var(--primary);
-      color: white;
-      padding: 16px;
-      border-radius: 10px;
-      text-align: center;
-      margin-bottom: 16px;
-      font-size: 1.3rem;
-      font-weight: 700;
+      padding:17px; margin-bottom:16px; border-radius:10px;
+      background:var(--primary); color:white; text-align:center;
+      font-size:1.25rem; font-weight:700;
     }
-    .filter-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
-    .filter-row > * { flex: 1; min-width: 120px; }
+    .filter-row { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .stats { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-bottom:16px; }
+    .stat { border:1px solid var(--border); border-radius:10px; padding:13px; background:var(--bg); }
+    .stat strong { display:block; font-size:1.4rem; }
+    .stat span { color:var(--muted); font-size:.85rem; }
+    .chart { margin:12px 0 22px; }
+    .bar-row { display:grid; grid-template-columns:minmax(75px,1fr) 3fr 45px; gap:8px; align-items:center; margin:9px 0; }
+    .bar-label { overflow-wrap:anywhere; font-size:.84rem; }
+    .bar-track { height:13px; background:var(--border); border-radius:8px; overflow:hidden; }
+    .bar-fill { height:100%; background:var(--primary); border-radius:8px; }
+    .section-gap { margin-top:24px; }
+    @media(max-width:420px) {
+      body { padding:10px; }
+      .card { padding:15px; }
+      .filter-row { grid-template-columns:1fr; gap:0; }
+      .nav button { flex:1 1 40%; }
+    }
   </style>
 </head>
 <body>
-
-  <!-- LOGIN SCREEN -->
   <div id="login-screen">
     <div class="card">
       <h1>HVAC Hours</h1>
-      <p style="color:var(--muted); margin-bottom:20px;">Log in to track your hours</p>
-      <label>Email</label>
-      <input type="email" id="email" placeholder="you@example.com" />
-      <label>Password</label>
-      <input type="password" id="password" placeholder="Password" />
-      <button id="login-btn">Log In</button>
-      <p id="login-error" class="error hidden"></p>
+      <p class="muted">Log in to track your hours.</p>
+      <form id="login-form">
+        <label for="email">Email</label>
+        <input id="email" type="email" autocomplete="username" required>
+        <label for="password">Password</label>
+        <input id="password" type="password" autocomplete="current-password" required>
+        <button id="login-btn" type="submit" style="width:100%">Log In</button>
+        <p id="login-error" class="error hidden" role="alert"></p>
+      </form>
     </div>
   </div>
 
-  <!-- MAIN APP -->
   <div id="app" class="hidden">
     <div class="user-info">
       Logged in as <strong id="user-email"></strong>
-      <button class="small secondary" id="logout-btn" style="float:right;">Log out</button>
+      <button id="logout-btn" class="small secondary" style="float:right">Log out</button>
+      <div style="clear:both"></div>
     </div>
 
-    <div class="nav">
-      <button id="nav-log" class="secondary">Log Hours</button>
-      <button id="nav-my" class="secondary">My Entries</button>
-      <button id="nav-admin" class="secondary hidden">Admin</button>
-      <button id="nav-reports" class="secondary hidden">Reports</button>
-    </div>
+    <nav class="nav" aria-label="Main navigation">
+      <button id="nav-log" class="secondary" data-screen="screen-log">Log Hours</button>
+      <button id="nav-my" class="secondary" data-screen="screen-my">My Entries</button>
+      <button id="nav-admin" class="secondary hidden" data-screen="screen-admin">Admin</button>
+      <button id="nav-reports" class="secondary hidden" data-screen="screen-reports">Reports</button>
+    </nav>
 
-    <!-- LOG HOURS -->
-    <div id="screen-log" class="card">
+    <section id="screen-log" class="card screen">
       <h2>Log Hours</h2>
-      <label>Job</label>
-      <select id="job-select"><option value="">Loading jobs...</option></select>
-      <label>Date</label>
-      <input type="date" id="work-date" />
-      <label>Hours worked</label>
-      <input type="number" id="hours" step="0.25" min="0.25" max="24" placeholder="e.g. 4.5" />
-      <label>Description (optional)</label>
-      <textarea id="description" placeholder="What did you do?"></textarea>
-      <button id="submit-btn">Submit Hours</button>
-      <p id="submit-msg" class="hidden"></p>
-    </div>
+      <form id="hours-form">
+        <label for="job-select">Job</label>
+        <select id="job-select" required><option value="">Loading jobs...</option></select>
+        <label for="work-date">Date</label>
+        <input id="work-date" type="date" required>
+        <label for="hours">Hours worked</label>
+        <input id="hours" type="number" step="0.25" min="0.25" max="24" required placeholder="e.g. 4.5">
+        <label for="description">Description (optional)</label>
+        <textarea id="description" maxlength="2000" placeholder="What did you do?"></textarea>
+        <button id="submit-btn" type="submit" style="width:100%">Submit Hours</button>
+        <p id="submit-msg" class="hidden" role="status"></p>
+      </form>
+    </section>
 
-    <!-- MY ENTRIES -->
-    <div id="screen-my" class="card hidden">
+    <section id="screen-my" class="card screen hidden">
       <h2>My Recent Entries</h2>
-      <div id="entries-list">Loading...</div>
-    </div>
+      <p class="muted">Your 40 most recent entries.</p>
+      <div id="entries-list">Open this tab to load entries.</div>
+    </section>
 
-    <!-- ADMIN -->
-    <div id="screen-admin" class="card hidden">
-      <h2>Admin – Manage Jobs</h2>
-      
-      <div style="margin-bottom: 24px;">
-        <h3 style="font-size:1rem; margin-bottom:10px;">Add New Job</h3>
-        <label>Job Code (easy ID)</label>
-        <input type="text" id="new-job-code" placeholder="e.g. JO-1006" />
-        <label>Job Name</label>
-        <input type="text" id="new-job-name" placeholder="e.g. Client Name – Work Description" />
-        <button id="add-job-btn">Add Job</button>
-        <p id="add-job-msg" class="hidden"></p>
-      </div>
+    <section id="screen-admin" class="card screen hidden">
+      <h2>Admin — Manage Jobs</h2>
+      <form id="add-job-form">
+        <h3>Add New Job</h3>
+        <label for="new-job-code">Job Code</label>
+        <input id="new-job-code" maxlength="50" required placeholder="e.g. JO-1006">
+        <label for="new-job-name">Job Name</label>
+        <input id="new-job-name" maxlength="200" required placeholder="Client name — Work description">
+        <button id="add-job-btn" type="submit" style="width:100%">Add Job</button>
+        <p id="add-job-msg" class="hidden" role="status"></p>
+      </form>
+      <h3 class="section-gap">Current Jobs</h3>
+      <div id="admin-jobs-list">Open Admin to load jobs.</div>
+    </section>
 
-      <h3 style="font-size:1rem; margin-bottom:10px;">Current Jobs</h3>
-      <div id="admin-jobs-list">Loading...</div>
-    </div>
-
-    <!-- REPORTS -->
-    <div id="screen-reports" class="card hidden">
+    <section id="screen-reports" class="card screen hidden">
       <h2>Reports</h2>
-
       <div class="filter-row">
         <div>
-          <label>From</label>
-          <input type="date" id="report-from" />
+          <label for="report-from">From</label>
+          <input id="report-from" type="date">
         </div>
         <div>
-          <label>To</label>
-          <input type="date" id="report-to" />
+          <label for="report-to">To</label>
+          <input id="report-to" type="date">
         </div>
       </div>
-
-      <label>Technician</label>
+      <label for="report-user">Technician</label>
       <select id="report-user"><option value="">All technicians</option></select>
-
-      <label>Job</label>
+      <label for="report-job">Job</label>
       <select id="report-job"><option value="">All jobs</option></select>
-
-      <button id="run-report-btn" style="margin-bottom:16px;">Run Report</button>
-
-      <div id="report-total" class="total-box hidden">Total: 0 hours</div>
+      <button id="run-report-btn" style="width:100%">Run Report</button>
+      <p id="report-msg" class="hidden" role="status"></p>
+      <div id="report-summary" class="hidden">
+        <div class="stats">
+          <div class="stat"><span>Total hours</span><strong id="stat-hours">0</strong></div>
+          <div class="stat"><span>Entries</span><strong id="stat-entries">0</strong></div>
+          <div class="stat"><span>Technicians</span><strong id="stat-users">0</strong></div>
+          <div class="stat"><span>Jobs worked</span><strong id="stat-jobs">0</strong></div>
+        </div>
+        <h3>Hours by Technician</h3>
+        <div id="chart-users" class="chart"></div>
+        <h3>Hours by Job</h3>
+        <div id="chart-jobs" class="chart"></div>
+        <h3>Hours by Week</h3>
+        <div id="chart-weeks" class="chart"></div>
+        <button id="export-btn" class="secondary" style="width:100%;margin-bottom:14px">Export CSV</button>
+      </div>
+      <h3>Entries</h3>
       <div id="report-results"></div>
-    </div>
+    </section>
   </div>
 
 <script>
-  // -------------------------------------------------
-  // CREDENTIALS
-  // -------------------------------------------------
-  const SUPABASE_URL = 'https://bnryuusnqfjltstwwqaa.supabase.co'
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJucnl1dXNucWZqbHRzdHd3cWFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MTcyMzIsImV4cCI6MjEwODE5MzIzMn0.Xsko4Pv7wMyeaSm0TKVX97TC1spBWkDWSJ7rrnYVOUY'  // ← put your key here
+(() => {
+  'use strict';
 
-  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  // Supabase project configuration. The anon/publishable key is intended
+  // for browser use. Protect your data with correctly configured RLS.
+  const SUPABASE_URL = 'https://bnryuusnqfjltstwwqaa.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJucnl1dXNucWZqbHRzdHd3cWFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MTcyMzIsImV4cCI6MjEwODE5MzIzMn0.Xsko4Pv7wMyeaSm0TKVX97TC1spBWkDWSJ7rrnYVOUY';
 
-  let currentUser = null
-  let isAdmin = false
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  let currentUser = null;
+  let isAdmin = false;
+  let latestReport = [];
+  let profilesById = {};
+  let jobsById = {};
 
-  // -------------------------------------------------
-  // Helpers
-  // -------------------------------------------------
-  function show(id) {
-    document.getElementById('login-screen').classList.add('hidden')
-    document.getElementById('app').classList.remove('hidden')
-    ;['screen-log','screen-my','screen-admin','screen-reports'].forEach(s => {
-      document.getElementById(s).classList.add('hidden')
-    })
-    document.getElementById(id).classList.remove('hidden')
+  const $ = id => document.getElementById(id);
+
+  function message(id, text, type = 'error') {
+    const el = $(id);
+    el.textContent = text;
+    el.className = type;
+  }
+
+  function clearMessage(id) {
+    $(id).textContent = '';
+    $(id).className = 'hidden';
+  }
+
+  function el(tag, text, className) {
+    const node = document.createElement(tag);
+    if (text !== undefined && text !== null) node.textContent = String(text);
+    if (className) node.className = className;
+    return node;
+  }
+
+  function option(value, text) {
+    const o = document.createElement('option');
+    o.value = value;
+    o.textContent = text;
+    return o;
+  }
+
+  function setButtonBusy(id, busy, busyText) {
+    const b = $(id);
+    if (busy) {
+      b.dataset.originalText = b.textContent;
+      b.textContent = busyText;
+    } else {
+      b.textContent = b.dataset.originalText || b.textContent;
+    }
+    b.disabled = busy;
+  }
+
+  function setNavPermissions() {
+    $('nav-admin').classList.toggle('hidden', !isAdmin);
+    $('nav-reports').classList.toggle('hidden', !isAdmin);
   }
 
   function showLogin() {
-    document.getElementById('login-screen').classList.remove('hidden')
-    document.getElementById('app').classList.add('hidden')
+    $('login-screen').classList.remove('hidden');
+    $('app').classList.add('hidden');
   }
 
-  // -------------------------------------------------
-  // Auth
-  // -------------------------------------------------
-  async function checkSession() {
-    const { data: { session } } = await supabaseClient.auth.getSession()
-    if (session) {
-      currentUser = session.user
-      await loadProfile()
-      document.getElementById('user-email').textContent = currentUser.email
-      show('screen-log')
-      loadJobs()
-      document.getElementById('work-date').valueAsDate = new Date()
-    } else {
-      showLogin()
+  function showScreen(id) {
+    if (!currentUser) return showLogin();
+    if ((id === 'screen-admin' || id === 'screen-reports') && !isAdmin) {
+      showScreen('screen-log');
+      return;
     }
+
+    $('login-screen').classList.add('hidden');
+    $('app').classList.remove('hidden');
+    document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+    $(id).classList.remove('hidden');
+
+    if (id === 'screen-log') loadJobs();
+    if (id === 'screen-my') loadMyEntries();
+    if (id === 'screen-admin') loadAdminJobs();
+    if (id === 'screen-reports') prepareReportFilters();
   }
 
   async function loadProfile() {
-    const { data } = await supabaseClient
-      .from('profiles')
-      .select('is_admin, full_name')
-      .eq('id', currentUser.id)
-      .single()
+    isAdmin = false;
+    setNavPermissions();
 
-    isAdmin = data?.is_admin === true
-    if (isAdmin) {
-      document.getElementById('nav-admin').classList.remove('hidden')
-      document.getElementById('nav-reports').classList.remove('hidden')
+    const { data, error } = await db
+      .from('profiles')
+      .select('id, is_admin, full_name')
+      .eq('id', currentUser.id)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Profile lookup failed:', error);
+      throw new Error(`Could not load your profile: ${error.message} (${error.code || 'unknown code'})`);
+    }
+
+    if (!data) {
+      throw new Error('No profile exists for this account. Check that profiles.id matches your Auth user UUID.');
+    }
+
+    isAdmin = data.is_admin === true;
+    setNavPermissions();
+    return data;
+  }
+
+  async function startApp(user) {
+    currentUser = user;
+    isAdmin = false;
+    setNavPermissions();
+    $('user-email').textContent = user.email || '';
+    try {
+      await loadProfile();
+      showScreen('screen-log');
+    } catch (error) {
+      console.error(error);
+      alert(error.message);
+      await db.auth.signOut();
+      currentUser = null;
+      isAdmin = false;
+      setNavPermissions();
+      showLogin();
     }
   }
 
-  document.getElementById('login-btn').addEventListener('click', async () => {
-    const email = document.getElementById('email').value.trim()
-    const password = document.getElementById('password').value
-    const errorEl = document.getElementById('login-error')
-    errorEl.classList.add('hidden')
-    document.getElementById('login-btn').disabled = true
-
-    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password })
-    document.getElementById('login-btn').disabled = false
-
+  async function checkSession() {
+    const { data, error } = await db.auth.getSession();
     if (error) {
-      errorEl.textContent = error.message
-      errorEl.classList.remove('hidden')
-      return
+      console.error('Session lookup failed:', error);
+      showLogin();
+      return;
     }
+    if (data.session?.user) await startApp(data.session.user);
+    else showLogin();
+  }
 
-    currentUser = data.user
-    await loadProfile()
-    document.getElementById('user-email').textContent = currentUser.email
-    show('screen-log')
-    loadJobs()
-    document.getElementById('work-date').valueAsDate = new Date()
-  })
+  $('login-form').addEventListener('submit', async event => {
+    event.preventDefault();
+    clearMessage('login-error');
+    setButtonBusy('login-btn', true, 'Logging in...');
+    try {
+      const { data, error } = await db.auth.signInWithPassword({
+        email: $('email').value.trim(),
+        password: $('password').value
+      });
+      if (error) throw error;
+      await startApp(data.user);
+    } catch (error) {
+      console.error('Login failed:', error);
+      message('login-error', error.message || 'Login failed');
+    } finally {
+      setButtonBusy('login-btn', false);
+    }
+  });
 
-  document.getElementById('logout-btn').addEventListener('click', async () => {
-    await supabaseClient.auth.signOut()
-    currentUser = null
-    isAdmin = false
-    showLogin()
-  })
+  $('logout-btn').addEventListener('click', async () => {
+    const { error } = await db.auth.signOut();
+    if (error) {
+      alert('Could not log out: ' + error.message);
+      return;
+    }
+    currentUser = null;
+    isAdmin = false;
+    latestReport = [];
+    setNavPermissions();
+    showLogin();
+  });
 
-  // -------------------------------------------------
-  // Navigation
-  // -------------------------------------------------
-  document.getElementById('nav-log').addEventListener('click', () => {
-    show('screen-log')
-    loadJobs()
-  })
-  document.getElementById('nav-my').addEventListener('click', () => {
-    show('screen-my')
-    loadMyEntries()
-  })
-  document.getElementById('nav-admin').addEventListener('click', () => {
-    show('screen-admin')
-    loadAdminJobs()
-  })
-  document.getElementById('nav-reports').addEventListener('click', () => {
-    show('screen-reports')
-    prepareReportFilters()
-  })
+  db.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_OUT') {
+      currentUser = null;
+      isAdmin = false;
+      setNavPermissions();
+      showLogin();
+    }
+  });
 
-  // -------------------------------------------------
-  // Jobs (for logging)
-  // -------------------------------------------------
+  document.querySelectorAll('[data-screen]').forEach(button => {
+    button.addEventListener('click', () => showScreen(button.dataset.screen));
+  });
+
   async function loadJobs() {
-    const { data, error } = await supabaseClient
-      .from('jobs')
+    const select = $('job-select');
+    select.replaceChildren(option('', 'Loading jobs...'));
+
+    const { data, error } = await db.from('jobs')
       .select('id, job_code, job_name')
       .eq('active', true)
-      .order('job_code')
-
-    const select = document.getElementById('job-select')
-    select.innerHTML = ''
-
-    if (error || !data?.length) {
-      select.innerHTML = '<option value="">No active jobs</option>'
-      return
-    }
-
-    select.innerHTML = '<option value="">Select a job...</option>'
-    data.forEach(job => {
-      const opt = document.createElement('option')
-      opt.value = job.id
-      opt.textContent = `${job.job_code} – ${job.job_name}`
-      select.appendChild(opt)
-    })
-  }
-
-  // -------------------------------------------------
-  // Submit hours
-  // -------------------------------------------------
-  document.getElementById('submit-btn').addEventListener('click', async () => {
-    const jobId = document.getElementById('job-select').value
-    const workDate = document.getElementById('work-date').value
-    const hours = parseFloat(document.getElementById('hours').value)
-    const description = document.getElementById('description').value.trim()
-    const msg = document.getElementById('submit-msg')
-    msg.classList.add('hidden')
-
-    if (!jobId || !workDate || !hours || hours <= 0) {
-      msg.textContent = 'Please fill in job, date and hours'
-      msg.className = 'error'
-      msg.classList.remove('hidden')
-      return
-    }
-
-    document.getElementById('submit-btn').disabled = true
-    const { error } = await supabaseClient.from('time_entries').insert({
-      user_id: currentUser.id,
-      job_id: jobId,
-      work_date: workDate,
-      hours,
-      description: description || null
-    })
-    document.getElementById('submit-btn').disabled = false
+      .order('job_code');
 
     if (error) {
-      msg.textContent = 'Error: ' + error.message
-      msg.className = 'error'
-    } else {
-      msg.textContent = 'Hours saved!'
-      msg.className = 'success'
-      document.getElementById('hours').value = ''
-      document.getElementById('description').value = ''
+      console.error('Jobs lookup failed:', error);
+      select.replaceChildren(option('', 'Could not load jobs'));
+      message('submit-msg', `Could not load jobs: ${error.message} (${error.code || 'unknown code'})`);
+      return;
     }
-    msg.classList.remove('hidden')
-  })
 
-  // -------------------------------------------------
-  // My Entries
-  // -------------------------------------------------
+    select.replaceChildren(option('', 'Select a job...'));
+    (data || []).forEach(job => {
+      jobsById[job.id] = job;
+      select.appendChild(option(job.id, `${job.job_code} – ${job.job_name}`));
+    });
+
+    if (!data?.length) select.replaceChildren(option('', 'No active jobs'));
+  }
+
+  $('hours-form').addEventListener('submit', async event => {
+    event.preventDefault();
+    clearMessage('submit-msg');
+
+    const jobId = $('job-select').value;
+    const workDate = $('work-date').value;
+    const hours = Number($('hours').value);
+    const description = $('description').value.trim();
+
+    if (!jobId || !workDate || !Number.isFinite(hours) ||
+        hours < 0.25 || hours > 24 || Math.round(hours * 4) !== hours * 4) {
+      message('submit-msg', 'Select a job and date, and enter 0.25–24 hours in quarter-hour increments.');
+      return;
+    }
+
+    setButtonBusy('submit-btn', true, 'Saving...');
+    try {
+      const { error } = await db.from('time_entries').insert({
+        user_id: currentUser.id,
+        job_id: jobId,
+        work_date: workDate,
+        hours,
+        description: description || null
+      });
+      if (error) throw error;
+
+      message('submit-msg', 'Hours saved successfully!', 'success');
+      $('hours').value = '';
+      $('description').value = '';
+    } catch (error) {
+      console.error('Saving hours failed:', error);
+      message('submit-msg', `Could not save hours: ${error.message} (${error.code || 'unknown code'})`);
+    } finally {
+      setButtonBusy('submit-btn', false);
+    }
+  });
+
+  // Fetch related records separately to avoid depending on implicit
+  // PostgREST relationship joins or ambiguous foreign-key names.
+  async function getRelatedRecords(entries) {
+    const jobIds = [...new Set(entries.map(e => e.job_id).filter(Boolean))];
+    const userIds = [...new Set(entries.map(e => e.user_id).filter(Boolean))];
+
+    const jobsPromise = jobIds.length
+      ? db.from('jobs').select('id, job_code, job_name, active').in('id', jobIds)
+      : Promise.resolve({ data: [], error: null });
+
+    const profilesPromise = userIds.length
+      ? db.from('profiles').select('id, full_name').in('id', userIds)
+      : Promise.resolve({ data: [], error: null });
+
+    const [jobsResult, profilesResult] = await Promise.all([jobsPromise, profilesPromise]);
+
+    if (jobsResult.error) throw new Error(`Could not load related jobs: ${jobsResult.error.message} (${jobsResult.error.code || 'unknown code'})`);
+    if (profilesResult.error) throw new Error(`Could not load related profiles: ${profilesResult.error.message} (${profilesResult.error.code || 'unknown code'})`);
+
+    const jobs = Object.fromEntries((jobsResult.data || []).map(j => [j.id, j]));
+    const profiles = Object.fromEntries((profilesResult.data || []).map(p => [p.id, p]));
+
+    return entries.map(entry => ({
+      ...entry,
+      job: jobs[entry.job_id] || null,
+      profile: profiles[entry.user_id] || null
+    }));
+  }
+
+  function renderEntries(container, entries, allowEdit) {
+    container.replaceChildren();
+
+    if (!entries.length) {
+      container.appendChild(el('p', 'No entries found.', 'muted'));
+      return;
+    }
+
+    entries.forEach(entry => {
+      const card = el('div', undefined, 'entry');
+      const header = el('div', undefined, 'entry-header');
+      const job = entry.job;
+      header.appendChild(el('span',
+        `${job?.job_code || 'Unknown job'}${job?.job_name ? ' – ' + job.job_name : ''}`,
+        'entry-job'));
+      header.appendChild(el('strong', `${Number(entry.hours).toFixed(2)} h`));
+      card.appendChild(header);
+
+      const meta = [
+        entry.work_date,
+        entry.profile?.full_name || (entry.user_id === currentUser?.id ? currentUser.email : 'Unknown technician'),
+        entry.description
+      ].filter(Boolean).join(' • ');
+      card.appendChild(el('div', meta, 'entry-meta'));
+
+      if (allowEdit && entry.user_id === currentUser.id) {
+        const actions = el('div', undefined, 'entry-actions');
+        const edit = el('button', 'Edit', 'small secondary');
+        edit.addEventListener('click', () => editEntry(entry));
+        const del = el('button', 'Delete', 'small danger');
+        del.addEventListener('click', () => deleteEntry(entry.id));
+        actions.append(edit, del);
+        card.appendChild(actions);
+      }
+      container.appendChild(card);
+    });
+  }
+
   async function loadMyEntries() {
-    const { data, error } = await supabaseClient
-      .from('time_entries')
-      .select(`id, work_date, hours, description, jobs (job_code, job_name)`)
-      .eq('user_id', currentUser.id)
-      .order('work_date', { ascending: false })
-      .limit(40)
+    const list = $('entries-list');
+    list.textContent = 'Loading entries...';
 
-    const list = document.getElementById('entries-list')
-    if (error) {
-      list.innerHTML = '<p class="error">Error loading entries</p>'
-      return
-    }
-    if (!data?.length) {
-      list.innerHTML = '<p style="color:var(--muted)">No entries yet.</p>'
-      return
-    }
+    try {
+      const { data, error } = await db.from('time_entries')
+        .select('id, user_id, job_id, work_date, hours, description')
+        .eq('user_id', currentUser.id)
+        .order('work_date', { ascending: false })
+        .limit(40);
 
-    list.innerHTML = data.map(entry => `
-      <div class="entry">
-        <div class="entry-header">
-          <span class="entry-job">${entry.jobs?.job_code || '—'} – ${entry.jobs?.job_name || ''}</span>
-          <span>${entry.hours}h</span>
-        </div>
-        <div class="entry-meta">${entry.work_date}${entry.description ? ' • ' + entry.description : ''}</div>
-        <div style="margin-top:10px;">
-          <button class="small secondary" onclick="editEntry('${entry.id}', ${entry.hours}, \`${(entry.description || '').replace(/`/g, '')}\`)">Edit</button>
-          <button class="small danger" onclick="deleteEntry('${entry.id}')">Delete</button>
-        </div>
-      </div>
-    `).join('')
+      if (error) throw error;
+
+      console.log('My Entries base query succeeded:', {
+        userId: currentUser.id,
+        count: data?.length || 0
+      });
+
+      const entries = await getRelatedRecords(data || []);
+      renderEntries(list, entries, true);
+    } catch (error) {
+      console.error('My Entries failed:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint,
+        userId: currentUser?.id
+      });
+      list.replaceChildren();
+      list.appendChild(el('p',
+        `Error loading entries: ${error.message} (code: ${error.code || 'unknown'}). Check the browser console for details.`,
+        'error'));
+    }
   }
 
-  window.editEntry = async (id, currentHours, currentDesc) => {
-    const newHours = prompt('New hours:', currentHours)
-    if (newHours === null) return
-    const hours = parseFloat(newHours)
-    if (!hours || hours <= 0) return alert('Invalid hours')
-    const newDesc = prompt('Description (optional):', currentDesc || '')
-
-    const { error } = await supabaseClient
-      .from('time_entries')
-      .update({ hours, description: newDesc || null })
-      .eq('id', id)
-
-    if (error) alert('Error: ' + error.message)
-    else loadMyEntries()
-  }
-
-  window.deleteEntry = async (id) => {
-    if (!confirm('Delete this entry?')) return
-    const { error } = await supabaseClient.from('time_entries').delete().eq('id', id)
-    if (error) alert('Error: ' + error.message)
-    else loadMyEntries()
-  }
-
-  // -------------------------------------------------
-  // Admin – Manage Jobs
-  // -------------------------------------------------
-  async function loadAdminJobs() {
-    const { data, error } = await supabaseClient
-      .from('jobs')
-      .select('*')
-      .order('job_code')
-
-    const list = document.getElementById('admin-jobs-list')
-    if (error || !data?.length) {
-      list.innerHTML = '<p style="color:var(--muted)">No jobs yet</p>'
-      return
+  async function editEntry(entry) {
+    const newHours = prompt('Enter hours (0.25–24):', entry.hours);
+    if (newHours === null) return;
+    const hours = Number(newHours);
+    if (!Number.isFinite(hours) || hours < 0.25 || hours > 24 ||
+        Math.round(hours * 4) !== hours * 4) {
+      alert('Enter a valid number from 0.25 to 24 in quarter-hour increments.');
+      return;
     }
 
-    list.innerHTML = data.map(job => `
-      <div class="entry">
-        <div class="entry-header">
-          <span class="entry-job">${job.job_code}</span>
-          <span style="font-size:0.85rem; color:var(--muted)">${job.active ? 'Active' : 'Inactive'}</span>
-        </div>
-        <div class="entry-meta">${job.job_name}</div>
-      </div>
-    `).join('')
-  }
+    const newDesc = prompt('Description (optional):', entry.description || '');
+    if (newDesc === null) return;
 
-  document.getElementById('add-job-btn').addEventListener('click', async () => {
-    const code = document.getElementById('new-job-code').value.trim()
-    const name = document.getElementById('new-job-name').value.trim()
-    const msg = document.getElementById('add-job-msg')
-
-    if (!code || !name) {
-      msg.textContent = 'Both fields are required'
-      msg.className = 'error'
-      msg.classList.remove('hidden')
-      return
-    }
-
-    const { error } = await supabaseClient.from('jobs').insert({
-      job_code: code,
-      job_name: name,
-      active: true
-    })
+    const { error } = await db.from('time_entries')
+      .update({ hours, description: newDesc.trim() || null })
+      .eq('id', entry.id)
+      .eq('user_id', currentUser.id);
 
     if (error) {
-      msg.textContent = 'Error: ' + error.message
-      msg.className = 'error'
+      console.error('Edit failed:', error);
+      alert(`Could not update entry: ${error.message} (${error.code || 'unknown code'})`);
     } else {
-      msg.textContent = 'Job added!'
-      msg.className = 'success'
-      document.getElementById('new-job-code').value = ''
-      document.getElementById('new-job-name').value = ''
-      loadAdminJobs()
-      loadJobs()
+      await loadMyEntries();
     }
-    msg.classList.remove('hidden')
-  })
-
-  // -------------------------------------------------
-  // Reports
-  // -------------------------------------------------
-  async function prepareReportFilters() {
-    // Set default dates (last 30 days)
-    const to = new Date()
-    const from = new Date()
-    from.setDate(from.getDate() - 30)
-    document.getElementById('report-to').valueAsDate = to
-    document.getElementById('report-from').valueAsDate = from
-
-    // Load users
-    const { data: users } = await supabaseClient
-      .from('profiles')
-      .select('id, full_name')
-      .order('full_name')
-
-    const userSelect = document.getElementById('report-user')
-    userSelect.innerHTML = '<option value="">All technicians</option>'
-    ;(users || []).forEach(u => {
-      const opt = document.createElement('option')
-      opt.value = u.id
-      opt.textContent = u.full_name || u.id.substring(0, 8)
-      userSelect.appendChild(opt)
-    })
-
-    // Load jobs
-    const { data: jobs } = await supabaseClient
-      .from('jobs')
-      .select('id, job_code, job_name')
-      .order('job_code')
-
-    const jobSelect = document.getElementById('report-job')
-    jobSelect.innerHTML = '<option value="">All jobs</option>'
-    ;(jobs || []).forEach(j => {
-      const opt = document.createElement('option')
-      opt.value = j.id
-      opt.textContent = `${j.job_code} – ${j.job_name}`
-      jobSelect.appendChild(opt)
-    })
   }
 
-  document.getElementById('run-report-btn').addEventListener('click', async () => {
-    const from = document.getElementById('report-from').value
-    const to = document.getElementById('report-to').value
-    const userId = document.getElementById('report-user').value
-    const jobId = document.getElementById('report-job').value
-
-    let query = supabaseClient
-      .from('time_entries')
-      .select(`
-        id, work_date, hours, description,
-        jobs (job_code, job_name),
-        profiles:user_id (full_name)
-      `)
-      .order('work_date', { ascending: false })
-
-    if (from) query = query.gte('work_date', from)
-    if (to) query = query.lte('work_date', to)
-    if (userId) query = query.eq('user_id', userId)
-    if (jobId) query = query.eq('job_id', jobId)
-
-    const { data, error } = await query
-
-    const results = document.getElementById('report-results')
-    const totalBox = document.getElementById('report-total')
+  async function deleteEntry(id) {
+    if (!confirm('Delete this time entry? This cannot be undone.')) return;
+    const { error } = await db.from('time_entries').delete()
+      .eq('id', id)
+      .eq('user_id', currentUser.id);
 
     if (error) {
-      results.innerHTML = `<p class="error">Error: ${error.message}</p>`
-      totalBox.classList.add('hidden')
-      return
+      console.error('Delete failed:', error);
+      alert(`Could not delete entry: ${error.message} (${error.code || 'unknown code'})`);
+    } else {
+      await loadMyEntries();
+    }
+  }
+
+  async function loadAdminJobs() {
+    if (!isAdmin) return;
+
+    const list = $('admin-jobs-list');
+    list.textContent = 'Loading jobs...';
+
+    const { data, error } = await db.from('jobs')
+      .select('id, job_code, job_name, active')
+      .order('job_code');
+
+    if (error) {
+      console.error('Admin job query failed:', error);
+      list.textContent = `Could not load jobs: ${error.message} (${error.code || 'unknown code'})`;
+      return;
     }
 
+    list.replaceChildren();
     if (!data?.length) {
-      results.innerHTML = '<p style="color:var(--muted)">No entries found for these filters.</p>'
-      totalBox.classList.add('hidden')
-      return
+      list.appendChild(el('p', 'No jobs found.', 'muted'));
+      return;
     }
 
-    const totalHours = data.reduce((sum, e) => sum + Number(e.hours), 0)
-    totalBox.textContent = `Total: ${totalHours.toFixed(2)} hours`
-    totalBox.classList.remove('hidden')
+    data.forEach(job => {
+      const card = el('div', undefined, 'entry');
+      const header = el('div', undefined, 'entry-header');
+      header.appendChild(el('strong', job.job_code));
+      header.appendChild(el('span', job.active ? 'Active' : 'Inactive', 'entry-meta'));
+      card.appendChild(header);
+      card.appendChild(el('div', job.job_name, 'entry-meta'));
+      list.appendChild(card);
+    });
+  }
 
-    results.innerHTML = data.map(e => `
-      <div class="entry">
-        <div class="entry-header">
-          <span class="entry-job">${e.jobs?.job_code || '—'} – ${e.jobs?.job_name || ''}</span>
-          <span>${e.hours}h</span>
-        </div>
-        <div class="entry-meta">
-          ${e.work_date} • ${e.profiles?.full_name || 'Unknown'}
-          ${e.description ? ' • ' + e.description : ''}
-        </div>
-      </div>
-    `).join('')
-  })
+  $('add-job-form').addEventListener('submit', async event => {
+    event.preventDefault();
+    if (!isAdmin) return alert('Admin access is required.');
 
-  // -------------------------------------------------
-  // Start
-  // -------------------------------------------------
-  checkSession()
+    clearMessage('add-job-msg');
+    const code = $('new-job-code').value.trim();
+    const name = $('new-job-name').value.trim();
+    if (!code || !name) {
+      message('add-job-msg', 'Both fields are required.');
+      return;
+    }
+
+    setButtonBusy('add-job-btn', true, 'Adding...');
+    try {
+      const { error } = await db.from('jobs').insert({
+        job_code: code,
+        job_name: name,
+        active: true
+      });
+      if (error) throw error;
+
+      message('add-job-msg', 'Job added successfully!', 'success');
+      $('new-job-code').value = '';
+      $('new-job-name').value = '';
+      await Promise.all([loadAdminJobs(), loadJobs()]);
+    } catch (error) {
+      console.error('Add job failed:', error);
+      message('add-job-msg', `Could not add job: ${error.message} (${error.code || 'unknown code'})`);
+    } finally {
+      setButtonBusy('add-job-btn', false);
+    }
+  });
+
+  async function prepareReportFilters() {
+    if (!isAdmin) return;
+
+    const to = new Date();
+    const from = new Date();
+    from.setDate(from.getDate() - 30);
+
+    $('report-to').value = to.toISOString().slice(0, 10);
+    $('report-from').value = from.toISOString().slice(0, 10);
+
+    clearMessage('report-msg');
+    $('report-summary').classList.add('hidden');
+    $('report-results').replaceChildren();
+
+    try {
+      const [usersResult, jobsResult] = await Promise.all([
+        db.from('profiles').select('id, full_name').order('full_name'),
+        db.from('jobs').select('id, job_code, job_name').order('job_code')
+      ]);
+
+      if (usersResult.error) throw new Error(`Could not load technicians: ${usersResult.error.message}`);
+      if (jobsResult.error) throw new Error(`Could not load jobs: ${jobsResult.error.message}`);
+
+      const userSelect = $('report-user');
+      userSelect.replaceChildren(option('', 'All technicians'));
+      (usersResult.data || []).forEach(user => {
+        profilesById[user.id] = user;
+        userSelect.appendChild(option(user.id, user.full_name || user.id.slice(0, 8)));
+      });
+
+      const jobSelect = $('report-job');
+      jobSelect.replaceChildren(option('', 'All jobs'));
+      (jobsResult.data || []).forEach(job => {
+        jobsById[job.id] = job;
+        jobSelect.appendChild(option(job.id, `${job.job_code} – ${job.job_name}`));
+      });
+    } catch (error) {
+      console.error('Report filter setup failed:', error);
+      message('report-msg', error.message);
+    }
+  }
+
+  function groupHours(entries, keyFn, labelFn) {
+    const groups = {};
+    entries.forEach(entry => {
+      const key = keyFn(entry);
+      groups[key] = (groups[key] || 0) + Number(entry.hours || 0);
+    });
+    return Object.entries(groups)
+      .map(([key, hours]) => ({ label: labelFn(key), hours }))
+      .sort((a, b) => b.hours - a.hours);
+  }
+
+  function renderBars(containerId, rows) {
+    const container = $(containerId);
+    container.replaceChildren();
+
+    if (!rows.length) {
+      container.appendChild(el('p', 'No data for this chart.', 'muted'));
+      return;
+    }
+
+    const max = Math.max(...rows.map(r => r.hours), 0.01);
+    rows.slice(0, 10).forEach(row => {
+      const line = el('div', undefined, 'bar-row');
+      line.appendChild(el('div', row.label, 'bar-label'));
+
+      const track = el('div', undefined, 'bar-track');
+      const fill = el('div', undefined, 'bar-fill');
+      fill.style.width = `${Math.max(0, row.hours / max * 100)}%`;
+      track.appendChild(fill);
+      line.appendChild(track);
+      line.appendChild(el('div', row.hours.toFixed(1), 'bar-label'));
+      container.appendChild(line);
+    });
+  }
+
+  function weekStart(dateString) {
+    const d = new Date(dateString + 'T12:00:00Z');
+    const day = d.getUTCDay();
+    d.setUTCDate(d.getUTCDate() - ((day + 6) % 7));
+    return d.toISOString().slice(0, 10);
+  }
+
+  $('run-report-btn').addEventListener('click', runReport);
+
+  async function runReport() {
+    if (!isAdmin) return alert('Admin access is required.');
+
+    clearMessage('report-msg');
+    const from = $('report-from').value;
+    const to = $('report-to').value;
+    const userId = $('report-user').value;
+    const jobId = $('report-job').value;
+
+    if (from && to && from > to) {
+      message('report-msg', 'The From date must be on or before the To date.');
+      return;
+    }
+
+    setButtonBusy('run-report-btn', true, 'Running report...');
+    $('report-summary').classList.add('hidden');
+    $('report-results').replaceChildren();
+
+    try {
+      let query = db.from('time_entries')
+        .select('id, user_id, job_id, work_date, hours, description')
+        .order('work_date', { ascending: false });
+
+      if (from) query = query.gte('work_date', from);
+      if (to) query = query.lte('work_date', to);
+      if (userId) query = query.eq('user_id', userId);
+      if (jobId) query = query.eq('job_id', jobId);
+
+      // Supabase can cap the number of rows returned. Use range pagination
+      // so report totals aren't silently based on only the first page.
+      const pageSize = 1000;
+      let rows = [];
+      for (let offset = 0; ; offset += pageSize) {
+        const { data, error } = await query.range(offset, offset + pageSize - 1);
+        if (error) throw error;
+        rows = rows.concat(data || []);
+        if (!data || data.length < pageSize) break;
+      }
+
+      const entries = await getRelatedRecords(rows);
+      latestReport = entries;
+
+      const total = entries.reduce((sum, e) => sum + Number(e.hours || 0), 0);
+      $('stat-hours').textContent = total.toFixed(2);
+      $('stat-entries').textContent = String(entries.length);
+      $('stat-users').textContent = String(new Set(entries.map(e => e.user_id)).size);
+      $('stat-jobs').textContent = String(new Set(entries.map(e => e.job_id)).size);
+
+      const byUser = groupHours(
+        entries,
+        e => e.user_id || 'unknown',
+        id => profilesById[id]?.full_name || entries.find(e => e.user_id === id)?.profile?.full_name || id.slice(0, 8)
+      );
+      const byJob = groupHours(
+        entries,
+        e => e.job_id || 'unknown',
+        id => jobsById[id]?.job_code || entries.find(e => e.job_id === id)?.job?.job_code || 'Unknown job'
+      );
+      const byWeek = groupHours(
+        entries,
+        e => weekStart(e.work_date),
+        week => week
+      ).sort((a, b) => a.label.localeCompare(b.label));
+
+      renderBars('chart-users', byUser);
+      renderBars('chart-jobs', byJob);
+      renderBars('chart-weeks', byWeek);
+      $('report-summary').classList.remove('hidden');
+      renderEntries($('report-results'), entries, false);
+
+      if (!entries.length) message('report-msg', 'No entries matched these filters.', 'success');
+      else message('report-msg', `Report loaded: ${entries.length} entries.`, 'success');
+    } catch (error) {
+      console.error('Report failed:', error);
+      message('report-msg', `Report failed: ${error.message} (${error.code || 'unknown code'}).`);
+    } finally {
+      setButtonBusy('run-report-btn', false);
+    }
+  }
+
+  $('export-btn').addEventListener('click', () => {
+    if (!latestReport.length) return alert('There are no report entries to export.');
+
+    const columns = ['Date', 'Technician', 'Job Code', 'Job Name', 'Hours', 'Description'];
+    const quote = value => '"' + String(value ?? '').replace(/"/g, '""') + '"';
+    const rows = latestReport.map(e => [
+      e.work_date,
+      e.profile?.full_name || e.user_id,
+      e.job?.job_code || '',
+      e.job?.job_name || '',
+      Number(e.hours).toFixed(2),
+      e.description || ''
+    ]);
+    const csv = [columns, ...rows].map(row => row.map(quote).join(',')).join('\r\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `hvac-hours-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  $('work-date').value = new Date().toISOString().slice(0, 10);
+  checkSession();
+})();
 </script>
 </body>
 </html>
