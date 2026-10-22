@@ -123,6 +123,37 @@
     .legend-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);display:inline-block}
     .calendar-detail{margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
     .calendar-detail-title{font-weight:800;font-size:13px;margin-bottom:8px}
+    .log-layout{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .entry-search-row{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;margin-bottom:12px}
+    .filters-more{margin:0 0 16px;border:1px solid var(--border);border-radius:11px;padding:10px 12px;background:var(--surface-2)}
+    .filters-more summary{cursor:pointer;font-size:12px;font-weight:750;color:var(--muted)}
+    .filters-more .toolbar{margin:12px 0 0}
+    .job-search-hint{font-size:11px;color:var(--muted);margin-top:4px}
+    .entry-cards{display:none;gap:10px}
+    .entry-card{border:1px solid var(--border);background:var(--surface);border-radius:13px;padding:13px;min-width:0}
+    .entry-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+    .entry-card-job{font-weight:800;font-size:13px;overflow-wrap:anywhere}
+    .entry-card-meta{font-size:11px;color:var(--muted);margin-top:3px}
+    .entry-card-hours{font-size:19px;font-weight:850;white-space:nowrap;color:var(--teal)}
+    .entry-card-description{font-size:12px;margin-top:9px;overflow-wrap:anywhere;color:var(--muted)}
+    .entry-card-actions{display:flex;gap:8px;margin-top:12px}
+    .entry-card-actions button{flex:1;min-height:40px}
+    .report-summary{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:14px;margin-bottom:18px}
+    .report-total{background:linear-gradient(135deg,var(--navy),#20375a);color:#fff;border-radius:16px;padding:20px;min-height:132px;display:flex;flex-direction:column;justify-content:center}
+    .report-total-label{font-size:12px;color:#bdcbe2;font-weight:700}
+    .report-total-value{font-size:36px;font-weight:900;letter-spacing:-1px;line-height:1.2;margin:7px 0}
+    .report-total-note{font-size:11px;color:#bdcbe2}
+    .summary-table{border:1px solid var(--border);border-radius:12px;overflow:auto}
+    .summary-table table{min-width:430px}
+    .summary-table td:last-child,.summary-table th:last-child{text-align:right}
+    .report-calendar .calendar-day{min-height:64px}
+    .report-calendar .calendar-detail{margin-top:12px}
+    .report-calendar-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;padding:9px 0;border-top:1px solid var(--border);font-size:12px}
+    .report-calendar-row strong{display:block;overflow-wrap:anywhere}
+    .report-calendar-row small{display:block;color:var(--muted);margin-top:2px}
+    .report-calendar-total{font-weight:850;color:var(--teal);white-space:nowrap}
+    .form-actions .primary-btn{min-width:150px}
+    @media(max-width:760px){.report-summary{grid-template-columns:1fr}.report-total{min-height:110px}.report-total-value{font-size:32px}.desktop-entry-table{display:none}.entry-cards{display:grid}.form-actions{display:grid;grid-template-columns:1fr}.form-actions .primary-btn,.form-actions .secondary-btn{width:100%;min-height:46px}.report-calendar .calendar-day{min-height:54px}}
     @media(max-width:760px){input,select,textarea{font-size:16px!important}.calendar-grid{gap:3px}.calendar-day{min-height:54px;border-radius:8px;padding:5px 1px}.day-hours{font-size:9px}.calendar-weekday{font-size:9px}.calendar-title{font-size:15px}.calendar-toolbar .secondary-btn{padding:8px 10px}}
     @media(max-width:1050px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.two-col{grid-template-columns:1fr}}
     @media(max-width:760px){
@@ -141,8 +172,8 @@
 <body>
   <div id="loginView" class="login-wrap">
     <div class="login-card">
-      <div class="brand"><div class="brand-mark">F</div><div><div class="brand-name">HVAC Hours Tracker</div><div class="brand-sub">Simple time tracking for the field</div></div></div>
-      <h1>Welcome back</h1><p class="subtitle">Sign in to record hours and keep every job on track.</p>
+      <div class="brand"><div class="brand-mark">F</div><div><div class="brand-name">HVAC Hours Tracker</div><div class="brand-sub">Simple hour allocation for the field</div></div></div>
+      <h1>Welcome back</h1><p class="subtitle">Sign in to allocate hours and keep every job on track.</p>
       <div id="loginNotice" class="notice hidden"></div>
       <form id="loginForm">
         <div class="field"><label for="email">Email address</label><input id="email" type="email" autocomplete="username" required placeholder="you@company.com"></div>
@@ -157,7 +188,7 @@
     <aside class="sidebar">
       <div class="brand"><div class="brand-mark">F</div><div><div class="brand-name">HVAC Hours Tracker</div><div class="brand-sub">HVAC team workspace</div></div></div>
       <div><div class="nav-label">Workspace</div><nav class="nav" id="sideNav">
-        <button data-page="log" class="active"><span class="nav-icon">+</span>Log hours</button>
+        <button data-page="log" class="active"><span class="nav-icon">+</span>Allocate hours</button>
         <button data-page="entries"><span class="nav-icon">[ ]</span>My entries</button>
         <button data-page="reports" class="admin-only hidden"><span class="nav-icon">[R]</span>Reports & insights</button>
         <button data-page="jobs" class="admin-only hidden"><span class="nav-icon">[J]</span>Job management</button>
@@ -166,31 +197,31 @@
     </aside>
     <main class="main">
       <header class="topbar">
-        <div><div class="eyebrow" id="pageEyebrow">FIELD WORKSPACE</div><h1 id="pageTitle">Log your hours</h1><p class="subtitle" id="pageSubtitle">A quick entry now means less paperwork later.</p></div>
+        <div><div class="eyebrow" id="pageEyebrow">FIELD WORKSPACE</div><h1 id="pageTitle">Allocate hours</h1><p class="subtitle" id="pageSubtitle">Choose the job, date and hours. That’s it.</p></div>
         <div class="top-actions"><div class="user-chip"><div class="avatar" id="userAvatar">F</div><div><div class="user-name" id="userName">Team member</div><div class="user-role" id="userRole">Technician</div></div></div><button class="secondary-btn" id="logoutBtn">Sign out</button></div>
       </header>
 
       <section id="page-log" class="page active">
         <div class="grid two-col log-layout">
           <section class="panel">
-            <div class="panel-head"><div><h2 class="panel-title" id="entryFormTitle">Submit your time</h2><p class="panel-description">Choose a job, enter your hours, and submit.</p></div><span class="pill">Quick entry</span></div>
+            <div class="panel-head"><div><h2 class="panel-title" id="entryFormTitle">New allocation</h2><p class="panel-description">Add hours to the right job.</p></div></div>
             <div id="entryNotice" class="notice hidden"></div>
             <form id="entryForm">
               <input id="entryId" type="hidden">
               <div class="form-grid">
-                <div class="field full"><label for="jobSelect">Job / work order *</label><select id="jobSelect" required><option value="">Loading jobs...</option></select></div>
-                <div class="field"><label for="workDate">Work date *</label><input id="workDate" type="date" required></div>
-                <div class="field"><label for="hours">Hours worked *</label><input id="hours" type="number" min="0.25" max="24" step="0.25" required placeholder="e.g. 8"></div>
-                <div class="field full"><label for="description">Work performed (optional)</label><textarea id="description" maxlength="500" placeholder="e.g. Furnace maintenance, unit 204"></textarea></div>
+                <div class="field full"><label for="jobSearch">Job</label><input id="jobSearch" type="search" autocomplete="off" placeholder="Search by job code or name"><div class="job-search-hint" id="jobSearchHint">Start typing to find a job.</div><select id="jobSelect" required aria-label="Choose a job"><option value="">Choose a job...</option></select></div>
+                <div class="field"><label for="workDate">Date</label><input id="workDate" type="date" required></div>
+                <div class="field"><label for="hours">Hours</label><input id="hours" type="number" inputmode="decimal" min="0.25" max="24" step="0.25" required placeholder="e.g. 8"></div>
+                <div class="field full"><label for="description">Notes <span class="muted" style="font-weight:500">(optional)</span></label><input id="description" maxlength="500" placeholder="Optional details about the work"></div>
               </div>
-              <div class="form-actions"><button class="secondary-btn hidden" type="button" id="cancelEditBtn">Cancel edit</button><button class="primary-btn" type="submit" id="saveEntryBtn">Submit hours</button></div>
+              <div class="form-actions"><button class="secondary-btn hidden" type="button" id="cancelEditBtn">Cancel edit</button><button class="primary-btn" type="submit" id="saveEntryBtn">Allocate hours</button></div>
             </form>
           </section>
           <section class="panel">
-            <div class="panel-head"><div><h2 class="panel-title">Your month at a glance</h2><p class="panel-description">Days with recorded hours are marked in teal. Tap any day to review it.</p></div></div>
+            <div class="panel-head"><div><h2 class="panel-title">Your month</h2><p class="panel-description">Tap a day to review your allocations.</p></div></div>
             <div class="calendar-toolbar"><button class="secondary-btn" id="calendarPrev" type="button" aria-label="Previous month">Previous</button><div class="calendar-title" id="calendarMonthTitle">This month</div><button class="secondary-btn" id="calendarNext" type="button" aria-label="Next month">Next</button></div>
             <div id="calendarGrid" class="calendar-grid" aria-label="Monthly time entry calendar"></div>
-            <div class="calendar-legend"><span><i class="legend-dot"></i> Hours recorded</span><span><i class="legend-dot" style="background:var(--blue)"></i> Today / selected day</span></div>
+            <div class="calendar-legend"><span><i class="legend-dot"></i> Hours allocated</span><span><i class="legend-dot" style="background:var(--blue)"></i> Today / selected day</span></div>
             <div class="calendar-detail" id="calendarDayDetail"><div class="muted small">Select a day to see its entries.</div></div>
           </section>
         </div>
@@ -198,22 +229,16 @@
 
       <section id="page-entries" class="page">
         <section class="panel">
-          <div class="panel-head"><div><h2 class="panel-title">My time entries</h2><p class="panel-description">Review, edit or remove your recorded hours.</p></div><button class="primary-btn" data-go="log">+ Log hours</button></div>
+          <div class="panel-head"><div><h2 class="panel-title">My allocated time</h2><p class="panel-description">View or update your allocations.</p></div><button class="primary-btn" data-go="log">+ Allocate hours</button></div>
           <div id="entriesNotice" class="notice hidden"></div>
-          <div class="toolbar"><div class="field"><label for="entrySearch">Search</label><input id="entrySearch" placeholder="Search job or description"></div><div class="field date"><label for="entriesFrom">From</label><input id="entriesFrom" type="date"></div><div class="field date"><label for="entriesTo">To</label><input id="entriesTo" type="date"></div></div>
+          <div class="entry-search-row"><div class="field"><label for="entrySearch">Find an allocation</label><input id="entrySearch" type="search" placeholder="Type a job name or code"></div></div><details class="filters-more"><summary>Filter by date (optional)</summary><div class="toolbar"><div class="field date"><label for="entriesFrom">From</label><input id="entriesFrom" type="date"></div><div class="field date"><label for="entriesTo">To</label><input id="entriesTo" type="date"></div><button class="secondary-btn" id="clearEntryFilters" type="button">Clear dates</button></div></details>
           <div id="entriesTable"></div>
         </section>
       </section>
 
       <section id="page-reports" class="page">
-        <div class="grid stats">
-          <div class="stat-card"><div class="stat-top"><span>Total hours</span><span class="stat-icon blue">H</span></div><div class="stat-value" id="reportHours">0</div><div class="stat-note">For selected date range</div></div>
-          <div class="stat-card"><div class="stat-top"><span>Time entries</span><span class="stat-icon teal">[ ]</span></div><div class="stat-value" id="reportEntries">0</div><div class="stat-note">Individual submissions</div></div>
-          <div class="stat-card"><div class="stat-top"><span>Technicians</span><span class="stat-icon purple">[U]</span></div><div class="stat-value" id="reportTechs">0</div><div class="stat-note">With recorded hours</div></div>
-          <div class="stat-card"><div class="stat-top"><span>Jobs worked</span><span class="stat-icon orange">[J]</span></div><div class="stat-value" id="reportJobs">0</div><div class="stat-note">With recorded hours</div></div>
-        </div>
         <section class="panel">
-          <div class="panel-head"><div><h2 class="panel-title">Reports & insights</h2><p class="panel-description">Filter the data, review the workload and export a report.</p></div><button class="primary-btn" id="exportCsvBtn">v Export CSV</button></div>
+          <div class="panel-head"><div><h2 class="panel-title">Allocated hours</h2><p class="panel-description">See how hours are distributed by job and technician.</p></div><button class="primary-btn" id="exportCsvBtn">v Export CSV</button></div>
           <div id="reportNotice" class="notice hidden"></div>
           <div class="toolbar">
             <div class="field date"><label for="reportFrom">From date</label><input id="reportFrom" type="date"></div>
@@ -223,15 +248,22 @@
             <button class="secondary-btn" id="clearReportFilters">Reset</button>
           </div>
         </section>
+        <section class="report-summary">
+          <div class="report-total"><div class="report-total-label">Total hours allocated</div><div class="report-total-value" id="reportHours">0</div><div class="report-total-note" id="reportSummaryNote">For selected filters</div></div>
+          <div><div class="panel-title" style="margin:2px 0 9px">Hours by job and technician</div><div id="allocationSummary" class="summary-table"></div></div>
+        </section>
+        <section class="panel report-calendar"><div class="panel-head"><div><h2 class="panel-title">Allocation calendar</h2><p class="panel-description">Choose a day to see the job, technician and hours.</p></div></div>
+          <div class="calendar-toolbar"><button class="secondary-btn" id="reportCalendarPrev" type="button" aria-label="Previous month">Previous</button><div class="calendar-title" id="reportCalendarMonthTitle">This month</div><button class="secondary-btn" id="reportCalendarNext" type="button" aria-label="Next month">Next</button></div>
+          <div id="reportCalendarGrid" class="calendar-grid" aria-label="Allocation calendar"></div><div class="calendar-detail" id="reportCalendarDetail"></div>
+        </section>
         <div class="grid two-col">
-          <section class="panel"><div class="panel-head"><div><h2 class="panel-title">Hours by technician</h2><p class="panel-description">Who has logged time in this period?</p></div></div><div class="chart-box"><canvas id="techChart"></canvas></div></section>
+          <section class="panel"><div class="panel-head"><div><h2 class="panel-title">Hours by technician</h2><p class="panel-description">Total allocated hours per technician.</p></div></div><div class="chart-box"><canvas id="techChart"></canvas></div></section>
           <section class="panel"><div class="panel-head"><div><h2 class="panel-title">Hours by job</h2><p class="panel-description">Job code and name, ranked by hours.</p></div></div><div class="chart-box"><canvas id="jobChart"></canvas></div></section>
         </div>
         <div class="grid two-col">
-          <section class="panel"><div class="panel-head"><div><h2 class="panel-title">Hours by week</h2><p class="panel-description">Weekly time trends across the selected period.</p></div></div><div class="chart-box short"><canvas id="weekChart"></canvas></div></section>
-          <section class="panel"><div class="panel-head"><div><h2 class="panel-title">Hours by job mix</h2><p class="panel-description">Share of recorded hours for each job.</p></div></div><div class="chart-box short"><canvas id="mixChart"></canvas></div></section>
+          <section class="panel"><div class="panel-head"><div><h2 class="panel-title">Hours by job mix</h2><p class="panel-description">Share of all allocated hours by job.</p></div></div><div class="chart-box short"><canvas id="mixChart"></canvas></div></section>
         </div>
-        <section class="panel"><div class="panel-head"><div><h2 class="panel-title">Detailed time report</h2><p class="panel-description">Includes technician, job code, job name, work date and notes.</p></div></div><div id="reportTable"></div></section>
+        <section class="panel"><div class="panel-head"><div><h2 class="panel-title">Detailed allocations</h2><p class="panel-description">Every allocation, with technician, job, date and notes.</p></div></div><div id="reportTable"></div></section>
       </section>
 
       <section id="page-jobs" class="page">
@@ -240,11 +272,11 @@
             <div id="jobNotice" class="notice hidden"></div>
             <form id="jobForm"><div class="form-grid"><div class="field"><label for="jobCode">Job code *</label><input id="jobCode" required maxlength="80" placeholder="e.g. HVAC-1042"></div><div class="field"><label for="jobName">Job name *</label><input id="jobName" required maxlength="180" placeholder="e.g. Main Street service call"></div></div><div class="form-actions"><button class="primary-btn" type="submit">+ Add job</button></div></form>
           </section>
-          <section class="panel"><div class="panel-head"><div><h2 class="panel-title">Job directory</h2><p class="panel-description">Active jobs appear in the technician entry form.</p></div><span class="pill" id="jobCountPill">0 jobs</span></div><div id="jobList"></div></section>
+          <section class="panel"><div class="panel-head"><div><h2 class="panel-title">Job directory</h2><p class="panel-description">In-progress jobs appear in the allocation form.</p></div><span class="pill" id="jobCountPill">0 jobs</span></div><div id="jobList"></div></section>
         </div>
         <section class="panel"><div class="panel-head"><div><h2 class="panel-title">Admin time entry</h2><p class="panel-description">This form is available to admins once the database policy allows admins to create entries for other technicians.</p></div></div>
-          <div class="notice">The admin entry form is intentionally not enabled in this version because the current database permissions have not been verified. This avoids presenting a feature that may fail or weaken access controls. The existing technician entry workflow remains unchanged.</div>
-          <p class="small muted">Next step: verify the current <code>time_entries</code> row-level security policies, then add the narrow admin-only insert/update policy before enabling this form.</p>
+          <div class="notice">Admin allocations for another technician are not enabled yet. Admin access in the app does not automatically grant permission to create entries for other users, so the database permissions need to be checked first.</div>
+          <p class="small muted">To enable this safely, verify the Supabase <code>time_entries</code> access policies first, then add an admin-only permission for allocations made on behalf of another technician.</p>
         </section>
       </section>
     </main>
@@ -263,17 +295,18 @@
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJucnl1dXNucWZqbHRzdHd3cWFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MTcyMzIsImV4cCI6MjEwODE5MzIzMn0.Xsko4Pv7wMyeaSm0TKVX97TC1spBWkDWSJ7rrnYVOUY';
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   const $ = id => document.getElementById(id);
-  const state = { user:null, profile:null, isAdmin:false, jobs:[], entries:[], reportRows:[], techChart:null, jobChart:null, weekChart:null, mixChart:null, calendarMonth:new Date(new Date().getFullYear(),new Date().getMonth(),1), calendarSelected:null };
+  const state = { user:null, profile:null, isAdmin:false, jobs:[], entries:[], reportRows:[], techChart:null, jobChart:null, weekChart:null, mixChart:null, calendarMonth:new Date(new Date().getFullYear(),new Date().getMonth(),1), calendarSelected:null, reportCalendarMonth:new Date(new Date().getFullYear(),new Date().getMonth(),1), reportCalendarSelected:null };
   const pageMeta = {
-    log:['FIELD WORKSPACE','Log your hours','A quick entry now means less paperwork later.'],
-    entries:['YOUR ACTIVITY','My time entries','Keep your submitted hours accurate and up to date.'],
-    reports:['MANAGEMENT OVERVIEW','Reports & insights','A clearer view of hours across technicians and jobs.'],
+    log:['FIELD WORKSPACE','Allocate hours','Choose the job, date and hours. That’s it.'],
+    entries:['YOUR ALLOCATIONS','My allocated time','View or update your allocations.'],
+    reports:['MANAGEMENT OVERVIEW','Allocated hours','A clear view of hours by job, technician and date.'],
     jobs:['ADMIN WORKSPACE','Job management','Manage job codes and names used by your team.']
   };
   const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const dateISO = d => { const x = new Date(d); return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`; };
   const today = () => dateISO(new Date());
   state.calendarSelected = today();
+  state.reportCalendarSelected = today();
   const weekStart = () => { const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() - ((d.getDay()+6)%7)); return dateISO(d); };
   const fmtDate = value => value ? new Date(`${value}T12:00:00`).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}) : '-';
   const fmtHours = value => `${Number(value || 0).toLocaleString(undefined,{maximumFractionDigits:2})}`;
@@ -298,16 +331,22 @@
     document.querySelectorAll('.admin-only').forEach(el=>el.classList.toggle('hidden',!state.isAdmin));
   }
 
+  function renderJobOptions(includeJobId='') {
+    const current=includeJobId||$('jobSelect').value;
+    const term=($('jobSearch')?.value||'').trim().toLowerCase();
+    const active=state.jobs.filter(j=>j.active!==false||String(j.id)===String(includeJobId));
+    const matches=active.filter(j=>!term||`${j.job_code||''} ${j.job_name||''}`.toLowerCase().includes(term));
+    $('jobSelect').innerHTML='<option value="">Choose a job...</option>'+matches.map(j=>`<option value="${esc(j.id)}">${esc(jobLabel(j))}</option>`).join('');
+    if(current&&matches.some(j=>String(j.id)===String(current))) $('jobSelect').value=current;
+    $('jobSearchHint').textContent=term?`${matches.length} matching job${matches.length===1?'':'s'}`:`${active.length} job${active.length===1?'':'s'} available — type to narrow the list.`;
+  }
   async function loadJobs() {
     const {data,error}=await sb.from('jobs').select('id,job_code,job_name,active').order('job_code');
     if(error) throw error;
     state.jobs=data||[];
-    const active=state.jobs.filter(j=>j.active!==false);
-    $('jobSelect').innerHTML='<option value="">Choose a job...</option>'+active.map(j=>`<option value="${esc(j.id)}">${esc(jobLabel(j))}</option>`).join('');
-    const activeJobsStat = $('activeJobsStat');
-    if (activeJobsStat) activeJobsStat.textContent = active.length;
+    renderJobOptions();
     $('jobCountPill').textContent=`${state.jobs.length} job${state.jobs.length===1?'':'s'}`;
-    $('jobList').innerHTML=state.jobs.length?`<div class="table-wrap"><table><thead><tr><th>Job code</th><th>Job name</th><th>Status</th><th>Action</th></tr></thead><tbody>${state.jobs.map(j=>`<tr><td><strong>${esc(j.job_code)}</strong></td><td>${esc(j.job_name)}</td><td><span class="pill" style="${j.active===false?'background:var(--surface-2);color:var(--muted)':''}">${j.active===false?'Inactive':'Active'}</span></td><td><button class="secondary-btn toggle-job" data-id="${esc(j.id)}" data-active="${j.active===false?'false':'true'}">${j.active===false?'Activate':'Deactivate'}</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty"><strong>No jobs yet</strong>Add a job code and name to get started.</div>';
+    $('jobList').innerHTML=state.jobs.length?`<div class="table-wrap"><table><thead><tr><th>Job code</th><th>Job name</th><th>Status</th><th>Action</th></tr></thead><tbody>${state.jobs.map(j=>`<tr><td><strong>${esc(j.job_code)}</strong></td><td>${esc(j.job_name)}</td><td><span class="pill" style="${j.active===false?'background:var(--surface-2);color:var(--muted)':''}">${j.active===false?'Complete':'In progress'}</span></td><td><button class="secondary-btn toggle-job" data-id="${esc(j.id)}" data-active="${j.active===false?'false':'true'}">${j.active===false?'Reopen':'Complete'}</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty"><strong>No jobs yet</strong>Add a job code and name to get started.</div>';
     $('reportJob').innerHTML='<option value="">All jobs</option>'+state.jobs.map(j=>`<option value="${esc(j.id)}">${esc(jobLabel(j))}</option>`).join('');
   }
 
@@ -416,14 +455,13 @@
     const key=state.calendarSelected||today();
     const rows=state.entries.filter(e=>e.user_id===state.user.id&&e.work_date===key);
     const total=rows.reduce((sum,e)=>sum+Number(e.hours||0),0);
-    $('calendarDayDetail').innerHTML=`<div class="calendar-detail-title">${esc(fmtDate(key))} · ${esc(fmtHours(total))} hours</div>`+(rows.length?rows.map(e=>{const j=e._job||{};return `<div style="padding:9px 0;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:10px"><div style="min-width:0"><div style="font-weight:750;font-size:12px;overflow-wrap:anywhere">${esc(j.job_code||'Job')} - ${esc(j.job_name||'Job details unavailable')}</div><div class="small muted">${esc(e.description||'No description')}</div></div><div style="white-space:nowrap;font-weight:800">${esc(fmtHours(e.hours))} h</div></div>`}).join(''):'<div class="small muted">No time entries recorded for this day yet.</div>')+`<button type="button" class="secondary-btn" id="useCalendarDate" style="margin-top:10px">Use this date</button>`;
-    const useDate=$('useCalendarDate'); if(useDate)useDate.addEventListener('click',()=>{$('workDate').value=key;$('workDate').focus();});
+    $('calendarDayDetail').innerHTML=`<div class="calendar-detail-title">${esc(fmtDate(key))} · ${esc(fmtHours(total))} hours</div>`+(rows.length?rows.map(e=>{const j=e._job||{};return `<div style="padding:9px 0;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:10px"><div style="min-width:0"><div style="font-weight:750;font-size:12px;overflow-wrap:anywhere">${esc(j.job_code||'Job')} - ${esc(j.job_name||'Job details unavailable')}</div><div class="small muted">${esc(e.description||'No description')}</div></div><div style="white-space:nowrap;font-weight:800">${esc(fmtHours(e.hours))} h</div></div>`}).join(''):'<div class="small muted">No time entries recorded for this day yet.</div>');
   }
 
   function renderEntriesTable() {
     const search=$('entrySearch').value.trim().toLowerCase(), from=$('entriesFrom').value, to=$('entriesTo').value;
     const rows=state.entries.filter(e=>e.user_id===state.user.id&&(!from||e.work_date>=from)&&(!to||e.work_date<=to)&&(!search||`${(e._job||{}).job_code||''} ${(e._job||{}).job_name||''} ${e.description||''}`.toLowerCase().includes(search)));
-    $('entriesTable').innerHTML=rows.length?`<div class="table-wrap"><table><thead><tr><th>Work date</th><th>Job</th><th>Hours</th><th>Description</th><th>Actions</th></tr></thead><tbody>${rows.map(e=>entryRow(e)).join('')}</tbody></table></div><p class="small muted">${rows.length} entr${rows.length===1?'y':'ies'} shown  -  up to 500 most recent records loaded.</p>`:'<div class="empty"><strong>No matching entries</strong>Try changing your search or date filters.</div>';
+    $('entriesTable').innerHTML=rows.length?`<div class="table-wrap desktop-entry-table"><table><thead><tr><th>Date</th><th>Job</th><th>Hours</th><th>Notes</th><th>Actions</th></tr></thead><tbody>${rows.map(e=>entryRow(e)).join('')}</tbody></table></div><div class="entry-cards">${rows.map(e=>{const j=e._job||{};return `<article class="entry-card"><div class="entry-card-top"><div><div class="entry-card-job">${esc(j.job_code||'Job')} · ${esc(j.job_name||'Job details unavailable')}</div><div class="entry-card-meta">${esc(fmtDate(e.work_date))}</div></div><div class="entry-card-hours">${esc(fmtHours(e.hours))} h</div></div>${e.description?`<div class="entry-card-description">${esc(e.description)}</div>`:''}<div class="entry-card-actions"><button class="secondary-btn edit-entry" data-id="${esc(e.id)}" type="button">Edit</button><button class="danger-btn delete-entry" data-id="${esc(e.id)}" type="button">Delete</button></div></article>`}).join('')}</div><p class="small muted">${rows.length} allocation${rows.length===1?'':'s'} shown · up to 500 recent records loaded.</p>`:'<div class="empty"><strong>No allocations found</strong>Try another job name or adjust the date filter.</div>';
   }
 
   function goPage(page) {
@@ -437,7 +475,7 @@
   }
 
   function setTodayDefaults() {
-    $('workDate').value=today(); $('reportTo').value=today();
+    $('workDate').value=today(); $('reportTo').value=today(); state.reportCalendarSelected=today();
     const start=new Date(); start.setDate(start.getDate()-29); $('reportFrom').value=dateISO(start);
   }
 
@@ -452,19 +490,19 @@
       if(id) result=await sb.from('time_entries').update(payload).eq('id',id).eq('user_id',state.user.id);
       else result=await sb.from('time_entries').insert({...payload,user_id:state.user.id});
       if(result.error) throw result.error;
-      resetEntryForm(); showNotice('entryNotice',id?'Your entry has been updated.':'Hours submitted successfully.','success');
+      resetEntryForm(); showNotice('entryNotice',id?'Allocation updated.':'Hours allocated successfully.','success');
       await loadEntries(); goPage('log');
     } catch(e){showNotice('entryNotice',friendlyError(e),'error');}
-    finally{$('saveEntryBtn').disabled=false;$('saveEntryBtn').textContent=$('entryId').value?'Save changes':'Submit hours';}
+    finally{$('saveEntryBtn').disabled=false;$('saveEntryBtn').textContent=$('entryId').value?'Save changes':'Allocate hours';}
   }
 
   function resetEntryForm() {
-    $('entryForm').reset(); $('entryId').value=''; $('workDate').value=today(); $('entryFormTitle').textContent='Submit your time'; $('saveEntryBtn').textContent='Submit hours'; $('cancelEditBtn').classList.add('hidden');
+    $('entryForm').reset(); $('entryId').value=''; $('workDate').value=today(); $('entryFormTitle').textContent='New allocation'; $('saveEntryBtn').textContent='Allocate hours'; $('jobSearch').value=''; renderJobOptions(); $('cancelEditBtn').classList.add('hidden');
   }
   function startEdit(id) {
     const e=state.entries.find(r=>String(r.id)===String(id)&&r.user_id===state.user.id); if(!e)return;
-    $('entryId').value=e.id; $('jobSelect').value=e.job_id; $('workDate').value=e.work_date; $('hours').value=e.hours; $('description').value=e.description||'';
-    $('entryFormTitle').textContent='Edit time entry'; $('saveEntryBtn').textContent='Save changes'; $('cancelEditBtn').classList.remove('hidden'); goPage('log'); window.scrollTo({top:0,behavior:'smooth'});
+    $('entryId').value=e.id; $('jobSearch').value=''; renderJobOptions(e.job_id); $('jobSelect').value=e.job_id; $('workDate').value=e.work_date; $('hours').value=e.hours; $('description').value=e.description||'';
+    $('entryFormTitle').textContent='Edit allocation'; $('saveEntryBtn').textContent='Save changes'; $('cancelEditBtn').classList.remove('hidden'); goPage('log'); window.scrollTo({top:0,behavior:'smooth'});
   }
   async function deleteEntry(id) {
     const e=state.entries.find(r=>String(r.id)===String(id)); if(!e||e.user_id!==state.user.id)return;
@@ -483,10 +521,27 @@
     const filtered=rows.filter(r=>(!techFilter||r.user_id===techFilter)&&(!jobFilter||String(r.job_id)===String(jobFilter)));
     state.reportRows=filtered;
     const total=filtered.reduce((s,r)=>s+Number(r.hours||0),0);
-    $('reportHours').textContent=fmtHours(total); $('reportEntries').textContent=filtered.length;
-    $('reportTechs').textContent=new Set(filtered.map(r=>r.user_id)).size; $('reportJobs').textContent=new Set(filtered.map(r=>r.job_id)).size;
+    $('reportHours').textContent=fmtHours(total);
+    $('reportSummaryNote').textContent=`${filtered.length} allocation${filtered.length===1?'':'s'} · ${new Set(filtered.map(r=>r.user_id)).size} technician${new Set(filtered.map(r=>r.user_id)).size===1?'':'s'} · ${new Set(filtered.map(r=>r.job_id)).size} job${new Set(filtered.map(r=>r.job_id)).size===1?'':'s'}`;
     await populateTechFilter(rows);
-    renderCharts(filtered); renderReportTable(filtered);
+    renderAllocationSummary(filtered); renderReportCalendar(filtered); renderCharts(filtered); renderReportTable(filtered);
+  }
+  function renderAllocationSummary(rows) {
+    const byJob=new Map();
+    rows.forEach(r=>{const j=r._job||{},key=String(r.job_id||'unknown');if(!byJob.has(key))byJob.set(key,{job:j,total:0,techs:new Map()});const item=byJob.get(key);const h=Number(r.hours||0);item.total+=h;const name=r._tech||`User ${String(r.user_id||'').slice(0,8)}`;item.techs.set(name,(item.techs.get(name)||0)+h);});
+    const jobs=[...byJob.values()].sort((a,b)=>b.total-a.total);
+    $('allocationSummary').innerHTML=jobs.length?`<table><thead><tr><th>Job</th><th>Technicians · hours</th><th>Total</th></tr></thead><tbody>${jobs.map(x=>`<tr><td><strong>${esc(x.job.job_code||'No code')}</strong><div class="small muted">${esc(x.job.job_name||'Job unavailable')}</div></td><td>${[...x.techs.entries()].sort((a,b)=>b[1]-a[1]).map(([name,h])=>`<div>${esc(name)} <span class="muted">· ${esc(fmtHours(h))} h</span></div>`).join('')}</td><td><strong>${esc(fmtHours(x.total))} h</strong></td></tr>`).join('')}</tbody></table>`:'<div class="empty"><strong>No allocations for these filters</strong>Try a wider date range.</div>';
+  }
+  function renderReportCalendar(rows) {
+    const month=state.reportCalendarMonth, year=month.getFullYear(), mi=month.getMonth();
+    $('reportCalendarMonthTitle').textContent=month.toLocaleDateString(undefined,{month:'long',year:'numeric'});
+    const byDate=new Map(); rows.forEach(r=>{if(!r.work_date)return;const list=byDate.get(r.work_date)||[];list.push(r);byDate.set(r.work_date,list);});
+    const first=new Date(year,mi,1),offset=(first.getDay()+6)%7,days=new Date(year,mi+1,0).getDate(),cells=Math.ceil((offset+days)/7)*7,weekdays=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    let html=weekdays.map(d=>`<div class="calendar-weekday">${d}</div>`).join('');
+    for(let i=0;i<cells;i++){const n=i-offset+1,d=new Date(year,mi,n),key=dateISO(d),inside=n>=1&&n<=days,list=byDate.get(key)||[],total=list.reduce((sum,r)=>sum+Number(r.hours||0),0),classes=['calendar-day',!inside?'outside':'',key===today()?'today':'',key===state.reportCalendarSelected?'selected':'',list.length?'has-entry':''].filter(Boolean).join(' ');html+=`<button type="button" class="${classes}" data-report-calendar-date="${key}" aria-label="${key}${list.length?`, ${fmtHours(total)} hours allocated`:''}"><span class="day-number">${d.getDate()}</span>${list.length?`<span class="day-hours">${esc(fmtHours(total))}h</span><span class="day-dot"></span>`:''}</button>`;}
+    $('reportCalendarGrid').innerHTML=html;
+    const key=state.reportCalendarSelected||today(),list=byDate.get(key)||[],total=list.reduce((sum,r)=>sum+Number(r.hours||0),0);
+    $('reportCalendarDetail').innerHTML=`<div class="calendar-detail-title">${esc(fmtDate(key))} · ${esc(fmtHours(total))} hours allocated</div>`+(list.length?[...list].sort((a,b)=>String(a._tech).localeCompare(String(b._tech))).map(r=>{const j=r._job||{};return `<div class="report-calendar-row"><div><strong>${esc(r._tech||'Technician')}</strong><small>${esc(j.job_code||'No code')} · ${esc(j.job_name||'Job unavailable')}${r.description?` · ${esc(r.description)}`:''}</small></div><div class="report-calendar-total">${esc(fmtHours(r.hours))} h</div></div>`}).join(''):'<div class="small muted">No allocations on this date with the current filters.</div>');
   }
   async function populateTechFilter(rows) {
     const old=$('reportTech').value, ids=[...new Set(rows.map(r=>r.user_id).filter(Boolean))];
@@ -498,16 +553,14 @@
   function chartColors(){return ['#4776f6','#18b6a4','#8b6df2','#f4a340','#e45d6b','#36a2eb','#e879c8','#7dbd55','#e6c84f','#6d82a8'];}
   function makeChart(old,canvas,type,data,options) { if(old)old.destroy(); return new Chart($(canvas),{type,data,options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:type==='doughnut',position:'bottom',labels:{color:getComputedStyle(document.body).getPropertyValue('--muted'),usePointStyle:true,boxWidth:8,padding:15}},tooltip:{callbacks:{label:c=>`${c.dataset.label?c.dataset.label+': ':''}${Number(c.raw||0).toLocaleString()} hours`}}},scales:type==='doughnut'?{}:{x:{ticks:{color:getComputedStyle(document.body).getPropertyValue('--muted')},grid:{color:'rgba(120,140,170,.12)'}},y:{beginAtZero:true,ticks:{color:getComputedStyle(document.body).getPropertyValue('--muted')},grid:{color:'rgba(120,140,170,.12)'}}},...options}}); }
   function renderCharts(rows) {
-    const colors=chartColors(), byTech={},byJob={},byWeek={},byMix={};
+    const colors=chartColors(), byTech={},byJob={},byMix={};
     rows.forEach(r=>{
       const h=Number(r.hours||0), tech=r._tech||`User ${String(r.user_id).slice(0,8)}`, j=r._job||{}, job=`${j.job_code||'No code'}  -  ${j.job_name||'Unnamed job'}`;
       byTech[tech]=(byTech[tech]||0)+h;byJob[job]=(byJob[job]||0)+h;byMix[job]=(byMix[job]||0)+h;
-      const d=new Date(`${r.work_date}T12:00:00`);d.setDate(d.getDate()-((d.getDay()+6)%7));const wk=dateISO(d);byWeek[wk]=(byWeek[wk]||0)+h;
     });
-    const tech=Object.entries(byTech).sort((a,b)=>b[1]-a[1]).slice(0,12), jobs=Object.entries(byJob).sort((a,b)=>b[1]-a[1]).slice(0,12), weeks=Object.entries(byWeek).sort((a,b)=>a[0].localeCompare(b[0]));
+    const tech=Object.entries(byTech).sort((a,b)=>b[1]-a[1]).slice(0,12), jobs=Object.entries(byJob).sort((a,b)=>b[1]-a[1]).slice(0,12);
     state.techChart=makeChart(state.techChart,'techChart','bar',{labels:tech.map(x=>x[0]),datasets:[{label:'Hours',data:tech.map(x=>x[1]),backgroundColor:colors[0],borderRadius:6}]},{indexAxis:'y',plugins:{legend:{display:false}}});
     state.jobChart=makeChart(state.jobChart,'jobChart','bar',{labels:jobs.map(x=>x[0]),datasets:[{label:'Hours',data:jobs.map(x=>x[1]),backgroundColor:jobs.map((_,i)=>colors[i%colors.length]),borderRadius:6}]},{indexAxis:'y',plugins:{legend:{display:false}}});
-    state.weekChart=makeChart(state.weekChart,'weekChart','line',{labels:weeks.map(x=>fmtDate(x[0])),datasets:[{label:'Hours',data:weeks.map(x=>x[1]),borderColor:colors[1],backgroundColor:colors[1]+'22',fill:true,tension:.3,pointRadius:3}]},{plugins:{legend:{display:false}}});
     const mix=Object.entries(byMix).sort((a,b)=>b[1]-a[1]).slice(0,8);
     state.mixChart=makeChart(state.mixChart,'mixChart','doughnut',{labels:mix.map(x=>x[0]),datasets:[{data:mix.map(x=>x[1]),backgroundColor:mix.map((_,i)=>colors[i%colors.length]),borderWidth:0}]},{scales:{},cutout:'64%'});
   }
@@ -535,7 +588,7 @@
   async function toggleJob(id,active) {
     const {error}=await sb.from('jobs').update({active:!active}).eq('id',id);
     if(error){showNotice('jobNotice',friendlyError(error),'error');return;}
-    await loadJobs();showNotice('jobNotice',`Job ${active?'deactivated':'activated'}.`,'success');
+    await loadJobs();showNotice('jobNotice',`Job ${active?'marked complete':'reopened'}.`,'success');
   }
 
   let workspaceLoadPromise = null;
@@ -578,10 +631,13 @@
     } finally { button.disabled=false; button.innerHTML=originalText; }
   });
   $('logoutBtn').addEventListener('click',signOut);
-  $('entryForm').addEventListener('submit',saveEntry);$('cancelEditBtn').addEventListener('click',resetEntryForm);
+  $('entryForm').addEventListener('submit',saveEntry);$('cancelEditBtn').addEventListener('click',resetEntryForm);$('jobSearch').addEventListener('input',renderJobOptions);$('clearEntryFilters').addEventListener('click',()=>{$('entriesFrom').value='';$('entriesTo').value='';renderEntriesTable();});
   $('calendarPrev').addEventListener('click',()=>{state.calendarMonth=new Date(state.calendarMonth.getFullYear(),state.calendarMonth.getMonth()-1,1);renderCalendar();});
   $('calendarNext').addEventListener('click',()=>{state.calendarMonth=new Date(state.calendarMonth.getFullYear(),state.calendarMonth.getMonth()+1,1);renderCalendar();});
   $('calendarGrid').addEventListener('click',e=>{const day=e.target.closest('[data-calendar-date]');if(!day)return;state.calendarSelected=day.dataset.calendarDate;renderCalendar();});
+  $('reportCalendarPrev').addEventListener('click',()=>{state.reportCalendarMonth=new Date(state.reportCalendarMonth.getFullYear(),state.reportCalendarMonth.getMonth()-1,1);renderReportCalendar(state.reportRows);});
+  $('reportCalendarNext').addEventListener('click',()=>{state.reportCalendarMonth=new Date(state.reportCalendarMonth.getFullYear(),state.reportCalendarMonth.getMonth()+1,1);renderReportCalendar(state.reportRows);});
+  $('reportCalendarGrid').addEventListener('click',e=>{const day=e.target.closest('[data-report-calendar-date]');if(!day)return;state.reportCalendarSelected=day.dataset.reportCalendarDate;renderReportCalendar(state.reportRows);});
   $('entrySearch').addEventListener('input',renderEntriesTable);$('entriesFrom').addEventListener('change',renderEntriesTable);$('entriesTo').addEventListener('change',renderEntriesTable);
   $('exportCsvBtn').addEventListener('click',exportCsv);$('jobForm').addEventListener('submit',addJob);
   $('clearReportFilters').addEventListener('click',()=>{setTodayDefaults();$('reportTech').value='';$('reportJob').value='';loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));});
