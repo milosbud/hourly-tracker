@@ -342,7 +342,7 @@
   }
   function renderEntriesTable() {
     const search=$('entrySearch').value.trim().toLowerCase(), from=$('entriesFrom').value, to=$('entriesTo').value;
-    const rows=state.entries.filter(e=>e.user_id===state.user.id&&(!from||e.work_date>=from)&&(!to||e.work_date<=to)&&(!search||`${e._job.job_code} ${e._job.job_name} ${e.description||''}`.toLowerCase().includes(search)));
+    const rows=state.entries.filter(e=>e.user_id===state.user.id&&(!from||e.work_date>=from)&&(!to||e.work_date<=to)&&(!search||`${(e._job||{}).job_code||''} ${(e._job||{}).job_name||''} ${e.description||''}`.toLowerCase().includes(search)));
     $('entriesTable').innerHTML=rows.length?`<div class="table-wrap"><table><thead><tr><th>Work date</th><th>Job</th><th>Hours</th><th>Description</th><th>Actions</th></tr></thead><tbody>${rows.map(e=>entryRow(e)).join('')}</tbody></table></div><p class="small muted">${rows.length} entr${rows.length===1?'y':'ies'} shown  -  up to 500 most recent records loaded.</p>`:'<div class="empty"><strong>No matching entries</strong>Try changing your search or date filters.</div>';
   }
 
@@ -458,16 +458,27 @@
     await loadJobs();showNotice('jobNotice',`Job ${active?'deactivated':'activated'}.`,'success');
   }
 
+  let workspaceLoadPromise = null;
+  let workspaceLoadingUserId = null;
   async function openApp(user) {
+    if (!user) return;
+    // Supabase can emit SIGNED_IN while the login form and getSession() are also
+    // handling the same session. Reuse the in-flight load instead of initializing twice.
+    if (workspaceLoadPromise && workspaceLoadingUserId === user.id) return workspaceLoadPromise;
     state.user=user;
+    workspaceLoadingUserId=user.id;
     $('loginView').classList.add('hidden');$('appView').classList.remove('hidden');
-    try {
-      await loadProfile(); await loadJobs(); await loadEntries(); setTodayDefaults(); goPage('log');
-    } catch(e) {
-      console.error(e);
-      $('appView').classList.add('hidden');$('loginView').classList.remove('hidden');
-      showNotice('loginNotice',`Unable to load your workspace: ${friendlyError(e)}`,'error');
-    }
+    workspaceLoadPromise = (async () => {
+      try {
+        await loadProfile(); await loadJobs(); await loadEntries(); setTodayDefaults(); goPage('log');
+      } catch(e) {
+        console.error('Unable to load HVAC Hours Tracker workspace:', e);
+        $('appView').classList.add('hidden');$('loginView').classList.remove('hidden');
+        showNotice('loginNotice',`Unable to load your workspace: ${friendlyError(e)}`,'error');
+      }
+    })();
+    try { await workspaceLoadPromise; }
+    finally { workspaceLoadPromise = null; workspaceLoadingUserId = null; }
   }
   async function signOut() { await sb.auth.signOut();state.user=null;state.profile=null;state.isAdmin=false;$('appView').classList.add('hidden');$('loginView').classList.remove('hidden'); }
   $('loginForm').addEventListener('submit',async e=>{e.preventDefault();hideNotice('loginNotice');const {data,error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error){showNotice('loginNotice',friendlyError(error),'error');return;}await openApp(data.user);});
