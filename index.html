@@ -114,7 +114,7 @@
     .report-filter-head{display:flex;align-items:center;gap:8px;background:var(--navy);color:#fff;padding:10px 12px;cursor:move;touch-action:none;user-select:none}
     .report-filter-head strong{font-size:12px;flex:1}
     .report-filter-head button{border:1px solid #ffffff35;background:#ffffff12;color:#fff;border-radius:8px;min-width:30px;height:29px;font-weight:800}
-    .report-filter-body{padding:13px;max-height:min(60vh,480px);overflow-y:auto}
+    .report-filter-body{padding:13px;max-height:min(60vh,480px);overflow-y:auto}.report-filter-float.collapsed .report-filter-body{display:none}.report-filter-float.collapsed .report-filter-head{cursor:move}
     .report-filter-body .date-presets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
     .report-filter-body .date-preset{white-space:normal;padding:8px 4px}
     .report-filter-body .field{margin-bottom:10px}
@@ -266,12 +266,11 @@
         <section class="panel">
           <div class="panel-head"><div><h2 class="panel-title">Allocated hours</h2><p class="panel-description">See how hours are distributed by job and technician.</p></div><button class="primary-btn" id="exportCsvBtn">v Export CSV</button></div>
           <div id="reportNotice" class="notice hidden"></div>
-          <div class="date-presets" data-preset-group="report"><button class="date-preset" type="button" data-date-preset="report:week">This week</button><button class="date-preset" type="button" data-date-preset="report:lastweek">Last week</button><button class="date-preset" type="button" data-date-preset="report:month">This month</button><button class="date-preset" type="button" data-date-preset="report:lastmonth">Last month</button><button class="date-preset" type="button" data-date-preset="report:all">All time</button><button class="date-preset" type="button" data-date-preset="report:custom">Custom dates</button></div>
-          <div class="date-filter-fields"><div class="field"><label for="reportFrom">From date</label><input id="reportFrom" type="date"></div><div class="field"><label for="reportTo">To date</label><input id="reportTo" type="date"></div></div>
-          <div class="toolbar">
-            <div class="field"><label for="reportTech">Technician</label><select id="reportTech"><option value="">All technicians</option></select></div>
-            <div class="field"><label for="reportJob">Job</label><select id="reportJob"><option value="">All jobs</option></select></div>
-            <button class="secondary-btn" id="clearReportFilters">Reset filters</button>
+          <div class="hidden" aria-hidden="true">
+            <input id="reportFrom" type="date"><input id="reportTo" type="date">
+            <select id="reportTech"><option value="">All technicians</option></select>
+            <select id="reportJob"><option value="">All jobs</option></select>
+            <button type="button" id="clearReportFilters">Reset filters</button>
           </div>
         </section>
         <section class="report-summary">
@@ -314,7 +313,7 @@
     </nav>
     <button type="button" id="reportFilterToggle" class="report-filter-toggle hidden" aria-expanded="false"><span>☷</span> Report filters</button>
     <section id="reportFilterFloat" class="report-filter-float hidden" aria-label="Floating report filters">
-      <div class="report-filter-head" id="reportFilterDrag"><strong>Report filters</strong><button type="button" id="reportFilterMinimize" aria-label="Minimize filters">−</button><button type="button" id="reportFilterClose" aria-label="Close filters">×</button></div>
+      <div class="report-filter-head" id="reportFilterDrag"><strong>Report filters</strong><button type="button" id="reportFilterMinimize" aria-label="Collapse filter options" title="Collapse filter options">−</button><button type="button" id="reportFilterClose" aria-label="Close filters" title="Close filters">×</button></div>
       <div class="report-filter-body" id="reportFilterBody">
         <div class="date-presets" data-preset-group="floating-report"><button class="date-preset" type="button" data-date-preset="floating-report:week">This week</button><button class="date-preset" type="button" data-date-preset="floating-report:lastweek">Last week</button><button class="date-preset" type="button" data-date-preset="floating-report:month">This month</button><button class="date-preset" type="button" data-date-preset="floating-report:lastmonth">Last month</button><button class="date-preset" type="button" data-date-preset="floating-report:all">All time</button><button class="date-preset" type="button" data-date-preset="floating-report:custom">Custom dates</button></div>
         <div class="date-filter-fields"><div class="field"><label for="floatingReportFrom">From date</label><input id="floatingReportFrom" type="date"></div><div class="field"><label for="floatingReportTo">To date</label><input id="floatingReportTo" type="date"></div></div>
@@ -513,7 +512,7 @@
     $('pageEyebrow').textContent=pageMeta[page][0]; $('pageTitle').textContent=pageMeta[page][1]; $('pageSubtitle').textContent=pageMeta[page][2];
     $('reportFilterFloat').classList.toggle('hidden',page!=='reports'||$('reportFilterToggle').dataset.minimized==='true');
     $('reportFilterToggle').classList.toggle('hidden',page!=='reports'||$('reportFilterToggle').dataset.minimized!=='true');
-    if(page==='reports') { syncFloatingReportFilters(); loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error')); }
+    if(page==='reports') { syncFloatingReportFilters(); markDatePreset('report',(!$('reportFrom').value&&!$('reportTo').value)?'all':'custom'); loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error')); }
     if(page==='jobs') loadJobs().catch(e=>showNotice('jobNotice',friendlyError(e),'error'));
   }
 
@@ -553,8 +552,7 @@
   function setCustomPresetOnDateChange(scope) { markDatePreset(scope,'custom'); if(scope==='report')syncFloatingReportFilters(); }
 
   function setTodayDefaults() {
-    $('workDate').value=today(); $('reportTo').value=today(); state.reportCalendarSelected=today();
-    const start=new Date(); start.setDate(start.getDate()-29); $('reportFrom').value=dateISO(start);
+    $('workDate').value=today(); $('reportFrom').value=''; $('reportTo').value=''; state.reportCalendarSelected=today();
   }
 
   async function saveEntry(event) {
@@ -720,10 +718,11 @@
   $('entrySearch').addEventListener('input',renderEntriesTable);$('entriesFrom').addEventListener('change',()=>{setCustomPresetOnDateChange('entries');renderEntriesTable();});$('entriesTo').addEventListener('change',()=>{setCustomPresetOnDateChange('entries');renderEntriesTable();});
   document.querySelectorAll('[data-date-preset]').forEach(btn=>btn.addEventListener('click',()=>{const [scope,preset]=btn.dataset.datePreset.split(':');applyDatePreset(scope,preset);}));
   $('exportCsvBtn').addEventListener('click',exportCsv);$('jobForm').addEventListener('submit',addJob);
-  $('reportFilterToggle').dataset.minimized='false';
-  $('reportFilterMinimize').addEventListener('click',()=>{$('reportFilterFloat').classList.add('hidden');$('reportFilterToggle').dataset.minimized='true';$('reportFilterToggle').classList.remove('hidden');$('reportFilterToggle').setAttribute('aria-expanded','false');});
-  $('reportFilterClose').addEventListener('click',()=>{$('reportFilterFloat').classList.add('hidden');$('reportFilterToggle').dataset.minimized='true';$('reportFilterToggle').classList.remove('hidden');$('reportFilterToggle').setAttribute('aria-expanded','false');});
-  $('reportFilterToggle').addEventListener('click',()=>{$('reportFilterFloat').classList.remove('hidden');$('reportFilterToggle').dataset.minimized='false';$('reportFilterToggle').classList.add('hidden');$('reportFilterFloat').style.left='';$('reportFilterFloat').style.top='';$('reportFilterFloat').style.right='18px';$('reportFilterFloat').style.bottom=window.matchMedia('(max-width:760px)').matches?'88px':'20px';$('reportFilterToggle').setAttribute('aria-expanded','true');});
+  $('reportFilterToggle').dataset.minimized='true';
+  $('reportFilterFloat').classList.add('hidden');
+  $('reportFilterMinimize').addEventListener('click',()=>{const panel=$('reportFilterFloat');panel.classList.toggle('collapsed');const collapsed=panel.classList.contains('collapsed');$('reportFilterMinimize').textContent=collapsed?'+':'−';$('reportFilterMinimize').setAttribute('aria-label',collapsed?'Expand filter options':'Collapse filter options');$('reportFilterMinimize').title=collapsed?'Expand filter options':'Collapse filter options';});
+  $('reportFilterClose').addEventListener('click',()=>{$('reportFilterFloat').classList.add('hidden');$('reportFilterFloat').classList.remove('collapsed');$('reportFilterMinimize').textContent='−';$('reportFilterToggle').dataset.minimized='true';$('reportFilterToggle').classList.remove('hidden');$('reportFilterToggle').setAttribute('aria-expanded','false');});
+  $('reportFilterToggle').addEventListener('click',()=>{$('reportFilterFloat').classList.remove('hidden','collapsed');$('reportFilterMinimize').textContent='−';$('reportFilterToggle').dataset.minimized='false';$('reportFilterToggle').classList.add('hidden');$('reportFilterFloat').style.left='';$('reportFilterFloat').style.top='';$('reportFilterFloat').style.right='18px';$('reportFilterFloat').style.bottom=window.matchMedia('(max-width:760px)').matches?'88px':'20px';$('reportFilterToggle').setAttribute('aria-expanded','true');});
   ['floatingReportFrom','floatingReportTo'].forEach((id,i)=>$(id).addEventListener('change',()=>{const target=i===0?'reportFrom':'reportTo';$(target).value=$(id).value;setCustomPresetOnDateChange('report');loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));}));
   ['floatingReportTech','floatingReportJob'].forEach((id,i)=>$(id).addEventListener('change',()=>{const target=i===0?'reportTech':'reportJob';$(target).value=$(id).value;loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));}));
   $('floatingReportReset').addEventListener('click',()=>{$('clearReportFilters').click();syncFloatingReportFilters();});
@@ -731,7 +730,7 @@
   $('reportFilterDrag').addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;const box=$('reportFilterFloat').getBoundingClientRect();dragState={x:e.clientX,y:e.clientY,left:box.left,top:box.top};$('reportFilterDrag').setPointerCapture?.(e.pointerId);});
   $('reportFilterDrag').addEventListener('pointermove',e=>{if(!dragState)return;const el=$('reportFilterFloat');const left=Math.max(4,Math.min(window.innerWidth-el.offsetWidth-4,dragState.left+e.clientX-dragState.x));const top=Math.max(4,Math.min(window.innerHeight-el.offsetHeight-4,dragState.top+e.clientY-dragState.y));el.style.left=left+'px';el.style.top=top+'px';el.style.right='auto';el.style.bottom='auto';});
   $('reportFilterDrag').addEventListener('pointerup',()=>{dragState=null;});$('reportFilterDrag').addEventListener('pointercancel',()=>{dragState=null;});
-  $('clearReportFilters').addEventListener('click',()=>{setTodayDefaults();$('reportTech').value='';$('reportJob').value='';markDatePreset('report','custom');loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));});
+  $('clearReportFilters').addEventListener('click',()=>{setTodayDefaults();$('reportTech').value='';$('reportJob').value='';markDatePreset('report','all');syncFloatingReportFilters();loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));});
   ['reportFrom','reportTo'].forEach(id=>$(id).addEventListener('change',()=>{setCustomPresetOnDateChange('report');loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));}));['reportTech','reportJob'].forEach(id=>$(id).addEventListener('change',()=>{syncFloatingReportFilters();loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));}));
   document.querySelectorAll('[data-page]').forEach(el=>el.addEventListener('click',()=>goPage(el.dataset.page)));
   document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',()=>goPage(el.dataset.go)));
