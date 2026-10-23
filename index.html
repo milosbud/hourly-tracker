@@ -107,6 +107,20 @@
     .login-card h1{font-size:26px;margin-bottom:7px}
     .login-card .subtitle{margin-bottom:23px}
     .login-card .field{margin-bottom:15px}
+    .login-kicker{display:inline-flex;align-items:center;gap:7px;background:var(--blue-soft);color:var(--blue);border-radius:99px;padding:6px 10px;font-size:10px;font-weight:850;letter-spacing:.7px;text-transform:uppercase;margin-bottom:13px}
+    .welcome-greeting{font-size:11px;font-weight:850;letter-spacing:1.1px;text-transform:uppercase;color:var(--teal);margin-bottom:5px}
+    .report-filter-float{position:fixed;z-index:50;right:18px;bottom:20px;width:min(350px,calc(100vw - 28px));background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:16px;box-shadow:0 16px 45px #09142a33;overflow:hidden}
+    .report-filter-float.hidden{display:none!important}
+    .report-filter-head{display:flex;align-items:center;gap:8px;background:var(--navy);color:#fff;padding:10px 12px;cursor:move;touch-action:none;user-select:none}
+    .report-filter-head strong{font-size:12px;flex:1}
+    .report-filter-head button{border:1px solid #ffffff35;background:#ffffff12;color:#fff;border-radius:8px;min-width:30px;height:29px;font-weight:800}
+    .report-filter-body{padding:13px;max-height:min(60vh,480px);overflow-y:auto}
+    .report-filter-body .date-presets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+    .report-filter-body .date-preset{white-space:normal;padding:8px 4px}
+    .report-filter-body .field{margin-bottom:10px}
+    .report-filter-body .field label{font-size:11px}
+    .report-filter-toggle{position:fixed;z-index:50;right:18px;bottom:20px;border:0;border-radius:99px;background:var(--blue);color:#fff;box-shadow:0 10px 28px #1e4ed866;padding:13px 17px;font-weight:850;display:flex;align-items:center;gap:8px}
+    .report-filter-toggle.hidden{display:none!important}
     .hidden{display:none!important}
     .user-chip{display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:7px 10px 7px 7px}
     .avatar{width:32px;height:32px;border-radius:10px;background:var(--blue-soft);color:var(--blue);display:grid;place-items:center;font-weight:900}
@@ -145,13 +159,16 @@
     .entry-card-description{font-size:12px;margin-top:9px;overflow-wrap:anywhere;color:var(--muted)}
     .entry-card-actions{display:flex;gap:8px;margin-top:12px}
     .entry-card-actions button{flex:1;min-height:40px}
-    .report-summary{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:14px;margin-bottom:18px}
-    .report-total{background:linear-gradient(135deg,var(--navy),#20375a);color:#fff;border-radius:16px;padding:20px;min-height:132px;display:flex;flex-direction:column;justify-content:center}
+    .report-summary{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:14px;margin-bottom:18px;width:100%;min-width:0;align-items:stretch}
+    .report-summary > *{min-width:0;width:100%;max-width:100%;}
+    .report-summary-breakdown{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:var(--shadow);overflow:hidden}
+    .report-total{background:linear-gradient(135deg,var(--navy),#20375a);color:#fff;border-radius:16px;padding:20px;min-height:132px;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
     .report-total-label{font-size:12px;color:#bdcbe2;font-weight:700}
     .report-total-value{font-size:36px;font-weight:900;letter-spacing:-1px;line-height:1.2;margin:7px 0}
     .report-total-note{font-size:11px;color:#bdcbe2}
-    .summary-table{border:1px solid var(--border);border-radius:12px;overflow:auto}
-    .summary-table table{min-width:430px}
+    .summary-table{border:1px solid var(--border);border-radius:12px;overflow-x:auto;max-width:100%;min-width:0}
+    .summary-table table{width:100%;min-width:0;table-layout:fixed}
+    .summary-table th,.summary-table td{white-space:normal;overflow-wrap:anywhere;padding:10px 9px}
     .summary-table td:last-child,.summary-table th:last-child{text-align:right}
     .report-calendar .calendar-day{min-height:64px}
     .report-calendar .calendar-detail{margin-top:12px}
@@ -160,7 +177,7 @@
     .report-calendar-row small{display:block;color:var(--muted);margin-top:2px}
     .report-calendar-total{font-weight:850;color:var(--teal);white-space:nowrap}
     .form-actions .primary-btn{min-width:150px}
-    @media(max-width:760px){.report-summary{grid-template-columns:1fr}.report-total{min-height:110px}.report-total-value{font-size:32px}.desktop-entry-table{display:none}.entry-cards{display:grid}.form-actions{display:grid;grid-template-columns:1fr}.form-actions .primary-btn,.form-actions .secondary-btn{width:100%;min-height:46px}.report-calendar .calendar-day{min-height:54px}}
+    @media(max-width:760px){.report-summary{grid-template-columns:minmax(0,1fr)}.report-total{min-height:110px}.report-total-value{font-size:32px}.report-summary-breakdown{padding:13px}.summary-table th,.summary-table td{padding:8px 6px;font-size:11px}.summary-table table{min-width:0}.desktop-entry-table{display:none}.entry-cards{display:grid}.form-actions{display:grid;grid-template-columns:1fr}.form-actions .primary-btn,.form-actions .secondary-btn{width:100%;min-height:46px}.report-calendar .calendar-day{min-height:54px}.report-filter-float{right:10px;bottom:88px;width:min(340px,calc(100vw - 20px))}.report-filter-toggle{right:12px;bottom:86px;padding:12px 15px}}
     @media(max-width:760px){input,select,textarea{font-size:16px!important}.calendar-grid{gap:3px}.calendar-day{min-height:54px;border-radius:8px;padding:5px 1px}.day-hours{font-size:9px}.calendar-weekday{font-size:9px}.calendar-title{font-size:15px}.calendar-toolbar .secondary-btn{padding:8px 10px}}
     @media(max-width:1050px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.two-col{grid-template-columns:1fr}}
     @media(max-width:760px){
@@ -182,7 +199,7 @@
   <div id="loginView" class="login-wrap">
     <div class="login-card">
       <div class="brand"><div class="brand-mark">F</div><div><div class="brand-name">HVAC Hours Tracker</div><div class="brand-sub">Simple hour allocation for the field</div></div></div>
-      <h1>Welcome back</h1><p class="subtitle">Sign in to allocate hours and keep every job on track.</p>
+      <div class="login-kicker">Team workspace · Secure sign-in</div><h1>Welcome to your workspace</h1><p class="subtitle">Sign in to manage job-hour allocations and keep your team's work organized.</p>
       <div id="loginNotice" class="notice hidden"></div>
       <form id="loginForm">
         <div class="field"><label for="email">Email address</label><input id="email" type="email" autocomplete="username" required placeholder="you@company.com"></div>
@@ -206,7 +223,7 @@
     </aside>
     <main class="main">
       <header class="topbar">
-        <div><div class="eyebrow" id="pageEyebrow">FIELD WORKSPACE</div><h1 id="pageTitle">Allocate hours</h1><p class="subtitle" id="pageSubtitle">Choose the job, date and hours. That’s it.</p></div>
+        <div><div class="welcome-greeting hidden" id="welcomeGreeting"></div><div class="eyebrow" id="pageEyebrow">FIELD WORKSPACE</div><h1 id="pageTitle">Allocate hours</h1><p class="subtitle" id="pageSubtitle">Choose the job, date and hours. That’s it.</p></div>
         <div class="top-actions"><div class="user-chip"><div class="avatar" id="userAvatar">F</div><div><div class="user-name" id="userName">Team member</div><div class="user-role" id="userRole">Technician</div></div></div><button class="secondary-btn" id="logoutBtn">Sign out</button></div>
       </header>
 
@@ -259,7 +276,7 @@
         </section>
         <section class="report-summary">
           <div class="report-total"><div class="report-total-label">Total hours allocated</div><div class="report-total-value" id="reportHours">0</div><div class="report-total-note" id="reportSummaryNote">For selected filters</div></div>
-          <div><div class="panel-title" style="margin:2px 0 9px">Hours by job and technician</div><div id="allocationSummary" class="summary-table"></div></div>
+          <div class="report-summary-breakdown"><div class="panel-title" style="margin:2px 0 9px">Hours by job and technician</div><div id="allocationSummary" class="summary-table"></div></div>
         </section>
         <section class="panel report-calendar"><div class="panel-head"><div><h2 class="panel-title">Allocation calendar</h2><p class="panel-description">Choose a day to see the job, technician and hours.</p></div></div>
           <div class="calendar-toolbar"><button class="secondary-btn" id="reportCalendarPrev" type="button" aria-label="Previous month">Previous</button><div class="calendar-title" id="reportCalendarMonthTitle">This month</div><button class="secondary-btn" id="reportCalendarNext" type="button" aria-label="Next month">Next</button></div>
@@ -295,6 +312,17 @@
       <button data-page="reports" class="admin-only hidden"><span class="nav-icon">[R]</span>Reports</button>
       <button data-page="jobs" class="admin-only hidden"><span class="nav-icon">[J]</span>Jobs</button>
     </nav>
+    <button type="button" id="reportFilterToggle" class="report-filter-toggle hidden" aria-expanded="false"><span>☷</span> Report filters</button>
+    <section id="reportFilterFloat" class="report-filter-float hidden" aria-label="Floating report filters">
+      <div class="report-filter-head" id="reportFilterDrag"><strong>Report filters</strong><button type="button" id="reportFilterMinimize" aria-label="Minimize filters">−</button><button type="button" id="reportFilterClose" aria-label="Close filters">×</button></div>
+      <div class="report-filter-body" id="reportFilterBody">
+        <div class="date-presets" data-preset-group="floating-report"><button class="date-preset" type="button" data-date-preset="floating-report:week">This week</button><button class="date-preset" type="button" data-date-preset="floating-report:lastweek">Last week</button><button class="date-preset" type="button" data-date-preset="floating-report:month">This month</button><button class="date-preset" type="button" data-date-preset="floating-report:lastmonth">Last month</button><button class="date-preset" type="button" data-date-preset="floating-report:all">All time</button><button class="date-preset" type="button" data-date-preset="floating-report:custom">Custom dates</button></div>
+        <div class="date-filter-fields"><div class="field"><label for="floatingReportFrom">From date</label><input id="floatingReportFrom" type="date"></div><div class="field"><label for="floatingReportTo">To date</label><input id="floatingReportTo" type="date"></div></div>
+        <div class="field"><label for="floatingReportTech">Technician</label><select id="floatingReportTech"><option value="">All technicians</option></select></div>
+        <div class="field"><label for="floatingReportJob">Job</label><select id="floatingReportJob"><option value="">All jobs</option></select></div>
+        <button type="button" class="secondary-btn" id="floatingReportReset" style="width:100%">Reset filters</button>
+      </div>
+    </section>
   </div>
 
 <script>
@@ -337,6 +365,10 @@
     $('userName').textContent=data.full_name || state.user.email || 'Team member';
     $('userAvatar').textContent=initials(data.full_name || state.user.email);
     $('userRole').textContent=state.isAdmin?'Administrator':'Technician';
+    const displayName=(data.full_name||state.user.email||'Team member').trim();
+    const firstName=displayName.split(/\s+/)[0];
+    $('welcomeGreeting').textContent=`WELCOME BACK, ${firstName.toUpperCase()}!`;
+    $('welcomeGreeting').classList.remove('hidden');
     document.querySelectorAll('.admin-only').forEach(el=>el.classList.toggle('hidden',!state.isAdmin));
   }
 
@@ -479,7 +511,9 @@
     $(`page-${page}`).classList.add('active');
     document.querySelectorAll('[data-page]').forEach(el=>el.classList.toggle('active',el.dataset.page===page));
     $('pageEyebrow').textContent=pageMeta[page][0]; $('pageTitle').textContent=pageMeta[page][1]; $('pageSubtitle').textContent=pageMeta[page][2];
-    if(page==='reports') loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));
+    $('reportFilterFloat').classList.toggle('hidden',page!=='reports'||$('reportFilterToggle').dataset.minimized==='true');
+    $('reportFilterToggle').classList.toggle('hidden',page!=='reports'||$('reportFilterToggle').dataset.minimized!=='true');
+    if(page==='reports') { syncFloatingReportFilters(); loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error')); }
     if(page==='jobs') loadJobs().catch(e=>showNotice('jobNotice',friendlyError(e),'error'));
   }
 
@@ -495,19 +529,28 @@
     return null;
   }
   function markDatePreset(scope, preset) {
-    document.querySelectorAll(`[data-preset-group="${scope}"] .date-preset`).forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.datePreset === `${scope}:${preset}`);
-    });
+    const groups=scope==='report'||scope==='floating-report'?['report','floating-report']:[scope];
+    groups.forEach(group=>document.querySelectorAll(`[data-preset-group="${group}"] .date-preset`).forEach(btn => {
+      const normalized=group==='floating-report'?'report':group;
+      btn.classList.toggle('active', btn.dataset.datePreset === `${group}:${preset}` || (normalized==='report'&&scope==='floating-report'&&btn.dataset.datePreset===`floating-report:${preset}`));
+    }));
+  }
+  function syncFloatingReportFilters() {
+    if(!$('floatingReportFrom')) return;
+    $('floatingReportFrom').value=$('reportFrom').value; $('floatingReportTo').value=$('reportTo').value;
+    $('floatingReportTech').innerHTML=$('reportTech').innerHTML; $('floatingReportTech').value=$('reportTech').value;
+    $('floatingReportJob').innerHTML=$('reportJob').innerHTML; $('floatingReportJob').value=$('reportJob').value;
   }
   function applyDatePreset(scope, preset) {
-    if (preset === 'custom') { markDatePreset(scope, preset); const target=$(scope==='report'?'reportFrom':'entriesFrom'); if(target) target.focus(); return; }
+    const actualScope=scope==='floating-report'?'report':scope;
+    if (preset === 'custom') { markDatePreset(actualScope, preset); const target=scope==='floating-report'?'floatingReportFrom':$(actualScope==='report'?'reportFrom':'entriesFrom'); if(target) target.focus(); return; }
     const range=getPresetRange(preset); if(!range)return;
-    const from=$(scope==='report'?'reportFrom':'entriesFrom'), to=$(scope==='report'?'reportTo':'entriesTo');
-    from.value=range[0]; to.value=range[1]; markDatePreset(scope,preset);
-    if(scope==='report') loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));
+    const from=$(actualScope==='report'?'reportFrom':'entriesFrom'), to=$(actualScope==='report'?'reportTo':'entriesTo');
+    from.value=range[0]; to.value=range[1]; markDatePreset(actualScope,preset); if(actualScope==='report')syncFloatingReportFilters();
+    if(actualScope==='report') loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));
     else renderEntriesTable();
   }
-  function setCustomPresetOnDateChange(scope) { markDatePreset(scope,'custom'); }
+  function setCustomPresetOnDateChange(scope) { markDatePreset(scope,'custom'); if(scope==='report')syncFloatingReportFilters(); }
 
   function setTodayDefaults() {
     $('workDate').value=today(); $('reportTo').value=today(); state.reportCalendarSelected=today();
@@ -549,6 +592,7 @@
 
   async function loadReport() {
     hideNotice('reportNotice');
+    syncFloatingReportFilters();
     let q=sb.from('time_entries').select('id,user_id,job_id,work_date,hours,description').gte('work_date',$('reportFrom').value||'1900-01-01').lte('work_date',$('reportTo').value||today()).order('work_date',{ascending:false}).limit(5000);
     const {data,error}=await q;if(error)throw error;
     const rows=data||[]; await attachLabels(rows);
@@ -558,7 +602,7 @@
     const total=filtered.reduce((s,r)=>s+Number(r.hours||0),0);
     $('reportHours').textContent=fmtHours(total);
     $('reportSummaryNote').textContent=`${filtered.length} allocation${filtered.length===1?'':'s'} · ${new Set(filtered.map(r=>r.user_id)).size} technician${new Set(filtered.map(r=>r.user_id)).size===1?'':'s'} · ${new Set(filtered.map(r=>r.job_id)).size} job${new Set(filtered.map(r=>r.job_id)).size===1?'':'s'}`;
-    await populateTechFilter(rows);
+    await populateTechFilter(rows); syncFloatingReportFilters();
     renderAllocationSummary(filtered); renderReportCalendar(filtered); renderCharts(filtered); renderReportTable(filtered);
   }
   function renderAllocationSummary(rows) {
@@ -676,8 +720,19 @@
   $('entrySearch').addEventListener('input',renderEntriesTable);$('entriesFrom').addEventListener('change',()=>{setCustomPresetOnDateChange('entries');renderEntriesTable();});$('entriesTo').addEventListener('change',()=>{setCustomPresetOnDateChange('entries');renderEntriesTable();});
   document.querySelectorAll('[data-date-preset]').forEach(btn=>btn.addEventListener('click',()=>{const [scope,preset]=btn.dataset.datePreset.split(':');applyDatePreset(scope,preset);}));
   $('exportCsvBtn').addEventListener('click',exportCsv);$('jobForm').addEventListener('submit',addJob);
+  $('reportFilterToggle').dataset.minimized='false';
+  $('reportFilterMinimize').addEventListener('click',()=>{$('reportFilterFloat').classList.add('hidden');$('reportFilterToggle').dataset.minimized='true';$('reportFilterToggle').classList.remove('hidden');$('reportFilterToggle').setAttribute('aria-expanded','false');});
+  $('reportFilterClose').addEventListener('click',()=>{$('reportFilterFloat').classList.add('hidden');$('reportFilterToggle').dataset.minimized='true';$('reportFilterToggle').classList.remove('hidden');$('reportFilterToggle').setAttribute('aria-expanded','false');});
+  $('reportFilterToggle').addEventListener('click',()=>{$('reportFilterFloat').classList.remove('hidden');$('reportFilterToggle').dataset.minimized='false';$('reportFilterToggle').classList.add('hidden');$('reportFilterFloat').style.left='';$('reportFilterFloat').style.top='';$('reportFilterFloat').style.right='18px';$('reportFilterFloat').style.bottom=window.matchMedia('(max-width:760px)').matches?'88px':'20px';$('reportFilterToggle').setAttribute('aria-expanded','true');});
+  ['floatingReportFrom','floatingReportTo'].forEach((id,i)=>$(id).addEventListener('change',()=>{const target=i===0?'reportFrom':'reportTo';$(target).value=$(id).value;setCustomPresetOnDateChange('report');loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));}));
+  ['floatingReportTech','floatingReportJob'].forEach((id,i)=>$(id).addEventListener('change',()=>{const target=i===0?'reportTech':'reportJob';$(target).value=$(id).value;loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));}));
+  $('floatingReportReset').addEventListener('click',()=>{$('clearReportFilters').click();syncFloatingReportFilters();});
+  let dragState=null;
+  $('reportFilterDrag').addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;const box=$('reportFilterFloat').getBoundingClientRect();dragState={x:e.clientX,y:e.clientY,left:box.left,top:box.top};$('reportFilterDrag').setPointerCapture?.(e.pointerId);});
+  $('reportFilterDrag').addEventListener('pointermove',e=>{if(!dragState)return;const el=$('reportFilterFloat');const left=Math.max(4,Math.min(window.innerWidth-el.offsetWidth-4,dragState.left+e.clientX-dragState.x));const top=Math.max(4,Math.min(window.innerHeight-el.offsetHeight-4,dragState.top+e.clientY-dragState.y));el.style.left=left+'px';el.style.top=top+'px';el.style.right='auto';el.style.bottom='auto';});
+  $('reportFilterDrag').addEventListener('pointerup',()=>{dragState=null;});$('reportFilterDrag').addEventListener('pointercancel',()=>{dragState=null;});
   $('clearReportFilters').addEventListener('click',()=>{setTodayDefaults();$('reportTech').value='';$('reportJob').value='';markDatePreset('report','custom');loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));});
-  ['reportFrom','reportTo'].forEach(id=>$(id).addEventListener('change',()=>{setCustomPresetOnDateChange('report');loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));}));['reportTech','reportJob'].forEach(id=>$(id).addEventListener('change',()=>loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'))));
+  ['reportFrom','reportTo'].forEach(id=>$(id).addEventListener('change',()=>{setCustomPresetOnDateChange('report');loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));}));['reportTech','reportJob'].forEach(id=>$(id).addEventListener('change',()=>{syncFloatingReportFilters();loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));}));
   document.querySelectorAll('[data-page]').forEach(el=>el.addEventListener('click',()=>goPage(el.dataset.page)));
   document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',()=>goPage(el.dataset.go)));
   document.addEventListener('click',e=>{
