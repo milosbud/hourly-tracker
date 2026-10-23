@@ -150,15 +150,36 @@
     .filters-more .toolbar{margin:12px 0 0}
     .filters-more .date-presets{margin-top:12px}
     .job-search-hint{font-size:11px;color:var(--muted);margin-top:4px}
+    .job-picker{position:relative;min-width:0}
+    .job-picker-input{padding-right:40px}
+    .job-picker-caret{position:absolute;right:13px;top:12px;color:var(--muted);pointer-events:none}
+    .job-picker-list{position:absolute;z-index:30;top:calc(100% + 5px);left:0;right:0;max-height:260px;overflow:auto;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 12px 28px #09142a22;padding:5px}
+    .job-picker-option{display:block;width:100%;border:0;background:transparent;color:var(--text);text-align:left;padding:10px;border-radius:8px;cursor:pointer}
+    .job-picker-option:hover,.job-picker-option:focus{background:var(--blue-soft);outline:none}
+    .job-picker-option strong{display:block;font-size:12px}
+    .job-picker-option span{display:block;font-size:11px;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+    .job-picker-empty{padding:12px;color:var(--muted);font-size:12px}
+    .quick-hours{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+    .quick-hour{border:1px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:9px;padding:7px 12px;font-size:12px;font-weight:800;cursor:pointer}
+    .quick-hour:hover,.quick-hour.active{border-color:var(--blue);background:var(--blue-soft);color:var(--blue)}
+    .entries-overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:14px 0}
+    .entries-overview-card{border:1px solid var(--border);background:var(--surface-2);border-radius:12px;padding:12px;min-width:0}
+    .entries-overview-label{font-size:11px;color:var(--muted);font-weight:750}
+    .entries-overview-value{font-size:22px;font-weight:900;letter-spacing:-.5px;margin-top:3px}
+    .entries-by-date{display:grid;gap:10px;margin:14px 0}
+    .entries-date-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 2px 5px}
+    .entries-date-heading strong{font-size:12px}
+    .entries-date-heading span{font-size:11px;color:var(--teal);font-weight:850;white-space:nowrap}
+    .entries-date-cards{display:grid;gap:8px}
     .entry-cards{display:none;gap:10px}
-    .entry-card{border:1px solid var(--border);background:var(--surface);border-radius:13px;padding:13px;min-width:0}
+    .entry-card{border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:11px 12px;min-width:0}
     .entry-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
     .entry-card-job{font-weight:800;font-size:13px;overflow-wrap:anywhere}
     .entry-card-meta{font-size:11px;color:var(--muted);margin-top:3px}
     .entry-card-hours{font-size:19px;font-weight:850;white-space:nowrap;color:var(--teal)}
     .entry-card-description{font-size:12px;margin-top:9px;overflow-wrap:anywhere;color:var(--muted)}
-    .entry-card-actions{display:flex;gap:8px;margin-top:12px}
-    .entry-card-actions button{flex:1;min-height:40px}
+    .entry-card-actions{display:flex;gap:7px;margin-top:8px}
+    .entry-card-actions button{flex:1;min-height:35px;padding:7px 10px;font-size:11px}
     .report-summary{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:14px;margin-bottom:18px;width:100%;min-width:0;align-items:stretch}
     .report-summary > *{min-width:0;width:100%;max-width:100%;}
     .report-summary-breakdown{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:var(--shadow);overflow:hidden}
@@ -177,7 +198,7 @@
     .report-calendar-row small{display:block;color:var(--muted);margin-top:2px}
     .report-calendar-total{font-weight:850;color:var(--teal);white-space:nowrap}
     .form-actions .primary-btn{min-width:150px}
-    @media(max-width:760px){.report-summary{grid-template-columns:minmax(0,1fr)}.report-total{min-height:110px}.report-total-value{font-size:32px}.report-summary-breakdown{padding:13px}.summary-table th,.summary-table td{padding:8px 6px;font-size:11px}.summary-table table{min-width:0}.desktop-entry-table{display:none}.entry-cards{display:grid}.form-actions{display:grid;grid-template-columns:1fr}.form-actions .primary-btn,.form-actions .secondary-btn{width:100%;min-height:46px}.report-calendar .calendar-day{min-height:54px}.report-filter-float{right:10px;bottom:88px;width:min(340px,calc(100vw - 20px))}.report-filter-toggle{right:12px;bottom:86px;padding:12px 15px}}
+    @media(max-width:760px){.entries-overview{gap:6px}.entries-overview-card{padding:9px}.entries-overview-value{font-size:19px}.report-summary{grid-template-columns:minmax(0,1fr)}.report-total{min-height:110px}.report-total-value{font-size:32px}.report-summary-breakdown{padding:13px}.summary-table th,.summary-table td{padding:8px 6px;font-size:11px}.summary-table table{min-width:0}.desktop-entry-table{display:none}.entry-cards{display:grid}.form-actions{display:grid;grid-template-columns:1fr}.form-actions .primary-btn,.form-actions .secondary-btn{width:100%;min-height:46px}.report-calendar .calendar-day{min-height:54px}.report-filter-float{right:10px;bottom:88px;width:min(340px,calc(100vw - 20px))}.report-filter-toggle{right:12px;bottom:86px;padding:12px 15px}}
     @media(max-width:760px){input,select,textarea{font-size:16px!important}.calendar-grid{gap:3px}.calendar-day{min-height:54px;border-radius:8px;padding:5px 1px}.day-hours{font-size:9px}.calendar-weekday{font-size:9px}.calendar-title{font-size:15px}.calendar-toolbar .secondary-btn{padding:8px 10px}}
     @media(max-width:1050px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.two-col{grid-template-columns:1fr}}
     @media(max-width:760px){
@@ -235,20 +256,13 @@
             <form id="entryForm">
               <input id="entryId" type="hidden">
               <div class="form-grid">
-                <div class="field full"><label for="jobSearch">Job</label><input id="jobSearch" type="search" autocomplete="off" placeholder="Search by job code or name"><div class="job-search-hint" id="jobSearchHint">Start typing to find a job.</div><select id="jobSelect" required aria-label="Choose a job"><option value="">Choose a job...</option></select></div>
+                <div class="field full"><label for="jobSearch">Job</label><div class="job-picker"><input id="jobSearch" class="job-picker-input" type="text" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="jobPickerList" placeholder="Tap to view or search jobs"><span class="job-picker-caret">▾</span><div id="jobPickerList" class="job-picker-list hidden" role="listbox"></div></div><select id="jobSelect" required aria-label="Choose a job" class="hidden"><option value="">Choose a job...</option></select><div class="job-search-hint" id="jobSearchHint">Tap to view available jobs.</div></div>
                 <div class="field"><label for="workDate">Date</label><input id="workDate" type="date" required></div>
-                <div class="field"><label for="hours">Hours</label><input id="hours" type="number" inputmode="decimal" min="0.25" max="24" step="0.25" required placeholder="e.g. 8"></div>
+                <div class="field"><label for="hours">Hours</label><input id="hours" type="number" inputmode="decimal" min="0.25" max="24" step="0.25" required placeholder="e.g. 8"><div class="quick-hours" aria-label="Quick hour amounts"><button type="button" class="quick-hour" data-hours="4">4 h</button><button type="button" class="quick-hour" data-hours="6">6 h</button><button type="button" class="quick-hour" data-hours="7.5">7.5 h</button><button type="button" class="quick-hour" data-hours="8">8 h</button></div></div>
                 <div class="field full"><label for="description">Notes <span class="muted" style="font-weight:500">(optional)</span></label><input id="description" maxlength="500" placeholder="Optional details about the work"></div>
               </div>
               <div class="form-actions"><button class="secondary-btn hidden" type="button" id="cancelEditBtn">Cancel edit</button><button class="primary-btn" type="submit" id="saveEntryBtn">Allocate hours</button></div>
             </form>
-          </section>
-          <section class="panel">
-            <div class="panel-head"><div><h2 class="panel-title">Your month</h2><p class="panel-description">Tap a day to review your allocations.</p></div></div>
-            <div class="calendar-toolbar"><button class="secondary-btn" id="calendarPrev" type="button" aria-label="Previous month">Previous</button><div class="calendar-title" id="calendarMonthTitle">This month</div><button class="secondary-btn" id="calendarNext" type="button" aria-label="Next month">Next</button></div>
-            <div id="calendarGrid" class="calendar-grid" aria-label="Monthly time entry calendar"></div>
-            <div class="calendar-legend"><span><i class="legend-dot"></i> Hours allocated</span><span><i class="legend-dot" style="background:var(--blue)"></i> Today / selected day</span></div>
-            <div class="calendar-detail" id="calendarDayDetail"><div class="muted small">Select a day to see its entries.</div></div>
           </section>
         </div>
       </section>
@@ -257,7 +271,21 @@
         <section class="panel">
           <div class="panel-head"><div><h2 class="panel-title">My allocated time</h2><p class="panel-description">View or update your allocations.</p></div><button class="primary-btn" data-go="log">+ Allocate hours</button></div>
           <div id="entriesNotice" class="notice hidden"></div>
-          <div class="entry-search-row"><div class="field"><label for="entrySearch">Find an allocation</label><input id="entrySearch" type="search" placeholder="Type a job name or code"></div></div><details class="filters-more"><summary>Filter by date (optional)</summary><div class="date-presets" data-preset-group="entries"><button class="date-preset" type="button" data-date-preset="entries:week">This week</button><button class="date-preset" type="button" data-date-preset="entries:lastweek">Last week</button><button class="date-preset" type="button" data-date-preset="entries:month">This month</button><button class="date-preset" type="button" data-date-preset="entries:lastmonth">Last month</button><button class="date-preset" type="button" data-date-preset="entries:all">All time</button><button class="date-preset" type="button" data-date-preset="entries:custom">Custom dates</button></div><div class="date-filter-fields"><div class="field"><label for="entriesFrom">From date</label><input id="entriesFrom" type="date"></div><div class="field"><label for="entriesTo">To date</label><input id="entriesTo" type="date"></div></div><button class="secondary-btn" id="clearEntryFilters" type="button">Clear dates</button></details>
+          <div class="entries-overview">
+            <div class="entries-overview-card"><div class="entries-overview-label">This week</div><div class="entries-overview-value" id="myWeekHours">0 h</div></div>
+            <div class="entries-overview-card"><div class="entries-overview-label">This month</div><div class="entries-overview-value" id="myMonthHours">0 h</div></div>
+            <div class="entries-overview-card"><div class="entries-overview-label">Allocations this month</div><div class="entries-overview-value" id="myMonthCount">0</div></div>
+          </div>
+                    <section class="panel">
+            <div class="panel-head"><div><h2 class="panel-title">Daily hours calendar</h2><p class="panel-description">Daily totals make it easier to spot days that may need review. Tap a date for details.</p></div></div>
+            <div class="calendar-toolbar"><button class="secondary-btn" id="calendarPrev" type="button" aria-label="Previous month">Previous</button><div class="calendar-title" id="calendarMonthTitle">This month</div><button class="secondary-btn" id="calendarNext" type="button" aria-label="Next month">Next</button></div>
+            <div id="calendarGrid" class="calendar-grid" aria-label="Monthly allocation hours calendar"></div>
+            <div class="calendar-legend"><span>Hours shown are the total allocations recorded for each day.</span></div>
+            <div class="calendar-detail" id="calendarDayDetail"><div class="muted small">Select a day to see its entries.</div></div>
+          </section>
+
+          <div class="panel-head" style="margin-top:22px"><div><h2 class="panel-title">Your allocations</h2><p class="panel-description">Compact daily summaries make it easier to review your hours.</p></div></div>
+                    <div class="entry-search-row"><div class="field"><label for="entrySearch">Find an allocation</label><input id="entrySearch" type="search" placeholder="Type a job name or code"></div></div><details class="filters-more"><summary>Filter by date (optional)</summary><div class="date-presets" data-preset-group="entries"><button class="date-preset" type="button" data-date-preset="entries:week">This week</button><button class="date-preset" type="button" data-date-preset="entries:lastweek">Last week</button><button class="date-preset" type="button" data-date-preset="entries:month">This month</button><button class="date-preset" type="button" data-date-preset="entries:lastmonth">Last month</button><button class="date-preset" type="button" data-date-preset="entries:all">All time</button><button class="date-preset" type="button" data-date-preset="entries:custom">Custom dates</button></div><div class="date-filter-fields"><div class="field"><label for="entriesFrom">From date</label><input id="entriesFrom" type="date"></div><div class="field"><label for="entriesTo">To date</label><input id="entriesTo" type="date"></div></div><button class="secondary-btn" id="clearEntryFilters" type="button">Clear dates</button></details>
           <div id="entriesTable"></div>
         </section>
       </section>
@@ -372,14 +400,35 @@
   }
 
   function renderJobOptions(includeJobId='') {
-    const current=includeJobId||$('jobSelect').value;
+    const selectedId=includeJobId||$('jobSelect').value;
     const term=($('jobSearch')?.value||'').trim().toLowerCase();
-    const active=state.jobs.filter(j=>j.active!==false||String(j.id)===String(includeJobId));
+    const active=state.jobs.filter(j=>j.active!==false||String(j.id)===String(selectedId));
     const matches=active.filter(j=>!term||`${j.job_code||''} ${j.job_name||''}`.toLowerCase().includes(term));
-    $('jobSelect').innerHTML='<option value="">Choose a job...</option>'+matches.map(j=>`<option value="${esc(j.id)}">${esc(jobLabel(j))}</option>`).join('');
-    if(current&&matches.some(j=>String(j.id)===String(current))) $('jobSelect').value=current;
-    $('jobSearchHint').textContent=term?`${matches.length} matching job${matches.length===1?'':'s'}`:`${active.length} job${active.length===1?'':'s'} available — type to narrow the list.`;
+    $('jobSelect').innerHTML='<option value="">Choose a job...</option>'+active.map(j=>`<option value="${esc(j.id)}">${esc(jobLabel(j))}</option>`).join('');
+    if(selectedId&&active.some(j=>String(j.id)===String(selectedId))) $('jobSelect').value=selectedId;
+    const selected=active.find(j=>String(j.id)===String($('jobSelect').value));
+    if(selected&&!$('jobPickerList').classList.contains('open')) $('jobSearch').value=jobLabel(selected);
+    $('jobPickerList').innerHTML=matches.length?matches.map(j=>`<button type="button" class="job-picker-option" role="option" aria-selected="${String(j.id)===String($('jobSelect').value)}" data-job-id="${esc(j.id)}"><strong>${esc(j.job_code||'No code')}</strong><span>${esc(j.job_name||'Unnamed job')}${j.active===false?' · Completed':''}</span></button>`).join(''):'<div class="job-picker-empty">No matching active jobs found.</div>';
+    $('jobSearchHint').textContent=term?`${matches.length} matching job${matches.length===1?'':'s'}`:`${active.length} available job${active.length===1?'':'s'} — choose one or search by code or name.`;
   }
+  function openJobPicker(clearSearch=false) {
+    if(clearSearch) $('jobSearch').value='';
+    $('jobPickerList').classList.remove('hidden');$('jobPickerList').classList.add('open');
+    $('jobSearch').setAttribute('aria-expanded','true');renderJobOptions();
+  }
+  function closeJobPicker() {
+    if(!$('jobPickerList'))return;
+    $('jobPickerList').classList.add('hidden');$('jobPickerList').classList.remove('open');
+    $('jobSearch').setAttribute('aria-expanded','false');
+    const selected=state.jobs.find(j=>String(j.id)===String($('jobSelect').value));
+    $('jobSearch').value=selected?jobLabel(selected):'';
+  }
+  function chooseJob(id) {
+    $('jobSelect').value=id;closeJobPicker();
+    const selected=state.jobs.find(j=>String(j.id)===String(id));
+    $('jobSearchHint').textContent=selected?`Selected: ${jobLabel(selected)}`:'Tap to view available jobs.';
+  }
+
   async function loadJobs() {
     const {data,error}=await sb.from('jobs').select('id,job_code,job_name,active').order('job_code');
     if(error) throw error;
@@ -397,7 +446,7 @@
     if(error) throw error;
     state.entries=data||[];
     await attachLabels(state.entries);
-    renderEntryStats(); renderRecent(); renderEntriesTable(); renderCalendar();
+    renderEntryStats(); renderRecent(); renderMyAllocationOverview(); renderEntriesTable(); renderCalendar();
   }
 
   async function attachLabels(rows) {
@@ -498,10 +547,27 @@
     $('calendarDayDetail').innerHTML=`<div class="calendar-detail-title">${esc(fmtDate(key))} · ${esc(fmtHours(total))} hours</div>`+(rows.length?rows.map(e=>{const j=e._job||{};return `<div style="padding:9px 0;border-top:1px solid var(--border);display:flex;justify-content:space-between;gap:10px"><div style="min-width:0"><div style="font-weight:750;font-size:12px;overflow-wrap:anywhere">${esc(j.job_code||'Job')} - ${esc(j.job_name||'Job details unavailable')}</div><div class="small muted">${esc(e.description||'No description')}</div></div><div style="white-space:nowrap;font-weight:800">${esc(fmtHours(e.hours))} h</div></div>`}).join(''):'<div class="small muted">No time entries recorded for this day yet.</div>');
   }
 
+  function renderMyAllocationOverview() {
+    const mine=state.entries.filter(e=>e.user_id===state.user.id);
+    const now=new Date();now.setHours(0,0,0,0);
+    const monday=new Date(now);monday.setDate(now.getDate()-((now.getDay()+6)%7));
+    const weekStartDate=dateISO(monday),todayDate=today(),monthStart=dateISO(new Date(now.getFullYear(),now.getMonth(),1));
+    const week=mine.filter(e=>e.work_date>=weekStartDate&&e.work_date<=todayDate);
+    const month=mine.filter(e=>e.work_date>=monthStart&&e.work_date<=todayDate);
+    $('myWeekHours').textContent=`${fmtHours(week.reduce((sum,e)=>sum+Number(e.hours||0),0))} h`;
+    $('myMonthHours').textContent=`${fmtHours(month.reduce((sum,e)=>sum+Number(e.hours||0),0))} h`;
+    $('myMonthCount').textContent=String(month.length);
+  }
+
   function renderEntriesTable() {
-    const search=$('entrySearch').value.trim().toLowerCase(), from=$('entriesFrom').value, to=$('entriesTo').value;
-    const rows=state.entries.filter(e=>e.user_id===state.user.id&&(!from||e.work_date>=from)&&(!to||e.work_date<=to)&&(!search||`${(e._job||{}).job_code||''} ${(e._job||{}).job_name||''} ${e.description||''}`.toLowerCase().includes(search)));
-    $('entriesTable').innerHTML=rows.length?`<div class="table-wrap desktop-entry-table"><table><thead><tr><th>Date</th><th>Job</th><th>Hours</th><th>Notes</th><th>Actions</th></tr></thead><tbody>${rows.map(e=>entryRow(e)).join('')}</tbody></table></div><div class="entry-cards">${rows.map(e=>{const j=e._job||{};return `<article class="entry-card"><div class="entry-card-top"><div><div class="entry-card-job">${esc(j.job_code||'Job')} · ${esc(j.job_name||'Job details unavailable')}</div><div class="entry-card-meta">${esc(fmtDate(e.work_date))}</div></div><div class="entry-card-hours">${esc(fmtHours(e.hours))} h</div></div>${e.description?`<div class="entry-card-description">${esc(e.description)}</div>`:''}<div class="entry-card-actions"><button class="secondary-btn edit-entry" data-id="${esc(e.id)}" type="button">Edit</button><button class="danger-btn delete-entry" data-id="${esc(e.id)}" type="button">Delete</button></div></article>`}).join('')}</div><p class="small muted">${rows.length} allocation${rows.length===1?'':'s'} shown · up to 500 recent records loaded.</p>`:'<div class="empty"><strong>No allocations found</strong>Try another job name or adjust the date filter.</div>';
+    const search=$('entrySearch').value.trim().toLowerCase(),from=$('entriesFrom').value,to=$('entriesTo').value;
+    const rows=state.entries.filter(e=>e.user_id===state.user.id&&(!from||e.work_date>=from)&&(!to||e.work_date<=to)&&(!search||`${(e._job||{}).job_code||''} ${(e._job||{}).job_name||''} ${e.description||''}`.toLowerCase().includes(search))).sort((a,b)=>String(b.work_date).localeCompare(String(a.work_date)));
+    if(!rows.length){$('entriesTable').innerHTML='<div class="empty"><strong>No allocations found</strong>Try another job name or adjust the date filter.</div>';return;}
+    const groups=new Map();rows.forEach(e=>{const key=e.work_date||'Unknown date';if(!groups.has(key))groups.set(key,[]);groups.get(key).push(e);});
+    $('entriesTable').innerHTML=`<div class="entries-by-date">${[...groups.entries()].map(([date,items])=>{
+      const dailyTotal=items.reduce((sum,e)=>sum+Number(e.hours||0),0),label=date==='Unknown date'?date:fmtDate(date);
+      return `<section><div class="entries-date-heading"><strong>${esc(label)}</strong><span>${esc(fmtHours(dailyTotal))} h total</span></div><div class="entries-date-cards">${items.map(e=>{const j=e._job||{};return `<article class="entry-card"><div class="entry-card-top"><div style="min-width:0"><div class="entry-card-job">${esc(j.job_code||'Job')} · ${esc(j.job_name||'Job details unavailable')}</div><div class="entry-card-meta">${esc(e.description||'Allocation')}</div></div><div class="entry-card-hours">${esc(fmtHours(e.hours))} h</div></div><div class="entry-card-actions"><button class="secondary-btn edit-entry" data-id="${esc(e.id)}" type="button">Edit</button><button class="danger-btn delete-entry" data-id="${esc(e.id)}" type="button">Delete</button></div></article>`}).join('')}</div></section>`;
+    }).join('')}</div><p class="small muted">${rows.length} allocation${rows.length===1?'':'s'} shown · up to 500 recent records loaded.</p>`;
   }
 
   function goPage(page) {
@@ -558,7 +624,7 @@
   async function saveEntry(event) {
     event.preventDefault(); hideNotice('entryNotice');
     const id=$('entryId').value, payload={job_id:$('jobSelect').value,work_date:$('workDate').value,hours:Number($('hours').value),description:$('description').value.trim()||null};
-    if(!payload.job_id){showNotice('entryNotice','Please choose a job.','error');return;}
+    if(!payload.job_id){showNotice('entryNotice','Please choose a job before saving.','error');return;}
     if(!payload.work_date||!Number.isFinite(payload.hours)||payload.hours<=0||payload.hours>24){showNotice('entryNotice','Enter a valid work date and hours between 0.25 and 24.','error');return;}
     $('saveEntryBtn').disabled=true; $('saveEntryBtn').textContent='Saving...';
     try {
@@ -573,11 +639,11 @@
   }
 
   function resetEntryForm() {
-    $('entryForm').reset(); $('entryId').value=''; $('workDate').value=today(); $('entryFormTitle').textContent='New allocation'; $('saveEntryBtn').textContent='Allocate hours'; $('jobSearch').value=''; renderJobOptions(); $('cancelEditBtn').classList.add('hidden');
+    $('entryForm').reset(); document.querySelectorAll('[data-hours]').forEach(b=>b.classList.remove('active')); $('entryId').value=''; $('workDate').value=today(); $('entryFormTitle').textContent='New allocation'; $('saveEntryBtn').textContent='Allocate hours'; $('jobSearch').value=''; $('jobSelect').value=''; $('jobPickerList').classList.add('hidden'); $('jobPickerList').classList.remove('open'); $('jobSearch').setAttribute('aria-expanded','false'); renderJobOptions(); $('cancelEditBtn').classList.add('hidden');
   }
   function startEdit(id) {
     const e=state.entries.find(r=>String(r.id)===String(id)&&r.user_id===state.user.id); if(!e)return;
-    $('entryId').value=e.id; $('jobSearch').value=''; renderJobOptions(e.job_id); $('jobSelect').value=e.job_id; $('workDate').value=e.work_date; $('hours').value=e.hours; $('description').value=e.description||'';
+    $('entryId').value=e.id; $('jobSearch').value=''; $('jobSelect').value=e.job_id; renderJobOptions(e.job_id); $('jobSearch').value=jobLabel(e._job||{}); $('jobPickerList').classList.add('hidden'); $('jobPickerList').classList.remove('open'); $('jobSearch').setAttribute('aria-expanded','false'); $('workDate').value=e.work_date; $('hours').value=e.hours; document.querySelectorAll('[data-hours]').forEach(b=>b.classList.toggle('active',b.dataset.hours===String(e.hours))); $('description').value=e.description||'';
     $('entryFormTitle').textContent='Edit allocation'; $('saveEntryBtn').textContent='Save changes'; $('cancelEditBtn').classList.remove('hidden'); goPage('log'); window.scrollTo({top:0,behavior:'smooth'});
   }
   async function deleteEntry(id) {
@@ -708,7 +774,16 @@
     } finally { button.disabled=false; button.innerHTML=originalText; }
   });
   $('logoutBtn').addEventListener('click',signOut);
-  $('entryForm').addEventListener('submit',saveEntry);$('cancelEditBtn').addEventListener('click',resetEntryForm);$('jobSearch').addEventListener('input',renderJobOptions);$('clearEntryFilters').addEventListener('click',()=>{$('entriesFrom').value='';$('entriesTo').value='';markDatePreset('entries','all');renderEntriesTable();});
+  $('entryForm').addEventListener('submit',saveEntry);$('cancelEditBtn').addEventListener('click',resetEntryForm);
+  $('jobSearch').addEventListener('focus',()=>openJobPicker(true));
+  $('jobSearch').addEventListener('click',()=>{if($('jobPickerList').classList.contains('hidden'))openJobPicker(false);});
+  $('jobSearch').addEventListener('input',()=>openJobPicker(false));
+  $('jobPickerList').addEventListener('click',e=>{const option=e.target.closest('[data-job-id]');if(option)chooseJob(option.dataset.jobId);});
+  $('jobSearch').addEventListener('keydown',e=>{if(e.key==='Escape'){closeJobPicker();$('jobSearch').blur();}if(e.key==='Enter'&&!$('jobPickerList').classList.contains('hidden')){const first=$('jobPickerList').querySelector('[data-job-id]');if(first){e.preventDefault();chooseJob(first.dataset.jobId);}}});
+  document.addEventListener('click',e=>{if(!e.target.closest('.job-picker'))closeJobPicker();});
+  document.querySelectorAll('[data-hours]').forEach(btn=>btn.addEventListener('click',()=>{$('hours').value=btn.dataset.hours;document.querySelectorAll('[data-hours]').forEach(b=>b.classList.toggle('active',b===btn));}));
+  $('hours').addEventListener('input',()=>document.querySelectorAll('[data-hours]').forEach(b=>b.classList.toggle('active',b.dataset.hours===$('hours').value)));
+  $('clearEntryFilters').addEventListener('click',()=>{$('entriesFrom').value='';$('entriesTo').value='';markDatePreset('entries','all');renderEntriesTable();});
   $('calendarPrev').addEventListener('click',()=>{state.calendarMonth=new Date(state.calendarMonth.getFullYear(),state.calendarMonth.getMonth()-1,1);renderCalendar();});
   $('calendarNext').addEventListener('click',()=>{state.calendarMonth=new Date(state.calendarMonth.getFullYear(),state.calendarMonth.getMonth()+1,1);renderCalendar();});
   $('calendarGrid').addEventListener('click',e=>{const day=e.target.closest('[data-calendar-date]');if(!day)return;state.calendarSelected=day.dataset.calendarDate;renderCalendar();});
