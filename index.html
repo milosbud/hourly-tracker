@@ -132,8 +132,10 @@
     .calendar-weekday{text-align:center;color:var(--muted);font-size:10px;font-weight:800;padding:5px 0;text-transform:uppercase}
     .calendar-day{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:10px;min-height:68px;padding:7px 4px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
     .calendar-day.outside{opacity:.38;background:var(--surface-2)}
-    .calendar-day.today{border-color:var(--blue)}
+    .calendar-day.today{border-color:var(--border)}
+    .calendar-day.today .day-number{color:var(--blue);font-weight:900}
     .calendar-day.selected{background:var(--blue-soft);border-color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
+    .calendar-day.selected .day-number{color:var(--blue);font-weight:900}
     .calendar-day.has-entry .day-number{font-weight:900}
     .day-number{font-size:12px;font-weight:700}
     .day-hours{font-size:10px;color:var(--teal);font-weight:850;line-height:1.1}
@@ -180,6 +182,16 @@
     .entry-card-description{font-size:12px;margin-top:9px;overflow-wrap:anywhere;color:var(--muted)}
     .entry-card-actions{display:flex;gap:7px;margin-top:8px}
     .entry-card-actions button{flex:1;min-height:35px;padding:7px 10px;font-size:11px}
+    .report-entry-cards{display:grid;gap:9px;margin-top:12px}
+    .report-entry-card{border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:12px;min-width:0}
+    .report-entry-card .entry-card-job{font-size:13px}
+    .report-entry-card .entry-card-meta{line-height:1.45}
+    .job-directory-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:10px}
+    .job-directory-card{border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:13px;min-width:0}
+    .job-directory-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+    .job-directory-code{font-weight:900;font-size:14px;overflow-wrap:anywhere}
+    .job-directory-name{font-size:12px;color:var(--muted);margin-top:5px;overflow-wrap:anywhere}
+    .job-directory-card .secondary-btn{width:100%;margin-top:12px;min-height:38px}
     .report-summary{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:14px;margin-bottom:18px;width:100%;min-width:0;align-items:stretch}
     .report-summary > *{min-width:0;width:100%;max-width:100%;}
     .report-summary-breakdown{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:var(--shadow);overflow:hidden}
@@ -435,7 +447,7 @@
     state.jobs=data||[];
     renderJobOptions();
     $('jobCountPill').textContent=`${state.jobs.length} job${state.jobs.length===1?'':'s'}`;
-    $('jobList').innerHTML=state.jobs.length?`<div class="table-wrap"><table><thead><tr><th>Job code</th><th>Job name</th><th>Status</th><th>Action</th></tr></thead><tbody>${state.jobs.map(j=>`<tr><td><strong>${esc(j.job_code)}</strong></td><td>${esc(j.job_name)}</td><td><span class="pill" style="${j.active===false?'background:var(--surface-2);color:var(--muted)':''}">${j.active===false?'Complete':'In progress'}</span></td><td><button class="secondary-btn toggle-job" data-id="${esc(j.id)}" data-active="${j.active===false?'false':'true'}">${j.active===false?'Reopen':'Complete'}</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty"><strong>No jobs yet</strong>Add a job code and name to get started.</div>';
+    $('jobList').innerHTML=state.jobs.length?`<div class="job-directory-cards">${state.jobs.map(j=>`<article class="job-directory-card"><div class="job-directory-card-top"><div style="min-width:0"><div class="job-directory-code">${esc(j.job_code||'No job code')}</div><div class="job-directory-name">${esc(j.job_name||'Unnamed job')}</div></div><span class="pill" style="${j.active===false?'background:var(--surface-2);color:var(--muted)':''}">${j.active===false?'Complete':'In progress'}</span></div><button class="secondary-btn toggle-job" data-id="${esc(j.id)}" data-active="${j.active===false?'false':'true'}" type="button">${j.active===false?'Reopen job':'Mark complete'}</button></article>`).join('')}</div>`:'<div class="empty"><strong>No jobs yet</strong>Add a job code and name to get started.</div>';
     $('reportJob').innerHTML='<option value="">All jobs</option>'+state.jobs.map(j=>`<option value="${esc(j.id)}">${esc(jobLabel(j))}</option>`).join('');
   }
 
@@ -709,7 +721,7 @@
   }
   function renderReportTable(rows) {
     const sorted=[...rows].sort((a,b)=>String(b.work_date).localeCompare(String(a.work_date)));
-    $('reportTable').innerHTML=sorted.length?`<div class="table-wrap"><table><thead><tr><th>Work date</th><th>Technician</th><th>Job code / name</th><th>Hours</th><th>Description</th></tr></thead><tbody>${sorted.map(e=>entryRow(e,true)).join('')}</tbody></table></div><p class="small muted">${sorted.length} entries shown  -  report query is limited to 5,000 most recent matching rows.</p>`:'<div class="empty"><strong>No hours found</strong>Try a wider date range or remove a filter.</div>';
+    $('reportTable').innerHTML=sorted.length?`<div class="report-entry-cards">${sorted.map(e=>{const j=e._job||{};return `<article class="report-entry-card"><div class="entry-card-top"><div style="min-width:0"><div class="entry-card-job">${esc(j.job_code||'No job code')} · ${esc(j.job_name||'Job details unavailable')}</div><div class="entry-card-meta">${esc(fmtDate(e.work_date))} · ${esc(e._tech||'Unknown technician')}</div></div><div class="entry-card-hours">${esc(fmtHours(e.hours))} h</div></div>${e.description?`<div class="entry-card-description">${esc(e.description)}</div>`:''}</article>`}).join('')}</div><p class="small muted">${sorted.length} entries shown · report query is limited to 5,000 most recent matching rows.</p>`:'<div class="empty"><strong>No hours found</strong>Try a wider date range or remove a filter.</div>';
   }
 
   function exportCsv() {
