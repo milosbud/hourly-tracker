@@ -88,6 +88,12 @@
     .toolbar{display:flex;gap:10px;align-items:end;flex-wrap:wrap;margin-bottom:16px}
     .toolbar .field{flex:1;min-width:130px}
     .toolbar .field.date{flex:0 1 155px}
+    .date-filter-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%;min-width:0;margin-bottom:12px}
+    .date-filter-fields .field{min-width:0}
+    input[type="date"]{width:100%;max-width:100%;min-width:0;padding:10px 7px;font-size:13px}
+    .date-presets{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 14px}
+    .date-preset{padding:8px 11px;border:1px solid var(--border);border-radius:9px;background:var(--surface-2);color:var(--text);font-size:11px;font-weight:750;white-space:nowrap}
+    .date-preset.active{background:var(--blue-soft);border-color:var(--blue);color:var(--blue)}
     .chart-box{height:260px;position:relative}
     .chart-box.short{height:220px}
     .empty{padding:30px 15px;text-align:center;color:var(--muted);font-size:13px}
@@ -128,6 +134,7 @@
     .filters-more{margin:0 0 16px;border:1px solid var(--border);border-radius:11px;padding:10px 12px;background:var(--surface-2)}
     .filters-more summary{cursor:pointer;font-size:12px;font-weight:750;color:var(--muted)}
     .filters-more .toolbar{margin:12px 0 0}
+    .filters-more .date-presets{margin-top:12px}
     .job-search-hint{font-size:11px;color:var(--muted);margin-top:4px}
     .entry-cards{display:none;gap:10px}
     .entry-card{border:1px solid var(--border);background:var(--surface);border-radius:13px;padding:13px;min-width:0}
@@ -164,7 +171,9 @@
       .stats{gap:10px}.stat-card{padding:14px}.stat-value{font-size:24px}.stat-icon{width:30px;height:30px}
       .panel{padding:16px;margin-bottom:14px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.three-col{grid-template-columns:1fr}
       .topbar h1{font-size:25px}.subtitle{font-size:12px}.topbar .icon-btn{width:38px;height:38px}
-      .toolbar{display:grid;grid-template-columns:1fr 1fr}.toolbar .field{min-width:0}.toolbar .field.date{min-width:0}
+      .toolbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.toolbar .field{min-width:0}.toolbar .field.date{min-width:0}
+      .date-presets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.date-preset{padding:9px 4px;white-space:normal}
+      .date-filter-fields{gap:8px}.date-filter-fields input[type="date"]{font-size:12px!important;padding:10px 5px}
     }
     @media(max-width:390px){.stats{grid-template-columns:1fr 1fr}.stat-value{font-size:21px}.top-actions{gap:5px}.icon-btn{width:36px;height:36px}}
   </style>
@@ -189,7 +198,7 @@
       <div class="brand"><div class="brand-mark">F</div><div><div class="brand-name">HVAC Hours Tracker</div><div class="brand-sub">HVAC team workspace</div></div></div>
       <div><div class="nav-label">Workspace</div><nav class="nav" id="sideNav">
         <button data-page="log" class="active"><span class="nav-icon">+</span>Allocate hours</button>
-        <button data-page="entries"><span class="nav-icon">[ ]</span>My entries</button>
+        <button data-page="entries"><span class="nav-icon">[ ]</span>My allocations</button>
         <button data-page="reports" class="admin-only hidden"><span class="nav-icon">[R]</span>Reports & insights</button>
         <button data-page="jobs" class="admin-only hidden"><span class="nav-icon">[J]</span>Job management</button>
       </nav></div>
@@ -231,7 +240,7 @@
         <section class="panel">
           <div class="panel-head"><div><h2 class="panel-title">My allocated time</h2><p class="panel-description">View or update your allocations.</p></div><button class="primary-btn" data-go="log">+ Allocate hours</button></div>
           <div id="entriesNotice" class="notice hidden"></div>
-          <div class="entry-search-row"><div class="field"><label for="entrySearch">Find an allocation</label><input id="entrySearch" type="search" placeholder="Type a job name or code"></div></div><details class="filters-more"><summary>Filter by date (optional)</summary><div class="toolbar"><div class="field date"><label for="entriesFrom">From</label><input id="entriesFrom" type="date"></div><div class="field date"><label for="entriesTo">To</label><input id="entriesTo" type="date"></div><button class="secondary-btn" id="clearEntryFilters" type="button">Clear dates</button></div></details>
+          <div class="entry-search-row"><div class="field"><label for="entrySearch">Find an allocation</label><input id="entrySearch" type="search" placeholder="Type a job name or code"></div></div><details class="filters-more"><summary>Filter by date (optional)</summary><div class="date-presets" data-preset-group="entries"><button class="date-preset" type="button" data-date-preset="entries:week">This week</button><button class="date-preset" type="button" data-date-preset="entries:lastweek">Last week</button><button class="date-preset" type="button" data-date-preset="entries:month">This month</button><button class="date-preset" type="button" data-date-preset="entries:lastmonth">Last month</button><button class="date-preset" type="button" data-date-preset="entries:all">All time</button><button class="date-preset" type="button" data-date-preset="entries:custom">Custom dates</button></div><div class="date-filter-fields"><div class="field"><label for="entriesFrom">From date</label><input id="entriesFrom" type="date"></div><div class="field"><label for="entriesTo">To date</label><input id="entriesTo" type="date"></div></div><button class="secondary-btn" id="clearEntryFilters" type="button">Clear dates</button></details>
           <div id="entriesTable"></div>
         </section>
       </section>
@@ -240,12 +249,12 @@
         <section class="panel">
           <div class="panel-head"><div><h2 class="panel-title">Allocated hours</h2><p class="panel-description">See how hours are distributed by job and technician.</p></div><button class="primary-btn" id="exportCsvBtn">v Export CSV</button></div>
           <div id="reportNotice" class="notice hidden"></div>
+          <div class="date-presets" data-preset-group="report"><button class="date-preset" type="button" data-date-preset="report:week">This week</button><button class="date-preset" type="button" data-date-preset="report:lastweek">Last week</button><button class="date-preset" type="button" data-date-preset="report:month">This month</button><button class="date-preset" type="button" data-date-preset="report:lastmonth">Last month</button><button class="date-preset" type="button" data-date-preset="report:all">All time</button><button class="date-preset" type="button" data-date-preset="report:custom">Custom dates</button></div>
+          <div class="date-filter-fields"><div class="field"><label for="reportFrom">From date</label><input id="reportFrom" type="date"></div><div class="field"><label for="reportTo">To date</label><input id="reportTo" type="date"></div></div>
           <div class="toolbar">
-            <div class="field date"><label for="reportFrom">From date</label><input id="reportFrom" type="date"></div>
-            <div class="field date"><label for="reportTo">To date</label><input id="reportTo" type="date"></div>
             <div class="field"><label for="reportTech">Technician</label><select id="reportTech"><option value="">All technicians</option></select></div>
             <div class="field"><label for="reportJob">Job</label><select id="reportJob"><option value="">All jobs</option></select></div>
-            <button class="secondary-btn" id="clearReportFilters">Reset</button>
+            <button class="secondary-btn" id="clearReportFilters">Reset filters</button>
           </div>
         </section>
         <section class="report-summary">
@@ -281,8 +290,8 @@
       </section>
     </main>
     <nav class="mobile-nav" id="mobileNav">
-      <button data-page="log" class="active"><span class="nav-icon">+</span>Log</button>
-      <button data-page="entries"><span class="nav-icon">[ ]</span>Entries</button>
+      <button data-page="log" class="active"><span class="nav-icon">+</span>Allocate</button>
+      <button data-page="entries"><span class="nav-icon">[ ]</span>My allocations</button>
       <button data-page="reports" class="admin-only hidden"><span class="nav-icon">[R]</span>Reports</button>
       <button data-page="jobs" class="admin-only hidden"><span class="nav-icon">[J]</span>Jobs</button>
     </nav>
@@ -429,7 +438,7 @@
 
     recentActivity.innerHTML = rows.length
       ? `<div style="display:grid;gap:0">${rows.map(e => `<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)"><div class="stat-icon blue">H</div><div style="flex:1;min-width:0"><div style="font-weight:800;font-size:12px;overflow:hidden;text-overflow:ellipsis">${esc(e._job.job_code || 'Job')} - ${esc(e._job.job_name || 'Unnamed job')}</div><div class="small muted">${esc(fmtDate(e.work_date))}${e.description ? ' - ' + esc(e.description) : ''}</div></div><div style="font-weight:850;white-space:nowrap">${esc(fmtHours(e.hours))} h</div></div>`).join('')}</div>`
-      : '<div class="empty"><strong>No hours recorded yet</strong>Your latest entries will show up here.</div>';
+      : '<div class="empty"><strong>No allocations yet</strong>Your latest allocations will show up here.</div>';
   }
 
   function renderCalendar() {
@@ -474,6 +483,32 @@
     if(page==='jobs') loadJobs().catch(e=>showNotice('jobNotice',friendlyError(e),'error'));
   }
 
+  function getPresetRange(preset) {
+    const now = new Date(); now.setHours(0,0,0,0);
+    const monday = new Date(now); monday.setDate(now.getDate() - ((now.getDay()+6)%7));
+    const sunday = new Date(monday); sunday.setDate(monday.getDate()+6);
+    if (preset === 'week') return [dateISO(monday), dateISO(now)];
+    if (preset === 'lastweek') { const start=new Date(monday); start.setDate(start.getDate()-7); const end=new Date(monday); end.setDate(end.getDate()-1); return [dateISO(start),dateISO(end)]; }
+    if (preset === 'month') return [dateISO(new Date(now.getFullYear(),now.getMonth(),1)), dateISO(now)];
+    if (preset === 'lastmonth') return [dateISO(new Date(now.getFullYear(),now.getMonth()-1,1)), dateISO(new Date(now.getFullYear(),now.getMonth(),0))];
+    if (preset === 'all') return ['', ''];
+    return null;
+  }
+  function markDatePreset(scope, preset) {
+    document.querySelectorAll(`[data-preset-group="${scope}"] .date-preset`).forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.datePreset === `${scope}:${preset}`);
+    });
+  }
+  function applyDatePreset(scope, preset) {
+    if (preset === 'custom') { markDatePreset(scope, preset); const target=$(scope==='report'?'reportFrom':'entriesFrom'); if(target) target.focus(); return; }
+    const range=getPresetRange(preset); if(!range)return;
+    const from=$(scope==='report'?'reportFrom':'entriesFrom'), to=$(scope==='report'?'reportTo':'entriesTo');
+    from.value=range[0]; to.value=range[1]; markDatePreset(scope,preset);
+    if(scope==='report') loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));
+    else renderEntriesTable();
+  }
+  function setCustomPresetOnDateChange(scope) { markDatePreset(scope,'custom'); }
+
   function setTodayDefaults() {
     $('workDate').value=today(); $('reportTo').value=today(); state.reportCalendarSelected=today();
     const start=new Date(); start.setDate(start.getDate()-29); $('reportFrom').value=dateISO(start);
@@ -509,7 +544,7 @@
     if(!confirm(`Delete the ${e.hours}-hour entry for ${fmtDate(e.work_date)}? This cannot be undone.`))return;
     const {error}=await sb.from('time_entries').delete().eq('id',id).eq('user_id',state.user.id);
     if(error){showNotice('entriesNotice',friendlyError(error),'error');return;}
-    await loadEntries(); showNotice('entriesNotice','Entry deleted.','success');
+    await loadEntries(); showNotice('entriesNotice','Allocation deleted.','success');
   }
 
   async function loadReport() {
@@ -603,7 +638,7 @@
     $('loginView').classList.add('hidden');$('appView').classList.remove('hidden');
     workspaceLoadPromise = (async () => {
       try {
-        await loadProfile(); await loadJobs(); await loadEntries(); setTodayDefaults(); goPage('log');
+        await loadProfile(); await loadJobs(); await loadEntries(); setTodayDefaults(); markDatePreset('report','custom'); markDatePreset('entries','all'); goPage('log');
       } catch(e) {
         console.error('Unable to load HVAC Hours Tracker workspace:', e);
         // Clear the local user state so a failed workspace load can be retried.
@@ -631,17 +666,18 @@
     } finally { button.disabled=false; button.innerHTML=originalText; }
   });
   $('logoutBtn').addEventListener('click',signOut);
-  $('entryForm').addEventListener('submit',saveEntry);$('cancelEditBtn').addEventListener('click',resetEntryForm);$('jobSearch').addEventListener('input',renderJobOptions);$('clearEntryFilters').addEventListener('click',()=>{$('entriesFrom').value='';$('entriesTo').value='';renderEntriesTable();});
+  $('entryForm').addEventListener('submit',saveEntry);$('cancelEditBtn').addEventListener('click',resetEntryForm);$('jobSearch').addEventListener('input',renderJobOptions);$('clearEntryFilters').addEventListener('click',()=>{$('entriesFrom').value='';$('entriesTo').value='';markDatePreset('entries','all');renderEntriesTable();});
   $('calendarPrev').addEventListener('click',()=>{state.calendarMonth=new Date(state.calendarMonth.getFullYear(),state.calendarMonth.getMonth()-1,1);renderCalendar();});
   $('calendarNext').addEventListener('click',()=>{state.calendarMonth=new Date(state.calendarMonth.getFullYear(),state.calendarMonth.getMonth()+1,1);renderCalendar();});
   $('calendarGrid').addEventListener('click',e=>{const day=e.target.closest('[data-calendar-date]');if(!day)return;state.calendarSelected=day.dataset.calendarDate;renderCalendar();});
   $('reportCalendarPrev').addEventListener('click',()=>{state.reportCalendarMonth=new Date(state.reportCalendarMonth.getFullYear(),state.reportCalendarMonth.getMonth()-1,1);renderReportCalendar(state.reportRows);});
   $('reportCalendarNext').addEventListener('click',()=>{state.reportCalendarMonth=new Date(state.reportCalendarMonth.getFullYear(),state.reportCalendarMonth.getMonth()+1,1);renderReportCalendar(state.reportRows);});
   $('reportCalendarGrid').addEventListener('click',e=>{const day=e.target.closest('[data-report-calendar-date]');if(!day)return;state.reportCalendarSelected=day.dataset.reportCalendarDate;renderReportCalendar(state.reportRows);});
-  $('entrySearch').addEventListener('input',renderEntriesTable);$('entriesFrom').addEventListener('change',renderEntriesTable);$('entriesTo').addEventListener('change',renderEntriesTable);
+  $('entrySearch').addEventListener('input',renderEntriesTable);$('entriesFrom').addEventListener('change',()=>{setCustomPresetOnDateChange('entries');renderEntriesTable();});$('entriesTo').addEventListener('change',()=>{setCustomPresetOnDateChange('entries');renderEntriesTable();});
+  document.querySelectorAll('[data-date-preset]').forEach(btn=>btn.addEventListener('click',()=>{const [scope,preset]=btn.dataset.datePreset.split(':');applyDatePreset(scope,preset);}));
   $('exportCsvBtn').addEventListener('click',exportCsv);$('jobForm').addEventListener('submit',addJob);
-  $('clearReportFilters').addEventListener('click',()=>{setTodayDefaults();$('reportTech').value='';$('reportJob').value='';loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));});
-  ['reportFrom','reportTo','reportTech','reportJob'].forEach(id=>$(id).addEventListener('change',()=>loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'))));
+  $('clearReportFilters').addEventListener('click',()=>{setTodayDefaults();$('reportTech').value='';$('reportJob').value='';markDatePreset('report','custom');loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));});
+  ['reportFrom','reportTo'].forEach(id=>$(id).addEventListener('change',()=>{setCustomPresetOnDateChange('report');loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));}));['reportTech','reportJob'].forEach(id=>$(id).addEventListener('change',()=>loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'))));
   document.querySelectorAll('[data-page]').forEach(el=>el.addEventListener('click',()=>goPage(el.dataset.page)));
   document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',()=>goPage(el.dataset.go)));
   document.addEventListener('click',e=>{
