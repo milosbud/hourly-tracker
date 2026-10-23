@@ -192,6 +192,16 @@
     .job-directory-code{font-weight:900;font-size:14px;overflow-wrap:anywhere}
     .job-directory-name{font-size:12px;color:var(--muted);margin-top:5px;overflow-wrap:anywhere}
     .job-directory-card .secondary-btn{width:100%;margin-top:12px;min-height:38px}
+    .job-card-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:12px}
+    .job-card-actions button{width:100%;min-width:0;padding:8px 9px;font-size:11px;min-height:37px}
+    .job-card-actions .danger-btn{margin-top:0}
+    .job-detail-panel{margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+    .job-detail-summary{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;font-size:12px}
+    .job-detail-summary span{color:var(--teal);font-weight:800;text-align:right}
+    .job-detail-list{display:grid;gap:0;margin-top:8px}
+    .job-detail-row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:9px 0;border-top:1px solid var(--border);font-size:12px}
+    .job-detail-row small{display:block;color:var(--muted);font-size:11px;overflow-wrap:anywhere;margin-top:2px}
+    .job-detail-row>span{font-weight:850;color:var(--teal);white-space:nowrap}
     .report-summary{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:14px;margin-bottom:18px;width:100%;min-width:0;align-items:stretch}
     .report-summary > *{min-width:0;width:100%;max-width:100%;}
     .report-summary-breakdown{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:var(--shadow);overflow:hidden}
@@ -333,11 +343,11 @@
 
       <section id="page-jobs" class="page">
         <div class="grid two-col">
-          <section class="panel"><div class="panel-head"><div><h2 class="panel-title">Add a job</h2><p class="panel-description">Keep job codes and names consistent for the field team.</p></div></div>
+          <section class="panel"><div class="panel-head"><div><h2 class="panel-title" id="jobFormTitle">Add a job</h2><p class="panel-description">Manage TG Ventilation jobs without changing existing job numbers.</p></div></div>
             <div id="jobNotice" class="notice hidden"></div>
-            <form id="jobForm"><div class="form-grid"><div class="field"><label for="jobCode">Job code *</label><input id="jobCode" required maxlength="80" placeholder="e.g. HVAC-1042"></div><div class="field"><label for="jobName">Job name *</label><input id="jobName" required maxlength="180" placeholder="e.g. Main Street service call"></div></div><div class="form-actions"><button class="primary-btn" type="submit">+ Add job</button></div></form>
+            <form id="jobForm"><div class="form-grid"><div class="field"><label for="jobCode">Job code *</label><input id="jobCode" required maxlength="80" placeholder="e.g. TGV-606-26"></div><div class="field"><label for="jobName">Job name *</label><input id="jobName" required maxlength="180" placeholder="e.g. Main Street ventilation install"></div></div><div class="form-actions"><button class="secondary-btn hidden" id="cancelJobEditBtn" type="button">Cancel edit</button><button class="primary-btn" id="saveJobBtn" type="submit">+ Add job</button></div></form>
           </section>
-          <section class="panel"><div class="panel-head"><div><h2 class="panel-title">Job directory</h2><p class="panel-description">In-progress jobs appear in the allocation form.</p></div><span class="pill" id="jobCountPill">0 jobs</span></div><div id="jobList"></div></section>
+          <section class="panel"><div class="panel-head"><div><h2 class="panel-title">Job directory</h2><p class="panel-description">Search jobs, review allocated hours, and manage status.</p></div><span class="pill" id="jobCountPill">0 jobs</span></div><div class="toolbar" style="margin-bottom:14px"><div class="field"><label for="jobDirectorySearch">Search jobs</label><input id="jobDirectorySearch" type="search" placeholder="Job number or project name"></div><div class="field"><label for="jobDirectoryStatus">Status</label><select id="jobDirectoryStatus"><option value="active">Active jobs</option><option value="all">All jobs</option><option value="complete">Completed jobs</option></select></div></div><div id="jobList"></div></section>
         </div>
         <section class="panel"><div class="panel-head"><div><h2 class="panel-title">Admin time entry</h2><p class="panel-description">This form is available to admins once the database policy allows admins to create entries for other technicians.</p></div></div>
           <div class="notice">Admin allocations for another technician are not enabled yet. Admin access in the app does not automatically grant permission to create entries for other users, so the database permissions need to be checked first.</div>
@@ -371,7 +381,7 @@
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJucnl1dXNucWZqbHRzdHd3cWFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MTcyMzIsImV4cCI6MjEwODE5MzIzMn0.Xsko4Pv7wMyeaSm0TKVX97TC1spBWkDWSJ7rrnYVOUY';
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   const $ = id => document.getElementById(id);
-  const state = { user:null, profile:null, isAdmin:false, jobs:[], entries:[], reportRows:[], techChart:null, jobChart:null, weekChart:null, mixChart:null, calendarMonth:new Date(new Date().getFullYear(),new Date().getMonth(),1), calendarSelected:null, reportCalendarMonth:new Date(new Date().getFullYear(),new Date().getMonth(),1), reportCalendarSelected:null };
+  const state = { user:null, profile:null, isAdmin:false, jobs:[], entries:[], reportRows:[], techChart:null, jobChart:null, weekChart:null, mixChart:null, calendarMonth:new Date(new Date().getFullYear(),new Date().getMonth(),1), calendarSelected:null, reportCalendarMonth:new Date(new Date().getFullYear(),new Date().getMonth(),1), reportCalendarSelected:null, jobEditingId:null, jobDetailId:null, jobDetailRows:[], jobDetailLoading:false, jobStats:{} };
   const pageMeta = {
     log:['FIELD WORKSPACE','Allocate hours','Choose the job, date and hours. That’s it.'],
     entries:['YOUR ALLOCATIONS','My allocated time','View or update your allocations.'],
@@ -441,14 +451,46 @@
     $('jobSearchHint').textContent=selected?`Selected: ${jobLabel(selected)}`:'Tap to view available jobs.';
   }
 
+  function renderJobDirectory() {
+    const term=($('jobDirectorySearch')?.value||'').trim().toLowerCase();
+    const status=$('jobDirectoryStatus')?.value||'active';
+    const jobs=state.jobs.filter(j=>{
+      const active=j.active!==false;
+      const matchesStatus=status==='all'||(status==='active'&&active)||(status==='complete'&&!active);
+      const matchesTerm=!term||`${j.job_code||''} ${j.job_name||''}`.toLowerCase().includes(term);
+      return matchesStatus&&matchesTerm;
+    });
+    $('jobCountPill').textContent=`${state.jobs.length} total · ${state.jobs.filter(j=>j.active!==false).length} active`;
+    $('jobList').innerHTML=jobs.length?`<div class="job-directory-cards">${jobs.map(j=>{
+      const stats=state.jobStats[String(j.id)]||{hours:0,count:0};
+      const total=stats.hours;
+      const count=stats.count;
+      const isDetail=String(state.jobDetailId)===String(j.id);
+      const details=isDetail?(state.jobDetailLoading?'<div class="small muted" style="margin-top:12px">Loading job activity…</div>':renderJobDetailContent(j,state.jobDetailRows)):'';
+      return `<article class="job-directory-card"><div class="job-directory-card-top"><div style="min-width:0"><div class="job-directory-code">${esc(j.job_code||'No job code')}</div><div class="job-directory-name">${esc(j.job_name||'Unnamed job')}</div></div><span class="pill" style="${j.active===false?'background:var(--surface-2);color:var(--muted)':''}">${j.active===false?'Completed':'Active'}</span></div><div class="entries-overview" style="grid-template-columns:repeat(2,minmax(0,1fr));margin:12px 0 0"><div class="entries-overview-card"><div class="entries-overview-label">Allocated hours</div><div class="entries-overview-value" style="font-size:20px">${esc(fmtHours(total))}</div></div><div class="entries-overview-card"><div class="entries-overview-label">Allocations</div><div class="entries-overview-value" style="font-size:20px">${count}</div></div></div><div class="job-card-actions"><button class="secondary-btn job-details-btn" data-id="${esc(j.id)}" type="button">${isDetail?'Hide details':'View job details'}</button><button class="secondary-btn edit-job" data-id="${esc(j.id)}" type="button">Edit</button><button class="secondary-btn toggle-job" data-id="${esc(j.id)}" data-active="${j.active===false?'false':'true'}" type="button">${j.active===false?'Reopen':'Complete'}</button><button class="danger-btn delete-job" data-id="${esc(j.id)}" type="button">Delete</button></div>${details}</article>`;
+    }).join('')}</div>`:'<div class="empty"><strong>No matching jobs</strong>Try another search or status filter.</div>';
+  }
+  function renderJobDetailContent(job,rows) {
+    const total=rows.reduce((sum,e)=>sum+Number(e.hours||0),0);
+    return `<div class="job-detail-panel"><div class="job-detail-summary"><strong>Job activity</strong><span>${esc(fmtHours(total))} total hours · ${rows.length} allocations</span></div>${rows.length?`<div class="job-detail-list">${rows.slice(0,50).map(e=>`<div class="job-detail-row"><div><strong>${esc(fmtDate(e.work_date))}</strong><small>${esc(e._tech||'Unknown technician')}${e.description?` · ${esc(e.description)}`:''}</small></div><span>${esc(fmtHours(e.hours))} h</span></div>`).join('')}${rows.length>50?'<p class="small muted">Showing the 50 most recent allocations.</p>':''}</div>`:'<p class="small muted">No time has been allocated to this job yet.</p>'}</div>`;
+  }
   async function loadJobs() {
     const {data,error}=await sb.from('jobs').select('id,job_code,job_name,active').order('job_code');
     if(error) throw error;
     state.jobs=data||[];
-    renderJobOptions();
-    $('jobCountPill').textContent=`${state.jobs.length} job${state.jobs.length===1?'':'s'}`;
-    $('jobList').innerHTML=state.jobs.length?`<div class="job-directory-cards">${state.jobs.map(j=>`<article class="job-directory-card"><div class="job-directory-card-top"><div style="min-width:0"><div class="job-directory-code">${esc(j.job_code||'No job code')}</div><div class="job-directory-name">${esc(j.job_name||'Unnamed job')}</div></div><span class="pill" style="${j.active===false?'background:var(--surface-2);color:var(--muted)':''}">${j.active===false?'Complete':'In progress'}</span></div><button class="secondary-btn toggle-job" data-id="${esc(j.id)}" data-active="${j.active===false?'false':'true'}" type="button">${j.active===false?'Reopen job':'Mark complete'}</button></article>`).join('')}</div>`:'<div class="empty"><strong>No jobs yet</strong>Add a job code and name to get started.</div>';
+    state.jobStats={};
+    const {data:allocationStats}=await sb.from('time_entries').select('job_id,hours').limit(5000);
+    (allocationStats||[]).forEach(row=>{const key=String(row.job_id);if(!state.jobStats[key])state.jobStats[key]={hours:0,count:0};state.jobStats[key].hours+=Number(row.hours||0);state.jobStats[key].count+=1;});
+    $('jobSelect').innerHTML='<option value="">Choose a job...</option>'+state.jobs.map(j=>`<option value="${esc(j.id)}">${esc(jobLabel(j))}</option>`).join('');
+    renderJobOptions();renderJobDirectory();
     $('reportJob').innerHTML='<option value="">All jobs</option>'+state.jobs.map(j=>`<option value="${esc(j.id)}">${esc(jobLabel(j))}</option>`).join('');
+  }
+  async function showJobDetails(id) {
+    if(String(state.jobDetailId)===String(id)){state.jobDetailId=null;state.jobDetailRows=[];state.jobDetailLoading=false;renderJobDirectory();return;}
+    state.jobDetailId=id;state.jobDetailRows=[];state.jobDetailLoading=true;renderJobDirectory();
+    const {data,error}=await sb.from('time_entries').select('id,user_id,job_id,work_date,hours,description').eq('job_id',id).order('work_date',{ascending:false}).limit(500);
+    if(error){state.jobDetailLoading=false;showNotice('jobNotice',friendlyError(error),'error');renderJobDirectory();return;}
+    state.jobDetailRows=data||[];await attachLabels(state.jobDetailRows);state.jobDetailLoading=false;renderJobDirectory();
   }
 
   async function loadEntries() {
@@ -732,18 +774,41 @@
     const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'})),a=document.createElement('a');a.href=url;a.download=`hvac-hours-report-${today()}.csv`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
   }
 
+  function resetJobForm() {
+    state.jobEditingId=null;$('jobForm').reset();$('jobFormTitle').textContent='Add a job';$('saveJobBtn').textContent='+ Add job';$('cancelJobEditBtn').classList.add('hidden');
+  }
+  function startJobEdit(id) {
+    const job=state.jobs.find(j=>String(j.id)===String(id));if(!job)return;
+    state.jobEditingId=job.id;$('jobCode').value=job.job_code||'';$('jobName').value=job.job_name||'';$('jobFormTitle').textContent='Edit job';$('saveJobBtn').textContent='Save changes';$('cancelJobEditBtn').classList.remove('hidden');hideNotice('jobNotice');
+    $('page-jobs').querySelector('#jobCode').focus();window.scrollTo({top:0,behavior:'smooth'});
+  }
   async function addJob(event) {
     event.preventDefault();hideNotice('jobNotice');
-    const payload={job_code:$('jobCode').value.trim(),job_name:$('jobName').value.trim(),active:true};
+    const payload={job_code:$('jobCode').value.trim(),job_name:$('jobName').value.trim()};
     if(!payload.job_code||!payload.job_name)return;
-    const {error}=await sb.from('jobs').insert(payload);
-    if(error){showNotice('jobNotice',friendlyError(error),'error');return;}
-    $('jobForm').reset();showNotice('jobNotice','Job added successfully.','success');await loadJobs();
+    const duplicate=state.jobs.find(j=>String(j.id)!==String(state.jobEditingId||'')&&String(j.job_code||'').trim().toLowerCase()===payload.job_code.toLowerCase());
+    if(duplicate){showNotice('jobNotice',`Job code ${payload.job_code} is already in use. Please use a unique job number.`, 'error');return;}
+    let result;
+    if(state.jobEditingId) result=await sb.from('jobs').update(payload).eq('id',state.jobEditingId);
+    else result=await sb.from('jobs').insert({...payload,active:true});
+    if(result.error){showNotice('jobNotice',friendlyError(result.error),'error');return;}
+    const wasEditing=!!state.jobEditingId;const editedId=state.jobEditingId;resetJobForm();if(wasEditing&&String(state.jobDetailId)===String(editedId)){state.jobDetailId=null;state.jobDetailRows=[];}showNotice('jobNotice',wasEditing?'Job updated successfully.':'Job added successfully.','success');await loadJobs();
   }
   async function toggleJob(id,active) {
     const {error}=await sb.from('jobs').update({active:!active}).eq('id',id);
     if(error){showNotice('jobNotice',friendlyError(error),'error');return;}
     await loadJobs();showNotice('jobNotice',`Job ${active?'marked complete':'reopened'}.`,'success');
+  }
+  async function deleteJob(id) {
+    const job=state.jobs.find(j=>String(j.id)===String(id));if(!job)return;
+    const {count,error:countError}=await sb.from('time_entries').select('id',{count:'exact',head:true}).eq('job_id',id);
+    if(countError){showNotice('jobNotice',friendlyError(countError),'error');return;}
+    if((count||0)>0){showNotice('jobNotice',`“${job.job_code}” has ${count} allocation(s), so it cannot be deleted without risking historical records. Mark it completed instead.`, 'error');return;}
+    if(!window.confirm(`Delete job ${job.job_code} — ${job.job_name}? This cannot be undone.`))return;
+    const {error}=await sb.from('jobs').delete().eq('id',id);
+    if(error){showNotice('jobNotice',friendlyError(error),'error');return;}
+    if(String(state.jobDetailId)===String(id)){state.jobDetailId=null;state.jobDetailRows=[];}
+    showNotice('jobNotice',`Job ${job.job_code} deleted.`,'success');await loadJobs();
   }
 
   let workspaceLoadPromise = null;
@@ -804,7 +869,7 @@
   $('reportCalendarGrid').addEventListener('click',e=>{const day=e.target.closest('[data-report-calendar-date]');if(!day)return;state.reportCalendarSelected=day.dataset.reportCalendarDate;renderReportCalendar(state.reportRows);});
   $('entrySearch').addEventListener('input',renderEntriesTable);$('entriesFrom').addEventListener('change',()=>{setCustomPresetOnDateChange('entries');renderEntriesTable();});$('entriesTo').addEventListener('change',()=>{setCustomPresetOnDateChange('entries');renderEntriesTable();});
   document.querySelectorAll('[data-date-preset]').forEach(btn=>btn.addEventListener('click',()=>{const [scope,preset]=btn.dataset.datePreset.split(':');applyDatePreset(scope,preset);}));
-  $('exportCsvBtn').addEventListener('click',exportCsv);$('jobForm').addEventListener('submit',addJob);
+  $('exportCsvBtn').addEventListener('click',exportCsv);$('jobForm').addEventListener('submit',addJob);$('cancelJobEditBtn').addEventListener('click',resetJobForm);$('jobDirectorySearch').addEventListener('input',renderJobDirectory);$('jobDirectoryStatus').addEventListener('change',renderJobDirectory);
   $('reportFilterToggle').dataset.minimized='true';
   $('reportFilterFloat').classList.add('hidden');
   $('reportFilterMinimize').addEventListener('click',()=>{const panel=$('reportFilterFloat');panel.classList.toggle('collapsed');const collapsed=panel.classList.contains('collapsed');$('reportFilterMinimize').textContent=collapsed?'+':'−';$('reportFilterMinimize').setAttribute('aria-label',collapsed?'Expand filter options':'Collapse filter options');$('reportFilterMinimize').title=collapsed?'Expand filter options':'Collapse filter options';});
@@ -825,6 +890,9 @@
     const edit=e.target.closest('.edit-entry');if(edit)startEdit(edit.dataset.id);
     const del=e.target.closest('.delete-entry');if(del)deleteEntry(del.dataset.id).catch(err=>showNotice('entriesNotice',friendlyError(err),'error'));
     const toggle=e.target.closest('.toggle-job');if(toggle)toggleJob(toggle.dataset.id,toggle.dataset.active==='true').catch(err=>showNotice('jobNotice',friendlyError(err),'error'));
+    const editJob=e.target.closest('.edit-job');if(editJob)startJobEdit(editJob.dataset.id);
+    const deleteJobButton=e.target.closest('.delete-job');if(deleteJobButton)deleteJob(deleteJobButton.dataset.id).catch(err=>showNotice('jobNotice',friendlyError(err),'error'));
+    const details=e.target.closest('.job-details-btn');if(details)showJobDetails(details.dataset.id).catch(err=>showNotice('jobNotice',friendlyError(err),'error'));
   });
   // Follow the device/browser appearance setting automatically; no manual toggle.
   const systemTheme = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
