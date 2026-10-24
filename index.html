@@ -111,6 +111,30 @@
     .welcome-greeting{font-size:11px;font-weight:850;letter-spacing:1.1px;text-transform:uppercase;color:var(--teal);margin-bottom:5px}
     .report-filter-float{position:fixed;z-index:50;right:18px;bottom:20px;width:min(350px,calc(100vw - 28px));background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:16px;box-shadow:0 16px 45px #09142a33;overflow:hidden}
     .report-filter-float.hidden{display:none!important}
+    .report-summary{display:grid;grid-template-columns:minmax(145px,.32fr) minmax(0,1fr);gap:10px;margin-bottom:16px;align-items:stretch}
+    .report-total{padding:14px 16px;border-radius:14px;min-height:0}
+    .report-total-value{font-size:27px;margin:5px 0}
+    .report-summary-breakdown{padding:13px 15px;border-radius:14px;min-width:0}
+    .report-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+    .report-actions .secondary-btn,.report-actions .primary-btn{padding:8px 11px;font-size:12px;min-height:36px}
+    .job-directory-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+    .job-directory-toolbar .toolbar{flex:1;margin:0;min-width:200px}
+    .job-directory-toolbar .toolbar .field{min-width:140px}
+    .job-form-modal{position:fixed;z-index:60;inset:0;background:#09142a66;display:grid;place-items:center;padding:16px}
+    .job-form-modal.hidden{display:none!important}
+    .job-form-dialog{width:min(680px,100%);max-height:90vh;overflow:auto;background:var(--surface);border:1px solid var(--border);border-radius:17px;padding:18px;box-shadow:0 24px 70px #09142a44}
+    .job-form-dialog .panel-head{margin-bottom:12px}
+    .job-form-dialog .form-grid{gap:10px}
+    .job-form-dialog textarea{min-height:65px}
+    .job-filter-float{position:fixed;z-index:55;right:18px;bottom:20px;width:min(350px,calc(100vw - 28px));background:var(--surface);border:1px solid var(--border);border-radius:15px;box-shadow:0 16px 45px #09142a33;overflow:hidden}
+    .job-filter-float.hidden{display:none!important}
+    .job-filter-head{display:flex;align-items:center;gap:8px;background:var(--navy);color:#fff;padding:10px 12px}
+    .job-filter-head strong{font-size:12px;flex:1}
+    .job-filter-head button{border:1px solid #ffffff35;background:#ffffff12;color:#fff;border-radius:8px;width:32px;height:30px;font-size:20px}
+    .job-filter-body{padding:13px;display:grid;gap:10px;max-height:65vh;overflow:auto}
+    .job-filter-toggle{position:fixed;z-index:55;right:18px;bottom:20px;border:0;border-radius:99px;background:var(--blue);color:#fff;box-shadow:0 10px 28px #1e4ed866;padding:12px 15px;font-weight:850;display:flex;align-items:center;gap:8px}
+    .job-filter-toggle.hidden{display:none!important}
+    .icon-btn.small-icon{width:32px;height:32px;min-width:32px;padding:0;border-radius:9px;font-size:14px}
     .report-filter-head{display:flex;align-items:center;gap:8px;background:var(--navy);color:#fff;padding:10px 12px;cursor:move;touch-action:none;user-select:none}
     .report-filter-head strong{font-size:12px;flex:1}
     .report-filter-head button{border:1px solid #ffffff35;background:#ffffff12;color:#fff;border-radius:8px;width:32px;height:30px;font-size:20px;line-height:1;font-weight:600}.report-filter-head button:hover{background:#ffffff25}
@@ -122,6 +146,7 @@
     .report-filter-toggle{position:fixed;z-index:50;right:18px;bottom:20px;border:0;border-radius:99px;background:var(--blue);color:#fff;box-shadow:0 10px 28px #1e4ed866;padding:13px 17px;font-weight:850;display:flex;align-items:center;gap:8px}
     .report-filter-toggle.hidden{display:none!important}
     .hidden{display:none!important}
+    .logout-btn{padding:7px 9px;font-size:11px;min-height:32px;border-radius:9px}
     .user-chip{display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:7px 10px 7px 7px}
     .avatar{width:32px;height:32px;border-radius:10px;background:var(--blue-soft);color:var(--blue);display:grid;place-items:center;font-weight:900}
     .user-name{font-weight:800;font-size:12px}.user-role{font-size:10px;color:var(--muted)}
@@ -135,7 +160,6 @@
     .calendar-day.today{border-color:var(--border)}
     .calendar-day.today .day-number{color:var(--blue);font-weight:900}
     .calendar-day.selected{background:var(--blue-soft);border-color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
-    .calendar-day.selected .day-number{color:var(--blue);font-weight:900}
     .calendar-day.has-entry .day-number{font-weight:900}
     .day-number{font-size:12px;font-weight:700}
     .day-hours{font-size:10px;color:var(--teal);font-weight:850;line-height:1.1}
@@ -181,7 +205,7 @@
     .entry-card-hours{font-size:19px;font-weight:850;white-space:nowrap;color:var(--teal)}
     .entry-card-description{font-size:12px;margin-top:9px;overflow-wrap:anywhere;color:var(--muted)}
     .entry-card-actions{display:flex;gap:7px;margin-top:8px}
-    .entry-card-actions button{flex:1;min-height:35px;padding:7px 10px;font-size:11px}
+    .entry-card-actions button{flex:0 0 32px;min-height:32px;padding:0;font-size:14px}.entry-card-actions{justify-content:flex-end}
     .report-entry-cards{display:grid;gap:9px;margin-top:12px}
     .report-entry-card{border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:12px;min-width:0}
     .report-entry-card .entry-card-job{font-size:13px}
@@ -209,6 +233,11 @@
     .report-total-label{font-size:12px;color:#bdcbe2;font-weight:700}
     .report-total-value{font-size:36px;font-weight:900;letter-spacing:-1px;line-height:1.2;margin:7px 0}
     .report-total-note{font-size:11px;color:#bdcbe2}
+    /* Compact report header and summary override the older roomy layout. */
+    .report-summary{grid-template-columns:minmax(145px,.32fr) minmax(0,1fr);gap:10px;margin-bottom:16px}
+    .report-total{padding:14px 16px;min-height:0;border-radius:14px}
+    .report-total-value{font-size:27px;margin:5px 0}
+    .report-summary-breakdown{padding:13px 15px;border-radius:14px}
     .summary-table{border:1px solid var(--border);border-radius:12px;overflow-x:auto;max-width:100%;min-width:0}
     .summary-table table{width:100%;min-width:0;table-layout:fixed}
     .summary-table th,.summary-table td{white-space:normal;overflow-wrap:anywhere;padding:10px 9px}
@@ -220,7 +249,7 @@
     .report-calendar-row small{display:block;color:var(--muted);margin-top:2px}
     .report-calendar-total{font-weight:850;color:var(--teal);white-space:nowrap}
     .form-actions .primary-btn{min-width:150px}.app-toast{position:fixed;z-index:100;left:50%;bottom:24px;transform:translateX(-50%);width:min(560px,calc(100vw - 28px));padding:13px 16px;border-radius:12px;background:#183347;color:#fff;box-shadow:0 14px 40px #071d2a55;font-size:13px;font-weight:700;line-height:1.45}.app-toast.error{background:#8f2836}.app-toast.success{background:#087f72}.app-toast.hidden{display:none!important}
-    @media(max-width:760px){.entries-overview{gap:6px}.entries-overview-card{padding:9px}.entries-overview-value{font-size:19px}.report-summary{grid-template-columns:minmax(0,1fr)}.report-total{min-height:110px}.report-total-value{font-size:32px}.report-summary-breakdown{padding:13px}.summary-table th,.summary-table td{padding:8px 6px;font-size:11px}.summary-table table{min-width:0}.desktop-entry-table{display:none}.entry-cards{display:grid}.form-actions{display:grid;grid-template-columns:1fr}.form-actions .primary-btn,.form-actions .secondary-btn{width:100%;min-height:46px}.report-calendar .calendar-day{min-height:54px}.report-filter-float{right:10px;bottom:88px;width:min(340px,calc(100vw - 20px))}.report-filter-toggle{right:12px;bottom:86px;padding:12px 15px}}
+    @media(max-width:760px){.report-summary{grid-template-columns:minmax(0,1fr);gap:8px}.report-total{min-height:0}.report-total-value{font-size:25px}.job-directory-toolbar{align-items:stretch}.job-directory-toolbar .toolbar{min-width:100%}.job-form-dialog .form-grid{grid-template-columns:minmax(0,1fr)}.job-filter-float{right:10px;bottom:88px;width:min(340px,calc(100vw - 20px))}.job-filter-toggle{right:12px;bottom:86px}.entries-overview{gap:6px}.entries-overview-card{padding:9px}.entries-overview-value{font-size:19px}.report-summary{grid-template-columns:minmax(0,1fr)}.report-total{min-height:0}.report-total-value{font-size:25px}.report-summary-breakdown{padding:13px}.summary-table th,.summary-table td{padding:8px 6px;font-size:11px}.summary-table table{min-width:0}.desktop-entry-table{display:none}.entry-cards{display:grid}.form-actions{display:grid;grid-template-columns:1fr}.form-actions .primary-btn,.form-actions .secondary-btn{width:100%;min-height:46px}.report-calendar .calendar-day{min-height:54px}.report-filter-float{right:10px;bottom:88px;width:min(340px,calc(100vw - 20px))}.report-filter-toggle{right:12px;bottom:86px;padding:12px 15px}}
     @media(max-width:760px){input,select,textarea{font-size:16px!important}.calendar-grid{gap:3px}.calendar-day{min-height:54px;border-radius:8px;padding:5px 1px}.day-hours{font-size:9px}.calendar-weekday{font-size:9px}.calendar-title{font-size:15px}.calendar-toolbar .secondary-btn{padding:8px 10px}}
     @media(max-width:1050px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.two-col{grid-template-columns:1fr}}
     @media(max-width:760px){
@@ -280,7 +309,7 @@
               <div class="form-grid">
                 <div class="field full"><label for="jobSearch">Job</label><div class="job-picker"><input id="jobSearch" class="job-picker-input" type="text" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="jobPickerList" placeholder="Tap to view or search jobs"><span class="job-picker-caret">▾</span><div id="jobPickerList" class="job-picker-list hidden" role="listbox"></div></div><select id="jobSelect" required aria-label="Choose a job" class="hidden"><option value="">Choose a job...</option></select><div class="job-search-hint" id="jobSearchHint">Tap to view available jobs.</div></div>
                 <div class="field"><label for="workDate">Date</label><input id="workDate" type="date" required></div>
-                <div class="field"><label for="hours">Hours</label><input id="hours" type="number" inputmode="decimal" min="0.25" max="24" step="0.25" required placeholder="e.g. 8"><div class="quick-hours" aria-label="Quick hour amounts"><button type="button" class="quick-hour" data-hours="4">4 h</button><button type="button" class="quick-hour" data-hours="6">6 h</button><button type="button" class="quick-hour" data-hours="7.5">7.5 h</button><button type="button" class="quick-hour" data-hours="8">8 h</button></div></div>
+                <div class="field"><label for="hours">Hours</label><input id="hours" type="number" inputmode="decimal" min="0.25" max="24" step="0.25" required placeholder="e.g. 8"><div class="quick-hours" aria-label="Quick hour amounts"><button type="button" class="quick-hour" data-hours="2">2 h</button><button type="button" class="quick-hour" data-hours="4">4 h</button><button type="button" class="quick-hour" data-hours="6">6 h</button><button type="button" class="quick-hour" data-hours="8">8 h</button><button type="button" class="quick-hour" data-hours="10">10 h</button></div></div>
                 <div class="field full"><label for="description">Notes <span class="muted" style="font-weight:500">(optional)</span></label><input id="description" maxlength="500" placeholder="Optional details about the work"></div>
               </div>
               <div class="form-actions"><button class="secondary-btn hidden" type="button" id="cancelEditBtn">Cancel edit</button><button class="primary-btn" type="submit" id="saveEntryBtn">Allocate hours</button></div>
@@ -307,14 +336,14 @@
           </section>
 
           <div class="panel-head" style="margin-top:22px"><div><h2 class="panel-title">Your allocations</h2><p class="panel-description">Compact daily summaries make it easier to review your hours.</p></div></div>
-                    <div class="entry-search-row"><div class="field"><label for="entrySearch">Find an allocation</label><input id="entrySearch" type="search" placeholder="Type a job name or code"></div></div><details class="filters-more"><summary>Filter by date (optional)</summary><div class="date-presets" data-preset-group="entries"><button class="date-preset" type="button" data-date-preset="entries:week">This week</button><button class="date-preset" type="button" data-date-preset="entries:lastweek">Last week</button><button class="date-preset" type="button" data-date-preset="entries:month">This month</button><button class="date-preset" type="button" data-date-preset="entries:lastmonth">Last month</button><button class="date-preset" type="button" data-date-preset="entries:all">All time</button><button class="date-preset" type="button" data-date-preset="entries:custom">Custom dates</button></div><div class="date-filter-fields"><div class="field"><label for="entriesFrom">From date</label><input id="entriesFrom" type="date"></div><div class="field"><label for="entriesTo">To date</label><input id="entriesTo" type="date"></div></div><button class="secondary-btn" id="clearEntryFilters" type="button">Clear dates</button></details>
+                    <div class="entry-search-row"><div class="field"><label for="entrySearch">Find an allocation</label><input id="entrySearch" type="search" list="allocationJobOptions" placeholder="Choose or search a job"><datalist id="allocationJobOptions"></datalist></div></div><details class="filters-more"><summary>Filter by date (optional)</summary><div class="date-presets" data-preset-group="entries"><button class="date-preset" type="button" data-date-preset="entries:week">This week</button><button class="date-preset" type="button" data-date-preset="entries:lastweek">Last week</button><button class="date-preset" type="button" data-date-preset="entries:month">This month</button><button class="date-preset" type="button" data-date-preset="entries:lastmonth">Last month</button><button class="date-preset" type="button" data-date-preset="entries:all">All time</button><button class="date-preset" type="button" data-date-preset="entries:custom">Custom dates</button></div><div class="date-filter-fields"><div class="field"><label for="entriesFrom">From date</label><input id="entriesFrom" type="date"></div><div class="field"><label for="entriesTo">To date</label><input id="entriesTo" type="date"></div></div><button class="secondary-btn" id="clearEntryFilters" type="button">Clear dates</button></details>
           <div id="entriesTable"></div>
         </section>
       </section>
 
       <section id="page-reports" class="page">
         <section class="panel">
-          <div class="panel-head"><div><h2 class="panel-title">Allocated hours</h2><p class="panel-description">See how hours are distributed by job and technician.</p></div><button class="primary-btn" id="exportCsvBtn">v Export CSV</button></div>
+          <div class="panel-head"><div><h2 class="panel-title">Allocated hours</h2><p class="panel-description">See how hours are distributed by job and technician.</p></div><div class="report-actions"><button type="button" class="secondary-btn" id="reportFiltersOpen">☷ Filters</button><button class="secondary-btn" id="exportCsvBtn" type="button">↓ Export CSV</button></div></div>
           <div id="reportNotice" class="notice hidden"></div>
           <div class="hidden" aria-hidden="true">
             <input id="reportFrom" type="date"><input id="reportTo" type="date">
@@ -342,17 +371,12 @@
       </section>
 
       <section id="page-jobs" class="page">
-        <div class="grid two-col">
-          <section class="panel"><div class="panel-head"><div><h2 class="panel-title" id="jobFormTitle">Add a job</h2><p class="panel-description">Manage TG Ventilation jobs without changing existing job numbers.</p></div></div>
-            <div id="jobNotice" class="notice hidden"></div>
-            <form id="jobForm"><div class="form-grid"><div class="field"><label for="jobCode">Job code *</label><input id="jobCode" required maxlength="80" placeholder="e.g. TGV-606-26"></div><div class="field"><label for="jobName">Job name *</label><input id="jobName" required maxlength="180" placeholder="e.g. Main Street ventilation install"></div></div><div class="form-actions"><button class="secondary-btn hidden" id="cancelJobEditBtn" type="button">Cancel edit</button><button class="primary-btn" id="saveJobBtn" type="submit">+ Add job</button></div></form>
-          </section>
-          <section class="panel"><div class="panel-head"><div><h2 class="panel-title">Job directory</h2><p class="panel-description">Search jobs, review allocated hours, and manage status.</p></div><span class="pill" id="jobCountPill">0 jobs</span></div><div class="toolbar" style="margin-bottom:14px"><div class="field"><label for="jobDirectorySearch">Search jobs</label><input id="jobDirectorySearch" type="search" placeholder="Job number or project name"></div><div class="field"><label for="jobDirectoryStatus">Status</label><select id="jobDirectoryStatus"><option value="active">Active jobs</option><option value="all">All jobs</option><option value="complete">Completed jobs</option></select></div></div><div id="jobList"></div></section>
-        </div>
-        <section class="panel"><div class="panel-head"><div><h2 class="panel-title">Admin time entry</h2><p class="panel-description">This form is available to admins once the database policy allows admins to create entries for other technicians.</p></div></div>
-          <div class="notice">Admin allocations for another technician are not enabled yet. Admin access in the app does not automatically grant permission to create entries for other users, so the database permissions need to be checked first.</div>
-          <p class="small muted">To enable this safely, verify the Supabase <code>time_entries</code> access policies first, then add an admin-only permission for allocations made on behalf of another technician.</p>
+        <section class="panel">
+          <div class="panel-head"><div><h2 class="panel-title">Job directory</h2><p class="panel-description">Search jobs, review allocated hours, filter by technician, and manage job details.</p></div><span class="pill" id="jobCountPill">0 jobs</span></div>
+          <div class="job-directory-toolbar"><div class="toolbar"><div class="field"><label for="jobDirectorySearch">Search jobs</label><input id="jobDirectorySearch" type="search" list="jobDirectoryOptions" placeholder="Choose or search a job number/name"><datalist id="jobDirectoryOptions"></datalist></div></div><div class="report-actions"><button type="button" class="secondary-btn" id="jobFiltersOpen">☷ Filters</button><button type="button" class="primary-btn" id="addJobOpen">+ Add Job</button></div></div>
+          <div id="jobNotice" class="notice hidden"></div><div id="jobList"></div>
         </section>
+        <section class="panel"><div class="panel-head"><div><h2 class="panel-title">Admin time entry</h2><p class="panel-description">This form is available to admins once the database policy allows admins to create entries for other technicians.</p></div></div><div class="notice">Admin allocations for another technician are not enabled yet. Admin access in the app does not automatically grant permission to create entries for other users, so the database permissions need to be checked first.</div><p class="small muted">To enable this safely, verify the Supabase <code>time_entries</code> access policies first, then add an admin-only permission for allocations made on behalf of another technician.</p></section>
       </section>
     </main>
     <nav class="mobile-nav" id="mobileNav">
@@ -363,6 +387,26 @@
     </nav>
     <div id="appToast" class="app-toast hidden" role="status" aria-live="polite"></div>
     <button type="button" id="reportFilterToggle" class="report-filter-toggle hidden" aria-expanded="false"><span>☷</span> Filter reports</button>
+    <div id="jobFormModal" class="job-form-modal hidden" role="dialog" aria-modal="true" aria-labelledby="jobFormTitle">
+      <section class="job-form-dialog"><div class="panel-head"><div><h2 class="panel-title" id="jobFormTitle">Add a job</h2><p class="panel-description">Required: job number and job name/site.</p></div><button type="button" class="icon-btn small-icon" id="jobFormClose" aria-label="Close job form">×</button></div>
+        <div id="jobFormNotice" class="notice hidden"></div><form id="jobForm"><div class="form-grid">
+          <div class="field"><label for="jobCode">Job code *</label><input id="jobCode" required maxlength="80" placeholder="e.g. TGV-606-26"></div>
+          <div class="field"><label for="jobName">Job name / site *</label><input id="jobName" required maxlength="180" placeholder="e.g. Main Street ventilation install"></div>
+          <div class="field"><label for="jobWorkingFor">Working for</label><input id="jobWorkingFor" maxlength="180" placeholder="Customer or general contractor"></div>
+          <div class="field"><label for="jobPoNumber">PO number</label><input id="jobPoNumber" maxlength="100" placeholder="Optional purchase order"></div>
+          <div class="field"><label for="jobQuoted">Quoted?</label><select id="jobQuoted"><option value="">Not specified</option><option value="yes">Yes</option><option value="no">No</option></select></div>
+          <div class="field"><label for="jobSiteAddress">Site address</label><input id="jobSiteAddress" maxlength="300" placeholder="Street, city, province"></div>
+          <div class="field full"><label for="jobNotes">Job notes</label><textarea id="jobNotes" maxlength="4000" placeholder="Optional notes about the job"></textarea></div>
+        </div><div class="form-actions"><button class="secondary-btn hidden" id="cancelJobEditBtn" type="button">Cancel edit</button><button class="secondary-btn" id="jobFormCancel" type="button">Cancel</button><button class="primary-btn" id="saveJobBtn" type="submit">+ Add job</button></div></form>
+      </section>
+    </div>
+    <button type="button" id="jobFilterToggle" class="job-filter-toggle hidden" aria-expanded="false">☷ Filter jobs</button>
+    <section id="jobFilterFloat" class="job-filter-float hidden" aria-label="Job filters"><div class="job-filter-head"><strong>Filter jobs</strong><button type="button" id="jobFilterClose" aria-label="Close job filters">×</button></div><div class="job-filter-body">
+      <div class="field"><label for="jobDirectoryStatus">Status</label><select id="jobDirectoryStatus"><option value="active">Active jobs</option><option value="all">All jobs</option><option value="complete">Completed jobs</option></select></div>
+      <div class="field"><label for="jobDirectoryTech">Technician</label><select id="jobDirectoryTech"><option value="">All technicians</option></select></div>
+      <p class="small muted" id="jobFilterSummary">Shows each job’s total hours and the selected technician’s hours.</p>
+      <button type="button" class="secondary-btn" id="jobFiltersReset">Reset filters</button>
+    </div></section>
     <section id="reportFilterFloat" class="report-filter-float hidden" aria-label="Floating report filters">
       <div class="report-filter-head" id="reportFilterDrag"><strong>Filter reports</strong><button type="button" id="reportFilterClose" aria-label="Close filters" title="Close filters">×</button></div>
       <div class="report-filter-body" id="reportFilterBody">
@@ -382,12 +426,12 @@
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJucnl1dXNucWZqbHRzdHd3cWFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MTcyMzIsImV4cCI6MjEwODE5MzIzMn0.Xsko4Pv7wMyeaSm0TKVX97TC1spBWkDWSJ7rrnYVOUY';
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   const $ = id => document.getElementById(id);
-  const state = { user:null, profile:null, isAdmin:false, jobs:[], entries:[], reportRows:[], techChart:null, jobChart:null, weekChart:null, mixChart:null, calendarMonth:new Date(new Date().getFullYear(),new Date().getMonth(),1), calendarSelected:null, reportCalendarMonth:new Date(new Date().getFullYear(),new Date().getMonth(),1), reportCalendarSelected:null, jobEditingId:null, jobDetailId:null, jobDetailRows:[], jobDetailLoading:false, jobStats:{} };
+  const state = { user:null, profile:null, isAdmin:false, jobs:[], entries:[], reportRows:[], techChart:null, jobChart:null, weekChart:null, mixChart:null, calendarMonth:new Date(new Date().getFullYear(),new Date().getMonth(),1), calendarSelected:null, reportCalendarMonth:new Date(new Date().getFullYear(),new Date().getMonth(),1), reportCalendarSelected:null, jobEditingId:null, jobDetailId:null, jobDetailRows:[], jobDetailLoading:false, jobStats:{}, jobTechnicians:[] };
   const pageMeta = {
     log:['FIELD WORKSPACE','Allocate hours','Choose the job, date and hours. That’s it.'],
     entries:['YOUR ALLOCATIONS','My allocated time','View or update your allocations.'],
     reports:['MANAGEMENT OVERVIEW','Allocated hours','A clear view of hours by job, technician and date.'],
-    jobs:['ADMIN WORKSPACE','Job management','Manage job codes and names used by your team.']
+    jobs:['ADMIN WORKSPACE','Job management','Manage jobs, site details, technician hours and job status.']
   };
   const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const dateISO = d => { const x = new Date(d); return `${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`; };
@@ -457,38 +501,53 @@
   function renderJobDirectory() {
     const term=($('jobDirectorySearch')?.value||'').trim().toLowerCase();
     const status=$('jobDirectoryStatus')?.value||'active';
+    const selectedTech=$('jobDirectoryTech')?.value||'';
     const jobs=state.jobs.filter(j=>{
       const active=j.active!==false;
       const matchesStatus=status==='all'||(status==='active'&&active)||(status==='complete'&&!active);
-      const matchesTerm=!term||`${j.job_code||''} ${j.job_name||''}`.toLowerCase().includes(term);
-      return matchesStatus&&matchesTerm;
+      const matchesTerm=!term||`${j.job_code||''} ${j.job_name||''} ${j.working_for||''} ${j.po_number||''} ${j.site_address||''}`.toLowerCase().includes(term);
+      const stats=state.jobStats[String(j.id)]||{};
+      const matchesTech=!selectedTech||(stats.technicianIds||[]).includes(String(selectedTech));
+      return matchesStatus&&matchesTerm&&matchesTech;
     });
-    $('jobCountPill').textContent=`${state.jobs.length} total · ${state.jobs.filter(j=>j.active!==false).length} active`;
+    $('jobCountPill').textContent=`${jobs.length} shown · ${state.jobs.length} total`;
+    const allHours=jobs.reduce((sum,j)=>sum+Number(selectedTech?(state.jobStats[String(j.id)]?.techHours?.[selectedTech]||0):(state.jobStats[String(j.id)]?.hours||0)),0);
+    $('jobFilterSummary').textContent=selectedTech?`${fmtHours(allHours)} hours across ${jobs.length} matching job${jobs.length===1?'':'s'} for this technician.`:`${fmtHours(allHours)} hours across ${jobs.length} matching job${jobs.length===1?'':'s'}.`;
     $('jobList').innerHTML=jobs.length?`<div class="job-directory-cards">${jobs.map(j=>{
-      const stats=state.jobStats[String(j.id)]||{hours:0,count:0,technicians:[],technicianCount:0};
-      const total=stats.hours||0, techs=stats.technicians||[], techCount=stats.technicianCount||techs.length;
+      const stats=state.jobStats[String(j.id)]||{hours:0,count:0,technicians:[],technicianCount:0,techHours:{},technicianIds:[]};
+      const total=selectedTech?Number(stats.techHours?.[selectedTech]||0):Number(stats.hours||0), techs=stats.technicians||[], techCount=stats.technicianCount||techs.length;
       const isDetail=String(state.jobDetailId)===String(j.id);
-      const details=isDetail?(state.jobDetailLoading?'<div class="small muted" style="margin-top:10px">Loading job activity…</div>':renderJobDetailContent(j,state.jobDetailRows)):'';
+      const details=isDetail?(state.jobDetailLoading?'<div class="small muted" style="margin-top:10px">Loading job activity…</div>':renderJobDetailContent(j,state.jobDetailRows)) : '';
       const techSummary=techs.length?`${techs.slice(0,2).join(', ')}${techs.length>2?` +${techs.length-2} more`:''}`:(techCount?'Technician names unavailable':'No technicians yet');
-      return `<article class="job-directory-card"><div class="job-directory-card-top"><div style="min-width:0"><div class="job-directory-code">${esc(j.job_code||'No job code')}</div><div class="job-directory-name">${esc(j.job_name||'Unnamed job')}</div></div><span class="pill" style="flex-shrink:0;${j.active===false?'background:var(--surface-2);color:var(--muted)':''}">${j.active===false?'Completed':'Active'}</span></div><div class="job-card-meta"><strong>${esc(fmtHours(total))} h</strong> allocated <span aria-hidden="true">·</span> ${techCount} technician${techCount===1?'':'s'}</div><div class="job-card-techs"><strong>Worked on by:</strong> ${esc(techSummary)}</div><div class="job-card-actions"><button class="secondary-btn job-details-btn" data-id="${esc(j.id)}" type="button" aria-expanded="${isDetail?'true':'false'}">${isDetail?'Hide details ↑':'View details ↓'}</button><button class="icon-btn edit-job" data-id="${esc(j.id)}" type="button" aria-label="Edit ${esc(j.job_code||'job')}" title="Edit job">✎</button><button class="icon-btn toggle-job" data-id="${esc(j.id)}" data-active="${j.active===false?'false':'true'}" type="button" aria-label="${j.active===false?'Reopen':'Mark complete'} ${esc(j.job_code||'job')}" title="${j.active===false?'Reopen job':'Mark complete'}">${j.active===false?'↻':'✓'}</button><button class="icon-btn danger-btn delete-job" data-id="${esc(j.id)}" type="button" aria-label="Delete ${esc(j.job_code||'job')}" title="Delete job">⌫</button></div>${details}</article>`;
-    }).join('')}</div>`:'<div class="empty"><strong>No matching jobs</strong>Try another search or status filter.</div>';
+      const meta=[j.working_for?`Working for: ${j.working_for}`:'',j.po_number?`PO: ${j.po_number}`:'',j.quoted==='yes'?'Quoted':j.quoted==='no'?'Not quoted':'',j.site_address||''].filter(Boolean).join(' · ');
+      return `<article class="job-directory-card"><div class="job-directory-card-top"><div style="min-width:0"><div class="job-directory-code">${esc(j.job_code||'No job code')}</div><div class="job-directory-name">${esc(j.job_name||'Unnamed job')}</div></div><span class="pill" style="flex-shrink:0;${j.active===false?'background:var(--surface-2);color:var(--muted)':''}">${j.active===false?'Completed':'Active'}</span></div>${meta?`<div class="job-card-techs">${esc(meta)}</div>`:''}${j.notes?`<div class="job-card-techs">${esc(j.notes)}</div>`:''}<div class="job-card-meta"><strong>${esc(fmtHours(total))} h</strong> ${selectedTech?'for selected technician':'allocated total'} <span aria-hidden="true">·</span> ${techCount} technician${techCount===1?'':'s'}</div><div class="job-card-techs"><strong>Worked on by:</strong> ${esc(techSummary)}</div><div class="job-card-actions"><button class="secondary-btn job-details-btn" data-id="${esc(j.id)}" type="button" aria-expanded="${isDetail?'true':'false'}">${isDetail?'Hide details ↑':'View details ↓'}</button><button class="icon-btn small-icon edit-job" data-id="${esc(j.id)}" type="button" aria-label="Edit ${esc(j.job_code||'job')}" title="Edit job">✎</button><button class="icon-btn small-icon toggle-job" data-id="${esc(j.id)}" data-active="${j.active===false?'false':'true'}" type="button" aria-label="${j.active===false?'Reopen':'Mark complete'} ${esc(j.job_code||'job')}" title="${j.active===false?'Reopen job':'Mark complete'}">${j.active===false?'↻':'✓'}</button><button class="icon-btn small-icon danger-btn delete-job" data-id="${esc(j.id)}" type="button" aria-label="Delete ${esc(j.job_code||'job')}" title="Delete job">⌫</button></div>${details}</article>`;
+    }).join('')}</div>`:'<div class="empty"><strong>No matching jobs</strong>Try another search, status, or technician filter.</div>';
   }
   function renderJobDetailContent(job,rows) {
     const total=rows.reduce((sum,e)=>sum+Number(e.hours||0),0);
     return `<div class="job-detail-panel"><div class="job-detail-summary"><strong>Job activity</strong><span>${esc(fmtHours(total))} total hours · ${rows.length} allocations</span></div>${rows.length?`<div class="job-detail-list">${rows.slice(0,50).map(e=>`<div class="job-detail-row"><div><strong>${esc(fmtDate(e.work_date))}</strong><small>${esc(e._tech||'Unknown technician')}${e.description?` · ${esc(e.description)}`:''}</small></div><span>${esc(fmtHours(e.hours))} h</span></div>`).join('')}${rows.length>50?'<p class="small muted">Showing the 50 most recent allocations.</p>':''}</div>`:'<p class="small muted">No time has been allocated to this job yet.</p>'}</div>`;
   }
   async function loadJobs() {
-    const {data,error}=await sb.from('jobs').select('id,job_code,job_name,active').order('job_code');
+    let data,error;
+    ({data,error}=await sb.from('jobs').select('*').order('job_code'));
+    if(error && /column|working_for|quoted|po_number|site_address|notes/i.test(error.message||'')) {
+      ({data,error}=await sb.from('jobs').select('id,job_code,job_name,active').order('job_code'));
+    }
     if(error) throw error;
     state.jobs=data||[];
     state.jobStats={};
-    const {data:allocationStats}=await sb.from('time_entries').select('job_id,hours,user_id').limit(5000);
-    const techIds=[...new Set((allocationStats||[]).map(row=>row.user_id).filter(Boolean))];
+    const {data:allocationStats,error:statsError}=await sb.from('time_entries').select('job_id,hours,user_id').limit(5000);
+    if(statsError) console.warn('Unable to load job allocation summaries:',statsError.message||statsError);
+    const techIds=[...new Set((allocationStats||[]).map(row=>row.user_id).filter(Boolean).map(String))];
     const techNames=new Map();
     if(techIds.length){const {data:profiles}=await sb.from('profiles').select('id,full_name').in('id',techIds);(profiles||[]).forEach(profile=>techNames.set(String(profile.id),profile.full_name||'Technician'));}
-    (allocationStats||[]).forEach(row=>{const key=String(row.job_id);if(!state.jobStats[key])state.jobStats[key]={hours:0,count:0,technicianIds:new Set(),technicians:[],technicianCount:0};state.jobStats[key].hours+=Number(row.hours||0);state.jobStats[key].count+=1;if(row.user_id)state.jobStats[key].technicianIds.add(String(row.user_id));});
-    Object.values(state.jobStats).forEach(stats=>{stats.technicianCount=stats.technicianIds.size;stats.technicians=[...stats.technicianIds].map(id=>techNames.get(id)).filter(Boolean).sort((a,b)=>a.localeCompare(b));delete stats.technicianIds;});
+    state.jobTechnicians=techIds.map(id=>({id,name:techNames.get(id)||`Technician ${id.slice(0,8)}`})).sort((a,b)=>a.name.localeCompare(b.name));
+    const selectedTechValue=$('jobDirectoryTech').value;$('jobDirectoryTech').innerHTML='<option value="">All technicians</option>'+state.jobTechnicians.map(t=>`<option value="${esc(t.id)}">${esc(t.name)}</option>`).join('');$('jobDirectoryTech').value=selectedTechValue;
+    (allocationStats||[]).forEach(row=>{const key=String(row.job_id);if(!state.jobStats[key])state.jobStats[key]={hours:0,count:0,technicianIds:new Set(),technicians:[],technicianCount:0,techHours:{}};const stats=state.jobStats[key];stats.hours+=Number(row.hours||0);stats.count+=1;if(row.user_id){const id=String(row.user_id);stats.technicianIds.add(id);stats.techHours[id]=(stats.techHours[id]||0)+Number(row.hours||0);}});
+    Object.values(state.jobStats).forEach(stats=>{stats.technicianCount=stats.technicianIds.size;stats.technicians=[...stats.technicianIds].map(id=>techNames.get(id)).filter(Boolean).sort((a,b)=>a.localeCompare(b));stats.technicianIds=[...stats.technicianIds];});
     $('jobSelect').innerHTML='<option value="">Choose a job...</option>'+state.jobs.map(j=>`<option value="${esc(j.id)}">${esc(jobLabel(j))}</option>`).join('');
+    $('allocationJobOptions').innerHTML=state.jobs.map(j=>`<option value="${esc(jobLabel(j))}"></option>`).join('');
+    $('jobDirectoryOptions').innerHTML=state.jobs.map(j=>`<option value="${esc(jobLabel(j))}"></option>`).join('');
     renderJobOptions();renderJobDirectory();
     $('reportJob').innerHTML='<option value="">All jobs</option>'+state.jobs.map(j=>`<option value="${esc(j.id)}">${esc(jobLabel(j))}</option>`).join('');
   }
@@ -622,18 +681,19 @@
 
   function renderEntriesTable() {
     const search=$('entrySearch').value.trim().toLowerCase(),from=$('entriesFrom').value,to=$('entriesTo').value;
-    const rows=state.entries.filter(e=>e.user_id===state.user.id&&(!from||e.work_date>=from)&&(!to||e.work_date<=to)&&(!search||`${(e._job||{}).job_code||''} ${(e._job||{}).job_name||''} ${e.description||''}`.toLowerCase().includes(search))).sort((a,b)=>String(b.work_date).localeCompare(String(a.work_date)));
+    const selectedJob=state.jobs.find(j=>jobLabel(j).toLowerCase()===search);
+    const rows=state.entries.filter(e=>e.user_id===state.user.id&&(!from||e.work_date>=from)&&(!to||e.work_date<=to)&&(!selectedJob||String(e.job_id)===String(selectedJob.id))&&(!search||selectedJob||`${(e._job||{}).job_code||''} ${(e._job||{}).job_name||''} ${e.description||''}`.toLowerCase().includes(search))).sort((a,b)=>String(b.work_date).localeCompare(String(a.work_date)));
     if(!rows.length){$('entriesTable').innerHTML='<div class="empty"><strong>No allocations found</strong>Try another job name or adjust the date filter.</div>';return;}
     const groups=new Map();rows.forEach(e=>{const key=e.work_date||'Unknown date';if(!groups.has(key))groups.set(key,[]);groups.get(key).push(e);});
     $('entriesTable').innerHTML=`<div class="entries-by-date">${[...groups.entries()].map(([date,items])=>{
       const dailyTotal=items.reduce((sum,e)=>sum+Number(e.hours||0),0),label=date==='Unknown date'?date:fmtDate(date);
-      return `<section><div class="entries-date-heading"><strong>${esc(label)}</strong><span>${esc(fmtHours(dailyTotal))} h total</span></div><div class="entries-date-cards">${items.map(e=>{const j=e._job||{};return `<article class="entry-card"><div class="entry-card-top"><div style="min-width:0"><div class="entry-card-job">${esc(j.job_code||'Job')} · ${esc(j.job_name||'Job details unavailable')}</div><div class="entry-card-meta">${esc(e.description||'Allocation')}</div></div><div class="entry-card-hours">${esc(fmtHours(e.hours))} h</div></div><div class="entry-card-actions"><button class="secondary-btn edit-entry" data-id="${esc(e.id)}" type="button">Edit</button><button class="danger-btn delete-entry" data-id="${esc(e.id)}" type="button">Delete</button></div></article>`}).join('')}</div></section>`;
+      return `<section><div class="entries-date-heading"><strong>${esc(label)}</strong><span>${esc(fmtHours(dailyTotal))} h total</span></div><div class="entries-date-cards">${items.map(e=>{const j=e._job||{};return `<article class="entry-card"><div class="entry-card-top"><div style="min-width:0"><div class="entry-card-job">${esc(j.job_code||'Job')} · ${esc(j.job_name||'Job details unavailable')}</div><div class="entry-card-meta">${esc(e.description||'Allocation')}</div></div><div class="entry-card-hours">${esc(fmtHours(e.hours))} h</div></div><div class="entry-card-actions"><button class="icon-btn small-icon edit-entry" data-id="${esc(e.id)}" type="button" aria-label="Edit allocation" title="Edit allocation">✎</button><button class="icon-btn small-icon danger-btn delete-entry" data-id="${esc(e.id)}" type="button" aria-label="Delete allocation" title="Delete allocation">⌫</button></div></article>`}).join('')}</div></section>`;
     }).join('')}</div><p class="small muted">${rows.length} allocation${rows.length===1?'':'s'} shown · up to 500 recent records loaded.</p>`;
   }
 
   function goPage(page) {
     if(!pageMeta[page] || (['reports','jobs'].includes(page)&&!state.isAdmin)) page='log';
-    if(page!=='reports'){$('reportFilterFloat').classList.add('hidden');$('reportFilterToggle').dataset.minimized='true';}
+    if(page!=='reports'){$('reportFilterFloat').classList.add('hidden');$('reportFilterToggle').dataset.minimized='true';}if(page!=='jobs'){$('jobFilterFloat').classList.add('hidden');$('jobFilterToggle').classList.add('hidden');}
     window.scrollTo({top:0,left:0,behavior:'auto'});
     if($('mainContent'))$('mainContent').scrollTop=0;
     document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
@@ -643,7 +703,7 @@
     $('reportFilterFloat').classList.toggle('hidden',page!=='reports'||$('reportFilterToggle').dataset.minimized==='true');
     $('reportFilterToggle').classList.toggle('hidden',page!=='reports'||$('reportFilterToggle').dataset.minimized!=='true');
     if(page==='reports') { syncFloatingReportFilters(); markDatePreset('report',(!$('reportFrom').value&&!$('reportTo').value)?'all':'custom'); loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error')); }
-    if(page==='jobs') loadJobs().catch(e=>showNotice('jobNotice',friendlyError(e),'error'));
+    if(page==='jobs') { $('jobFilterToggle').classList.remove('hidden'); loadJobs().catch(e=>showNotice('jobNotice',friendlyError(e),'error')); }
   }
 
   function getPresetRange(preset) {
@@ -784,24 +844,24 @@
     const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'})),a=document.createElement('a');a.href=url;a.download=`hvac-hours-report-${today()}.csv`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
   }
 
+  function closeJobForm() { $('jobFormModal').classList.add('hidden'); }
   function resetJobForm() {
-    state.jobEditingId=null;$('jobForm').reset();$('jobFormTitle').textContent='Add a job';$('saveJobBtn').textContent='+ Add job';$('cancelJobEditBtn').classList.add('hidden');
+    state.jobEditingId=null;$('jobForm').reset();hideNotice('jobFormNotice');$('jobFormTitle').textContent='Add a job';$('saveJobBtn').textContent='+ Add job';$('cancelJobEditBtn').classList.add('hidden');closeJobForm();
   }
   function startJobEdit(id) {
     const job=state.jobs.find(j=>String(j.id)===String(id));if(!job)return;
-    state.jobEditingId=job.id;$('jobCode').value=job.job_code||'';$('jobName').value=job.job_name||'';$('jobFormTitle').textContent='Edit job';$('saveJobBtn').textContent='Save changes';$('cancelJobEditBtn').classList.remove('hidden');hideNotice('jobNotice');
-    $('page-jobs').querySelector('#jobCode').focus();window.scrollTo({top:0,behavior:'smooth'});
+    state.jobEditingId=job.id;$('jobCode').value=job.job_code||'';$('jobName').value=job.job_name||'';$('jobWorkingFor').value=job.working_for||'';$('jobPoNumber').value=job.po_number||'';$('jobQuoted').value=job.quoted||'';$('jobSiteAddress').value=job.site_address||'';$('jobNotes').value=job.notes||'';$('jobFormTitle').textContent='Edit job';$('saveJobBtn').textContent='Save changes';$('cancelJobEditBtn').classList.remove('hidden');hideNotice('jobNotice');$('jobFormModal').classList.remove('hidden');setTimeout(()=>$('jobCode').focus(),30);
   }
   async function addJob(event) {
-    event.preventDefault();hideNotice('jobNotice');
-    const payload={job_code:$('jobCode').value.trim(),job_name:$('jobName').value.trim()};
+    event.preventDefault();hideNotice('jobNotice');hideNotice('jobFormNotice');
+    const payload={job_code:$('jobCode').value.trim(),job_name:$('jobName').value.trim(),working_for:$('jobWorkingFor').value.trim()||null,po_number:$('jobPoNumber').value.trim()||null,quoted:$('jobQuoted').value||null,site_address:$('jobSiteAddress').value.trim()||null,notes:$('jobNotes').value.trim()||null};
     if(!payload.job_code||!payload.job_name)return;
     const duplicate=state.jobs.find(j=>String(j.id)!==String(state.jobEditingId||'')&&String(j.job_code||'').trim().toLowerCase()===payload.job_code.toLowerCase());
-    if(duplicate){showNotice('jobNotice',`Job code ${payload.job_code} is already in use. Please use a unique job number.`, 'error');return;}
+    if(duplicate){const msg=`Job code ${payload.job_code} is already in use. Please use a unique job number.`;showNotice('jobFormNotice',msg,'error');showNotice('jobNotice',msg,'error');return;}
     let result;
     if(state.jobEditingId) result=await sb.from('jobs').update(payload).eq('id',state.jobEditingId);
     else result=await sb.from('jobs').insert({...payload,active:true});
-    if(result.error){showNotice('jobNotice',friendlyError(result.error),'error');return;}
+    if(result.error){let msg=friendlyError(result.error);if(/column|schema cache/i.test(result.error.message||''))msg='The database is missing the new optional job fields. Run the supplied Supabase SQL migration, then try again. Details: '+msg;showNotice('jobFormNotice',msg,'error');showNotice('jobNotice',msg,'error');return;}
     const wasEditing=!!state.jobEditingId;const editedId=state.jobEditingId;resetJobForm();if(wasEditing&&String(state.jobDetailId)===String(editedId)){state.jobDetailId=null;state.jobDetailRows=[];}showNotice('jobNotice',wasEditing?'Job updated successfully.':'Job added successfully.','success');await loadJobs();
   }
   async function toggleJob(id,active) {
@@ -879,7 +939,7 @@
   $('reportCalendarGrid').addEventListener('click',e=>{const day=e.target.closest('[data-report-calendar-date]');if(!day)return;state.reportCalendarSelected=day.dataset.reportCalendarDate;renderReportCalendar(state.reportRows);});
   $('entrySearch').addEventListener('input',renderEntriesTable);$('entriesFrom').addEventListener('change',()=>{setCustomPresetOnDateChange('entries');renderEntriesTable();});$('entriesTo').addEventListener('change',()=>{setCustomPresetOnDateChange('entries');renderEntriesTable();});
   document.querySelectorAll('[data-date-preset]').forEach(btn=>btn.addEventListener('click',()=>{const [scope,preset]=btn.dataset.datePreset.split(':');applyDatePreset(scope,preset);}));
-  $('exportCsvBtn').addEventListener('click',exportCsv);$('jobForm').addEventListener('submit',addJob);$('cancelJobEditBtn').addEventListener('click',resetJobForm);$('jobDirectorySearch').addEventListener('input',renderJobDirectory);$('jobDirectoryStatus').addEventListener('change',renderJobDirectory);
+  $('exportCsvBtn').addEventListener('click',exportCsv);$('jobForm').addEventListener('submit',addJob);$('cancelJobEditBtn').addEventListener('click',resetJobForm);$('jobFormClose').addEventListener('click',closeJobForm);$('jobFormCancel').addEventListener('click',resetJobForm);$('jobFormModal').addEventListener('click',e=>{if(e.target===$('jobFormModal'))closeJobForm();});$('addJobOpen').addEventListener('click',()=>{resetJobForm();$('jobFormModal').classList.remove('hidden');setTimeout(()=>$('jobCode').focus(),30);});$('jobDirectorySearch').addEventListener('input',renderJobDirectory);$('jobDirectoryStatus').addEventListener('change',renderJobDirectory);$('jobDirectoryTech').addEventListener('change',renderJobDirectory);$('jobFiltersReset').addEventListener('click',()=>{$('jobDirectorySearch').value='';$('jobDirectoryStatus').value='active';$('jobDirectoryTech').value='';renderJobDirectory();});$('jobFiltersOpen').addEventListener('click',()=>{$('jobFilterFloat').classList.remove('hidden');$('jobFilterToggle').classList.add('hidden');$('jobFilterToggle').setAttribute('aria-expanded','true');});$('jobFilterToggle').addEventListener('click',()=>{$('jobFilterFloat').classList.remove('hidden');$('jobFilterToggle').classList.add('hidden');$('jobFilterToggle').setAttribute('aria-expanded','true');});$('jobFilterClose').addEventListener('click',()=>{$('jobFilterFloat').classList.add('hidden');$('jobFilterToggle').classList.remove('hidden');$('jobFilterToggle').setAttribute('aria-expanded','false');});$('reportFiltersOpen').addEventListener('click',()=>{$('reportFilterFloat').classList.remove('hidden');$('reportFilterToggle').classList.add('hidden');$('reportFilterToggle').setAttribute('aria-expanded','true');});
   $('reportFilterToggle').dataset.minimized='true';
   $('reportFilterFloat').classList.add('hidden');
   $('reportFilterClose').addEventListener('click',()=>{$('reportFilterFloat').classList.add('hidden');$('reportFilterToggle').dataset.minimized='true';$('reportFilterToggle').classList.remove('hidden');$('reportFilterToggle').setAttribute('aria-expanded','false');});
@@ -888,14 +948,11 @@
   ['floatingReportFrom','floatingReportTo'].forEach((id,i)=>$(id).addEventListener('change',()=>{const target=i===0?'reportFrom':'reportTo';$(target).value=$(id).value;setCustomPresetOnDateChange('report');loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));}));
   ['floatingReportTech','floatingReportJob'].forEach((id,i)=>$(id).addEventListener('change',()=>{const target=i===0?'reportTech':'reportJob';$(target).value=$(id).value;loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));}));
   $('floatingReportReset').addEventListener('click',()=>{$('clearReportFilters').click();syncFloatingReportFilters();});
-  let dragState=null;
-  $('reportFilterDrag').addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;const box=$('reportFilterFloat').getBoundingClientRect();dragState={x:e.clientX,y:e.clientY,left:box.left,top:box.top};$('reportFilterDrag').setPointerCapture?.(e.pointerId);});
-  $('reportFilterDrag').addEventListener('pointermove',e=>{if(!dragState)return;const el=$('reportFilterFloat');const left=Math.max(4,Math.min(window.innerWidth-el.offsetWidth-4,dragState.left+e.clientX-dragState.x));const top=Math.max(4,Math.min(window.innerHeight-el.offsetHeight-4,dragState.top+e.clientY-dragState.y));el.style.left=left+'px';el.style.top=top+'px';el.style.right='auto';el.style.bottom='auto';});
-  $('reportFilterDrag').addEventListener('pointerup',()=>{dragState=null;});$('reportFilterDrag').addEventListener('pointercancel',()=>{dragState=null;});
   $('clearReportFilters').addEventListener('click',()=>{setTodayDefaults();$('reportTech').value='';$('reportJob').value='';markDatePreset('report','all');syncFloatingReportFilters();loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));});
   ['reportFrom','reportTo'].forEach(id=>$(id).addEventListener('change',()=>{setCustomPresetOnDateChange('report');loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));}));['reportTech','reportJob'].forEach(id=>$(id).addEventListener('change',()=>{syncFloatingReportFilters();loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));}));
   document.querySelectorAll('[data-page]').forEach(el=>el.addEventListener('click',()=>goPage(el.dataset.page)));
   document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',()=>goPage(el.dataset.go)));
+  document.addEventListener('click',e=>{if(!$('jobFilterFloat').classList.contains('hidden')&&!$('jobFilterFloat').contains(e.target)&&!$('jobFiltersOpen').contains(e.target)&&!$('jobFilterToggle').contains(e.target)){$('jobFilterFloat').classList.add('hidden');$('jobFilterToggle').classList.remove('hidden');$('jobFilterToggle').setAttribute('aria-expanded','false');}});
   document.addEventListener('click',e=>{
     const edit=e.target.closest('.edit-entry');if(edit)startEdit(edit.dataset.id);
     const del=e.target.closest('.delete-entry');if(del)deleteEntry(del.dataset.id).catch(err=>showNotice('entriesNotice',friendlyError(err),'error'));
