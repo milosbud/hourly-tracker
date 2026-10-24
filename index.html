@@ -24,6 +24,13 @@
     *{box-sizing:border-box}
     body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
     button,input,select,textarea{font:inherit}
+    /* Keep iOS Safari from zooming when a form control receives focus. */
+    input,select,textarea{font-size:16px;}
+    @media (max-width:700px){
+      .job-form-modal{display:block;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px;}
+      .job-form-dialog{margin:0 auto;max-height:calc(100dvh - 16px);max-height:calc(100vh - 16px);max-height:calc(100dvh - 16px);overscroll-behavior:contain;scroll-padding:18px;}
+      .job-form-dialog .form-actions{position:sticky;bottom:-12px;background:var(--surface);padding:10px 0 4px;z-index:2;}
+    }
     button{cursor:pointer}
     .app{min-height:100vh;display:grid;grid-template-columns:248px minmax(0,1fr)}
     .sidebar{background:linear-gradient(165deg,var(--navy),#172746 75%,#20375a);color:#fff;padding:25px 16px;display:flex;flex-direction:column;gap:26px}
@@ -71,7 +78,7 @@
     .field{display:flex;flex-direction:column;gap:6px;min-width:0}
     .field.full{grid-column:1/-1}
     label{font-size:12px;font-weight:750;color:var(--text)}
-    input,select,textarea{width:100%;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:11px 12px;outline:none;min-width:0}
+    input,select,textarea{width:100%;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:11px 12px;outline:none;min-width:0;font-size:16px}
     input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px #2878a81c}
     textarea{resize:vertical;min-height:78px}
     .form-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:17px;flex-wrap:wrap}
@@ -122,9 +129,9 @@
     .job-directory-toolbar .toolbar .field{min-width:140px}
     .job-form-modal{position:fixed;z-index:60;inset:0;background:#09142a66;display:grid;place-items:center;padding:16px}
     .job-form-modal.hidden{display:none!important}
-    .job-form-dialog{width:min(680px,100%);max-height:90vh;overflow:auto;background:var(--surface);border:1px solid var(--border);border-radius:17px;padding:18px;box-shadow:0 24px 70px #09142a44}
+    .job-form-dialog{width:min(620px,100%);max-height:calc(100dvh - 24px);overflow:auto;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px;box-shadow:0 24px 70px #09142a44}
     .job-form-dialog .panel-head{margin-bottom:12px}
-    .job-form-dialog .form-grid{gap:10px}
+    .job-form-dialog .form-grid{gap:7px}.job-form-dialog .field{gap:3px}.job-form-dialog input,.job-form-dialog select,.job-form-dialog textarea{padding:8px 10px}.job-form-dialog textarea{min-height:48px}.job-form-dialog .form-actions{margin-top:9px;gap:7px}.job-form-modal{padding:8px;align-items:center}
     .job-form-dialog textarea{min-height:65px}
     .job-filter-float{position:fixed;z-index:55;right:18px;bottom:20px;width:min(350px,calc(100vw - 28px));background:var(--surface);border:1px solid var(--border);border-radius:15px;box-shadow:0 16px 45px #09142a33;overflow:hidden}
     .job-filter-float.hidden{display:none!important}
@@ -231,7 +238,7 @@
     .job-detail-row>span{font-weight:850;color:var(--teal);white-space:nowrap}
     .report-summary{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:14px;margin-bottom:18px;width:100%;min-width:0;align-items:stretch}
     .report-summary > *{min-width:0;width:100%;max-width:100%;}
-    .report-summary-breakdown{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:var(--shadow);overflow:hidden}
+    .report-summary-breakdown{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:var(--shadow);overflow:hidden}.report-summary{gap:0;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}.report-summary .report-total{border-radius:0;box-shadow:none;min-height:0}.report-summary .report-summary-breakdown{border:0;border-left:1px solid var(--border);border-radius:0;box-shadow:none}
     .report-total{background:linear-gradient(135deg,var(--navy),#20375a);color:#fff;border-radius:16px;padding:20px;min-height:132px;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
     .report-total-label{font-size:12px;color:#bdcbe2;font-weight:700}
     .report-total-value{font-size:36px;font-weight:900;letter-spacing:-1px;line-height:1.2;margin:7px 0}
@@ -252,10 +259,10 @@
     .report-calendar-row small{display:block;color:var(--muted);margin-top:2px}
     .report-calendar-total{font-weight:850;color:var(--teal);white-space:nowrap}
     .form-actions .primary-btn{min-width:150px}.app-toast{position:fixed;z-index:100;left:50%;bottom:24px;transform:translateX(-50%);width:min(560px,calc(100vw - 28px));padding:13px 16px;border-radius:12px;background:#183347;color:#fff;box-shadow:0 14px 40px #071d2a55;font-size:13px;font-weight:700;line-height:1.45}.app-toast.error{background:#8f2836}.app-toast.success{background:#087f72}.app-toast.hidden{display:none!important}
-    @media(max-width:760px){.report-summary{grid-template-columns:minmax(0,1fr);gap:8px}.report-total{min-height:0}.report-total-value{font-size:25px}.job-directory-toolbar{align-items:stretch}.job-directory-toolbar .toolbar{min-width:100%}.job-form-dialog .form-grid{grid-template-columns:minmax(0,1fr)}.job-filter-float{right:10px;bottom:88px;width:min(340px,calc(100vw - 20px))}.job-filter-toggle{right:12px;bottom:86px}.entries-overview{gap:6px}.entries-overview-card{padding:9px}.entries-overview-value{font-size:19px}.report-summary{grid-template-columns:minmax(0,1fr)}.report-total{min-height:0}.report-total-value{font-size:25px}.report-summary-breakdown{padding:13px}.summary-table th,.summary-table td{padding:8px 6px;font-size:11px}.summary-table table{min-width:0}.desktop-entry-table{display:none}.entry-cards{display:grid}.form-actions{display:grid;grid-template-columns:1fr}.form-actions .primary-btn,.form-actions .secondary-btn{width:100%;min-height:46px}.report-calendar .calendar-day{min-height:54px}.report-filter-float{right:10px;bottom:88px;width:min(340px,calc(100vw - 20px))}.report-filter-toggle{right:12px;bottom:86px;padding:12px 15px}}
-    @media(max-width:760px){.log-layout .panel{padding:14px}.log-layout .form-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.log-layout .field.full{grid-column:1/-1}.log-layout .form-actions{margin-top:10px}.log-layout .form-actions .primary-btn{width:100%;min-height:42px;padding:10px}.calendar-grid{gap:3px}.calendar-day{min-height:54px;border-radius:8px;padding:5px 1px}.day-hours{font-size:9px}.calendar-weekday{font-size:9px}.calendar-title{font-size:15px}.calendar-toolbar .secondary-btn{padding:8px 10px}}
+    @media(max-width:760px){.main{padding-top:16px}.topbar{gap:8px;align-items:flex-start}.top-actions{gap:5px}.user-chip{padding:5px 7px}.logout-btn{padding:4px 7px;font-size:10px;min-height:26px}.job-form-dialog{max-height:calc(100dvh - 16px);padding:10px}.job-form-dialog .form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.job-form-dialog .field.full{grid-column:1/-1}.job-form-dialog .form-actions{display:flex;flex-wrap:wrap}.job-form-dialog .form-actions button{width:auto;min-height:36px}.report-summary{grid-template-columns:minmax(0,1fr);gap:8px}.report-total{min-height:0}.report-total-value{font-size:25px}.job-directory-toolbar{align-items:stretch}.job-directory-toolbar .toolbar{min-width:100%}.job-form-dialog .form-grid{grid-template-columns:minmax(0,1fr)}.job-filter-float{right:10px;bottom:88px;width:min(340px,calc(100vw - 20px))}.job-filter-toggle{right:12px;bottom:86px}.entries-overview{gap:6px}.entries-overview-card{padding:9px}.entries-overview-value{font-size:19px}.report-summary{grid-template-columns:minmax(0,1fr)}.report-total{min-height:0}.report-total-value{font-size:25px}.report-summary-breakdown{padding:13px}.summary-table th,.summary-table td{padding:8px 6px;font-size:11px}.summary-table table{min-width:0}.desktop-entry-table{display:none}.entry-cards{display:grid}.form-actions{display:grid;grid-template-columns:1fr}.form-actions .primary-btn,.form-actions .secondary-btn{width:100%;min-height:46px}.report-calendar .calendar-day{min-height:54px}.report-filter-float{right:10px;bottom:88px;width:min(340px,calc(100vw - 20px))}.report-filter-toggle{right:12px;bottom:86px;padding:12px 15px}}
+    @media(max-width:760px){.main{padding-top:16px}.topbar{gap:8px;align-items:flex-start}.top-actions{gap:5px}.user-chip{padding:5px 7px}.logout-btn{padding:4px 7px;font-size:10px;min-height:26px}.job-form-dialog{max-height:calc(100dvh - 16px);padding:10px}.job-form-dialog .form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.job-form-dialog .field.full{grid-column:1/-1}.job-form-dialog .form-actions{display:flex;flex-wrap:wrap}.job-form-dialog .form-actions button{width:auto;min-height:36px}.log-layout .panel{padding:14px}.log-layout .form-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.log-layout .field.full{grid-column:1/-1}.log-layout .form-actions{margin-top:10px}.log-layout .form-actions .primary-btn{width:100%;min-height:42px;padding:10px}.calendar-grid{gap:3px}.calendar-day{min-height:54px;border-radius:8px;padding:5px 1px}.day-hours{font-size:9px}.calendar-weekday{font-size:9px}.calendar-title{font-size:15px}.calendar-toolbar .secondary-btn{padding:8px 10px}}
     @media(max-width:1050px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.two-col{grid-template-columns:1fr}}
-    @media(max-width:760px){
+    @media(max-width:760px){.main{padding-top:16px}.topbar{gap:8px;align-items:flex-start}.top-actions{gap:5px}.user-chip{padding:5px 7px}.logout-btn{padding:4px 7px;font-size:10px;min-height:26px}.job-form-dialog{max-height:calc(100dvh - 16px);padding:10px}.job-form-dialog .form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.job-form-dialog .field.full{grid-column:1/-1}.job-form-dialog .form-actions{display:flex;flex-wrap:wrap}.job-form-dialog .form-actions button{width:auto;min-height:36px}
       .app{display:block}.sidebar{display:none}.main{padding:19px 14px 92px}.topbar{align-items:flex-start;margin-bottom:20px}.topbar .top-actions{justify-content:flex-end}.user-chip{display:none}
       .mobile-nav{position:fixed;z-index:20;left:10px;right:10px;bottom:10px;display:flex;justify-content:space-around;gap:3px;background:var(--navy);border:1px solid #ffffff20;border-radius:16px;padding:7px;box-shadow:0 12px 30px #09142a55}
       .mobile-nav button{flex:1;border:0;background:transparent;color:#aab8d2;border-radius:10px;padding:9px 3px;font-size:10px;display:grid;justify-items:center;gap:3px}
@@ -299,7 +306,7 @@
     <main class="main" id="mainContent">
       <header class="topbar">
         <div><div class="welcome-greeting hidden" id="welcomeGreeting"></div><div class="eyebrow" id="pageEyebrow">FIELD WORKSPACE</div><h1 id="pageTitle">Allocate hours</h1><p class="subtitle" id="pageSubtitle">Choose the job, date and hours. That’s it.</p></div>
-        <div class="top-actions"><div class="user-chip"><div class="avatar" id="userAvatar">F</div><div><div class="user-name" id="userName">Team member</div><div class="user-role" id="userRole">Technician</div></div></div><button class="secondary-btn" id="logoutBtn">Sign out</button></div>
+        <div class="top-actions"><div class="user-chip"><div class="avatar" id="userAvatar">F</div><div><div class="user-name" id="userName">Team member</div><div class="user-role" id="userRole">Technician</div></div></div><button class="secondary-btn logout-btn" id="logoutBtn">Sign out</button></div>
       </header>
 
       <section id="page-log" class="page active">
@@ -453,7 +460,7 @@
   const friendlyError = error => {
     const msg = error?.message || String(error || 'Unknown error');
     if (/infinite recursion/i.test(msg)) return 'A database access policy is blocking this request. Please review the profiles row-level security policy.';
-    if (/row-level security|permission denied|not allowed/i.test(msg)) return 'You do not have permission to complete this action. If this is an admin task, check the Supabase row-level security policies.';
+    if (/row-level security|permission denied|not allowed/i.test(msg)) return 'Supabase blocked this change because the current user is not allowed to insert or update jobs. Check the jobs table Row Level Security policies and confirm this account is recognized as an admin.';
     return msg;
   };
 
@@ -698,6 +705,7 @@
     if(!pageMeta[page] || (['reports','jobs'].includes(page)&&!state.isAdmin)) page='log';
     if(page!=='reports'){$('reportFilterFloat').classList.add('hidden');$('reportFilterToggle').dataset.minimized='true';}if(page!=='jobs'){$('jobFilterFloat').classList.add('hidden');$('jobFilterToggle').classList.add('hidden');}
     window.scrollTo({top:0,left:0,behavior:'auto'});
+    if(document.scrollingElement)document.scrollingElement.scrollTop=0;
     if($('mainContent'))$('mainContent').scrollTop=0;
     document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
     $(`page-${page}`).classList.add('active');
@@ -847,7 +855,7 @@
     const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'})),a=document.createElement('a');a.href=url;a.download=`hvac-hours-report-${today()}.csv`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
   }
 
-  function closeJobForm() { $('jobFormModal').classList.add('hidden'); }
+  function closeJobForm() { $('jobFormModal').classList.add('hidden'); if(document.activeElement&&document.activeElement.blur)document.activeElement.blur(); }
   function resetJobForm() {
     state.jobEditingId=null;$('jobForm').reset();hideNotice('jobFormNotice');$('jobFormTitle').textContent='Add a job';$('saveJobBtn').textContent='+ Add job';$('cancelJobEditBtn').classList.add('hidden');closeJobForm();
   }
@@ -868,9 +876,16 @@
     const wasEditing=!!state.jobEditingId;const editedId=state.jobEditingId;resetJobForm();if(wasEditing&&String(state.jobDetailId)===String(editedId)){state.jobDetailId=null;state.jobDetailRows=[];}showNotice('jobNotice',wasEditing?'Job updated successfully.':'Job added successfully.','success');await loadJobs();
   }
   async function toggleJob(id,active) {
+    const job=state.jobs.find(j=>String(j.id)===String(id));
+    if(!job)return;
+    const action=active?'mark this job as completed':'reopen this completed job';
+    const detail=active
+      ? `Mark ${job.job_code} — ${job.job_name} as completed? It will no longer appear in technicians’ active job picker. Existing hour entries will be kept.`
+      : `Reopen ${job.job_code} — ${job.job_name}? It will become available again in technicians’ active job picker.`;
+    if(!window.confirm(detail))return;
     const {error}=await sb.from('jobs').update({active:!active}).eq('id',id);
     if(error){showNotice('jobNotice',friendlyError(error),'error');return;}
-    await loadJobs();showNotice('jobNotice',`Job ${active?'marked complete':'reopened'}.`,'success');
+    await loadJobs();showNotice('jobNotice',active?'Job marked completed. Existing hours were kept.':'Job reopened and available to technicians.','success');
   }
   async function deleteJob(id) {
     const job=state.jobs.find(j=>String(j.id)===String(id));if(!job)return;
@@ -942,7 +957,20 @@
   $('reportCalendarGrid').addEventListener('click',e=>{const day=e.target.closest('[data-report-calendar-date]');if(!day)return;state.reportCalendarSelected=day.dataset.reportCalendarDate;renderReportCalendar(state.reportRows);});
   $('entrySearch').addEventListener('input',renderEntriesTable);$('entriesFrom').addEventListener('change',()=>{setCustomPresetOnDateChange('entries');renderEntriesTable();});$('entriesTo').addEventListener('change',()=>{setCustomPresetOnDateChange('entries');renderEntriesTable();});
   document.querySelectorAll('[data-date-preset]').forEach(btn=>btn.addEventListener('click',()=>{const [scope,preset]=btn.dataset.datePreset.split(':');applyDatePreset(scope,preset);}));
-  $('exportCsvBtn').addEventListener('click',exportCsv);$('jobForm').addEventListener('submit',addJob);$('cancelJobEditBtn').addEventListener('click',resetJobForm);$('jobFormClose').addEventListener('click',closeJobForm);$('jobFormCancel').addEventListener('click',resetJobForm);$('jobFormModal').addEventListener('click',e=>{if(e.target===$('jobFormModal'))closeJobForm();});$('addJobOpen').addEventListener('click',()=>{resetJobForm();$('jobFormModal').classList.remove('hidden');setTimeout(()=>$('jobCode').focus(),30);});$('jobDirectorySearch').addEventListener('input',renderJobDirectory);$('jobDirectoryStatus').addEventListener('change',renderJobDirectory);$('jobDirectoryTech').addEventListener('change',renderJobDirectory);$('jobFiltersReset').addEventListener('click',()=>{$('jobDirectorySearch').value='';$('jobDirectoryStatus').value='active';$('jobDirectoryTech').value='';renderJobDirectory();});$('jobFiltersOpen').addEventListener('click',()=>{const panel=$('jobFilterFloat'),opening=panel.classList.contains('hidden');panel.classList.toggle('hidden',!opening);$('jobFilterToggle').classList.toggle('hidden',opening);$('jobFilterToggle').setAttribute('aria-expanded',String(opening));});$('jobFilterToggle').addEventListener('click',()=>{$('jobFilterFloat').classList.remove('hidden');$('jobFilterToggle').classList.add('hidden');$('jobFilterToggle').setAttribute('aria-expanded','true');});$('jobFilterClose').addEventListener('click',()=>{$('jobFilterFloat').classList.add('hidden');$('jobFilterToggle').classList.remove('hidden');$('jobFilterToggle').setAttribute('aria-expanded','false');});$('reportFiltersOpen').addEventListener('click',()=>{const panel=$('reportFilterFloat'),opening=panel.classList.contains('hidden');panel.classList.toggle('hidden',!opening);$('reportFilterToggle').classList.toggle('hidden',opening);$('reportFilterToggle').dataset.minimized=String(!opening);$('reportFilterToggle').setAttribute('aria-expanded',String(opening));});
+  $('exportCsvBtn').addEventListener('click',exportCsv);$('jobForm').addEventListener('submit',addJob);$('cancelJobEditBtn').addEventListener('click',resetJobForm);$('jobFormClose').addEventListener('click',closeJobForm);$('jobFormCancel').addEventListener('click',resetJobForm);$('jobFormModal').addEventListener('click',e=>{if(e.target===$('jobFormModal'))closeJobForm();});$('addJobOpen').addEventListener('click',()=>{resetJobForm();$('jobFormModal').classList.remove('hidden');$('jobFormModal').scrollTop=0;const dialog=$('jobFormModal').querySelector('.job-form-dialog');if(dialog)dialog.scrollTop=0;setTimeout(()=>{ $('jobCode').focus({preventScroll:true});keepJobFieldVisible($('jobCode'));},80);});
+  function keepJobFieldVisible(field){
+    if(!field||$('jobFormModal').classList.contains('hidden'))return;
+    const modal=$('jobFormModal'),dialog=modal.querySelector('.job-form-dialog');
+    requestAnimationFrame(()=>{
+      const rect=field.getBoundingClientRect();
+      const viewportBottom=(window.visualViewport?window.visualViewport.offsetTop+window.visualViewport.height:window.innerHeight)-20;
+      const viewportTop=(window.visualViewport?window.visualViewport.offsetTop:0)+12;
+      if(rect.bottom>viewportBottom){const delta=rect.bottom-viewportBottom+24;if(dialog&&dialog.scrollHeight>dialog.clientHeight)dialog.scrollTop+=delta;else modal.scrollTop+=delta;}
+      else if(rect.top<viewportTop){const delta=rect.top-viewportTop-16;if(dialog&&dialog.scrollHeight>dialog.clientHeight)dialog.scrollTop+=delta;else modal.scrollTop+=delta;}
+    });
+  }
+  $('jobFormModal').addEventListener('focusin',e=>{if(e.target.matches('input,select,textarea'))setTimeout(()=>keepJobFieldVisible(e.target),120);});
+  if(window.visualViewport)window.visualViewport.addEventListener('resize',()=>{const field=$('jobFormModal').querySelector('input:focus,select:focus,textarea:focus');if(field)setTimeout(()=>keepJobFieldVisible(field),80);});$('jobDirectorySearch').addEventListener('input',renderJobDirectory);$('jobDirectoryStatus').addEventListener('change',renderJobDirectory);$('jobDirectoryTech').addEventListener('change',renderJobDirectory);$('jobFiltersReset').addEventListener('click',()=>{$('jobDirectorySearch').value='';$('jobDirectoryStatus').value='active';$('jobDirectoryTech').value='';renderJobDirectory();});$('jobFiltersOpen').addEventListener('click',()=>{const panel=$('jobFilterFloat'),opening=panel.classList.contains('hidden');panel.classList.toggle('hidden',!opening);$('jobFilterToggle').classList.toggle('hidden',opening);$('jobFilterToggle').setAttribute('aria-expanded',String(opening));});$('jobFilterToggle').addEventListener('click',()=>{$('jobFilterFloat').classList.remove('hidden');$('jobFilterToggle').classList.add('hidden');$('jobFilterToggle').setAttribute('aria-expanded','true');});$('jobFilterClose').addEventListener('click',()=>{$('jobFilterFloat').classList.add('hidden');$('jobFilterToggle').classList.remove('hidden');$('jobFilterToggle').setAttribute('aria-expanded','false');});$('reportFiltersOpen').addEventListener('click',()=>{const panel=$('reportFilterFloat'),opening=panel.classList.contains('hidden');panel.classList.toggle('hidden',!opening);$('reportFilterToggle').classList.toggle('hidden',opening);$('reportFilterToggle').dataset.minimized=String(!opening);$('reportFilterToggle').setAttribute('aria-expanded',String(opening));});
   $('reportFilterToggle').dataset.minimized='true';
   $('reportFilterFloat').classList.add('hidden');
   $('reportFilterClose').addEventListener('click',()=>{$('reportFilterFloat').classList.add('hidden');$('reportFilterToggle').dataset.minimized='true';$('reportFilterToggle').classList.remove('hidden');$('reportFilterToggle').setAttribute('aria-expanded','false');});
