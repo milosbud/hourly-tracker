@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#101a33" />
-  <title>HVAC Hours Tracker | HVAC Time Tracking</title>
+  <title>TG Ventilation | Jobs & Hours</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <style>
@@ -12,7 +12,7 @@
       color-scheme: light dark;
       --bg:#f4f7fb; --surface:#fff; --surface-2:#f8faff; --text:#17233b;
       --muted:#71809a; --border:#e5ebf4; --navy:#101a33; --navy-2:#182747;
-      --blue:#4776f6; --blue-soft:#edf2ff; --teal:#18b6a4; --teal-soft:#e7faf6;
+      --blue:#2878a8; --blue-soft:#e8f4fa; --teal:#16a6a0; --teal-soft:#e4f8f5;
       --purple:#8b6df2; --orange:#f4a340; --red:#e45d6b; --shadow:0 12px 32px rgba(28,47,82,.07);
       --radius:18px;
     }
@@ -28,14 +28,14 @@
     .app{min-height:100vh;display:grid;grid-template-columns:248px minmax(0,1fr)}
     .sidebar{background:linear-gradient(165deg,var(--navy),#172746 75%,#20375a);color:#fff;padding:25px 16px;display:flex;flex-direction:column;gap:26px}
     .brand{display:flex;align-items:center;gap:11px;padding:0 9px}
-    .brand-mark{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#5c88ff,#24cbb5);display:grid;place-items:center;font-weight:900;font-size:17px;box-shadow:0 7px 20px #4776f655}
+    .brand-mark{width:42px;height:42px;border-radius:12px;background:linear-gradient(145deg,#15344a,#168c98);color:#fff;display:grid;place-items:center;font-weight:950;font-size:15px;letter-spacing:-.7px;box-shadow:0 7px 20px #168c9840;border:1px solid #ffffff24}
     .brand-name{font-size:17px;font-weight:800;letter-spacing:-.4px}
     .brand-sub{font-size:11px;color:#9eafcd;margin-top:1px}
     .nav-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#8294b6;padding:0 12px;margin-bottom:8px;font-weight:800}
     .nav{display:grid;gap:5px}
     .nav button{border:0;background:transparent;color:#bac7df;padding:12px 13px;border-radius:11px;text-align:left;display:flex;align-items:center;gap:12px;transition:.18s}
     .nav button:hover{background:#ffffff12;color:#fff}
-    .nav button.active{background:linear-gradient(90deg,#4776f6,#4c82f0);color:#fff;box-shadow:0 7px 18px #4776f633}
+    .nav button.active{background:linear-gradient(90deg,#2878a8,#168c98);color:#fff;box-shadow:0 7px 18px #2878a833}
     .nav-icon{width:19px;text-align:center;font-size:16px}
     .sidebar-bottom{margin-top:auto;border-top:1px solid #ffffff1a;padding:17px 8px 0;color:#a9b8d2;font-size:12px}
     .secure-note{display:flex;gap:8px;align-items:flex-start}
@@ -47,7 +47,7 @@
     .top-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
     .icon-btn,.secondary-btn,.primary-btn,.danger-btn{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:11px;padding:10px 13px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px}
     .icon-btn{width:42px;height:42px;padding:0;font-size:17px}
-    .primary-btn{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 5px 14px #4776f626}
+    .primary-btn{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 5px 14px #2878a826}
     .primary-btn:hover{filter:brightness(1.05)}
     .secondary-btn:hover,.icon-btn:hover{border-color:var(--blue)}
     .danger-btn{color:var(--red)}
@@ -72,7 +72,7 @@
     .field.full{grid-column:1/-1}
     label{font-size:12px;font-weight:750;color:var(--text)}
     input,select,textarea{width:100%;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:11px 12px;outline:none;min-width:0}
-    input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px #4776f61c}
+    input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px #2878a81c}
     textarea{resize:vertical;min-height:78px}
     .form-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:17px;flex-wrap:wrap}
     .notice{padding:12px 14px;border-radius:11px;background:var(--blue-soft);color:var(--blue);font-size:12px;margin-bottom:15px}
@@ -99,22 +99,22 @@
     .empty{padding:30px 15px;text-align:center;color:var(--muted);font-size:13px}
     .empty strong{display:block;color:var(--text);font-size:14px;margin-bottom:4px}
     .page{display:none}.page.active{display:block}
-    .login-wrap{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 15% 10%,#dfe9ff 0,transparent 35%),var(--bg)}
-    [data-theme="dark"] .login-wrap{background:radial-gradient(circle at 15% 10%,#1b2d51 0,transparent 35%),var(--bg)}
-    .login-card{width:min(100%,430px);background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:30px;box-shadow:var(--shadow)}
-    .login-card .brand{padding:0;margin-bottom:28px;color:var(--text)}
+    .login-wrap{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(ellipse at 12% 8%,#d8edf2 0,transparent 34%),radial-gradient(ellipse at 95% 90%,#dff6ef 0,transparent 30%),var(--bg);position:relative;overflow:hidden}
+    [data-theme="dark"] .login-wrap{background:radial-gradient(ellipse at 12% 8%,#15374a 0,transparent 34%),radial-gradient(ellipse at 95% 90%,#103b39 0,transparent 30%),var(--bg)}
+    .login-card{width:min(100%,450px);background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:clamp(23px,5vw,34px);box-shadow:0 24px 70px rgba(14,49,65,.13);position:relative;overflow:hidden}.login-card:before{content:"";position:absolute;inset:0 0 auto;height:5px;background:linear-gradient(90deg,#15344a,#168c98,#62c8b9)}
+    .login-card .brand{padding:0;margin-bottom:30px;color:var(--text)}
     .login-card .brand-sub{color:var(--muted)}
-    .login-card h1{font-size:26px;margin-bottom:7px}
+    .login-card h1{font-size:clamp(27px,6vw,32px);letter-spacing:-1.1px;margin-bottom:9px}
     .login-card .subtitle{margin-bottom:23px}
     .login-card .field{margin-bottom:15px}
-    .login-kicker{display:inline-flex;align-items:center;gap:7px;background:var(--blue-soft);color:var(--blue);border-radius:99px;padding:6px 10px;font-size:10px;font-weight:850;letter-spacing:.7px;text-transform:uppercase;margin-bottom:13px}
+    .login-kicker{display:inline-flex;align-items:center;gap:7px;background:var(--teal-soft);color:#087f7b;border-radius:8px;padding:7px 10px;font-size:9px;font-weight:900;letter-spacing:.7px;text-transform:uppercase;margin-bottom:15px}.airflow-mark{font-size:17px;line-height:10px}.login-footer{display:flex;align-items:center;gap:8px;border-top:1px solid var(--border);padding-top:15px;margin-top:20px;color:var(--muted);font-size:11px}.login-footer-dot{width:7px;height:7px;background:var(--teal);border-radius:50%;box-shadow:0 0 0 4px var(--teal-soft)}
     .welcome-greeting{font-size:11px;font-weight:850;letter-spacing:1.1px;text-transform:uppercase;color:var(--teal);margin-bottom:5px}
     .report-filter-float{position:fixed;z-index:50;right:18px;bottom:20px;width:min(350px,calc(100vw - 28px));background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:16px;box-shadow:0 16px 45px #09142a33;overflow:hidden}
     .report-filter-float.hidden{display:none!important}
     .report-filter-head{display:flex;align-items:center;gap:8px;background:var(--navy);color:#fff;padding:10px 12px;cursor:move;touch-action:none;user-select:none}
     .report-filter-head strong{font-size:12px;flex:1}
-    .report-filter-head button{border:1px solid #ffffff35;background:#ffffff12;color:#fff;border-radius:8px;min-width:30px;height:29px;font-weight:800}
-    .report-filter-body{padding:13px;max-height:min(60vh,480px);overflow-y:auto}.report-filter-float.collapsed .report-filter-body{display:none}.report-filter-float.collapsed .report-filter-head{cursor:move}
+    .report-filter-head button{border:1px solid #ffffff35;background:#ffffff12;color:#fff;border-radius:8px;width:32px;height:30px;font-size:20px;line-height:1;font-weight:600}.report-filter-head button:hover{background:#ffffff25}
+    .report-filter-body{padding:13px;max-height:min(60vh,480px);overflow-y:auto}
     .report-filter-body .date-presets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
     .report-filter-body .date-preset{white-space:normal;padding:8px 4px}
     .report-filter-body .field{margin-bottom:10px}
@@ -186,16 +186,16 @@
     .report-entry-card{border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:12px;min-width:0}
     .report-entry-card .entry-card-job{font-size:13px}
     .report-entry-card .entry-card-meta{line-height:1.45}
-    .job-directory-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:10px}
-    .job-directory-card{border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:13px;min-width:0}
+    .job-directory-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,275px),1fr));gap:9px}
+    .job-directory-card{border:1px solid var(--border);background:var(--surface);border-radius:13px;padding:11px 12px;min-width:0;box-shadow:0 3px 12px rgba(25,50,75,.035)}
     .job-directory-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
-    .job-directory-code{font-weight:900;font-size:14px;overflow-wrap:anywhere}
-    .job-directory-name{font-size:12px;color:var(--muted);margin-top:5px;overflow-wrap:anywhere}
-    .job-directory-card .secondary-btn{width:100%;margin-top:12px;min-height:38px}
-    .job-card-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:12px}
-    .job-card-actions button{width:100%;min-width:0;padding:8px 9px;font-size:11px;min-height:37px}
+    .job-directory-code{font-weight:900;font-size:13px;letter-spacing:.1px;overflow-wrap:anywhere}
+    .job-directory-name{font-size:11px;color:var(--muted);margin-top:3px;overflow-wrap:anywhere;line-height:1.35}
+    .job-directory-card .secondary-btn{width:100%;margin-top:9px;min-height:34px}
+    .job-card-actions{display:flex;align-items:center;gap:6px;margin-top:10px;padding-top:9px;border-top:1px solid var(--border)}
+    .job-card-actions button{width:34px;height:32px;min-width:34px;min-height:32px;padding:0;font-size:15px;line-height:1;border-radius:9px}.job-card-actions .job-details-btn{flex:1;width:auto;height:32px;min-height:32px;padding:6px 9px;font-size:11px;font-weight:800}.job-card-actions .icon-btn:hover{border-color:var(--blue);background:var(--blue-soft)}.job-card-actions .delete-job:hover{background:#fff0f1;border-color:#e45d6b;color:#bd3446}.job-card-actions button[title]{position:relative}.job-card-meta{font-size:11px;color:var(--muted);margin-top:8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}.job-card-meta strong{color:var(--text);font-weight:850}.job-card-techs{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.4;overflow-wrap:anywhere}.job-card-techs strong{color:var(--text);font-weight:750}
     .job-card-actions .danger-btn{margin-top:0}
-    .job-detail-panel{margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+    .job-detail-panel{margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
     .job-detail-summary{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;font-size:12px}
     .job-detail-summary span{color:var(--teal);font-weight:800;text-align:right}
     .job-detail-list{display:grid;gap:0;margin-top:8px}
@@ -219,7 +219,7 @@
     .report-calendar-row strong{display:block;overflow-wrap:anywhere}
     .report-calendar-row small{display:block;color:var(--muted);margin-top:2px}
     .report-calendar-total{font-weight:850;color:var(--teal);white-space:nowrap}
-    .form-actions .primary-btn{min-width:150px}
+    .form-actions .primary-btn{min-width:150px}.app-toast{position:fixed;z-index:100;left:50%;bottom:24px;transform:translateX(-50%);width:min(560px,calc(100vw - 28px));padding:13px 16px;border-radius:12px;background:#183347;color:#fff;box-shadow:0 14px 40px #071d2a55;font-size:13px;font-weight:700;line-height:1.45}.app-toast.error{background:#8f2836}.app-toast.success{background:#087f72}.app-toast.hidden{display:none!important}
     @media(max-width:760px){.entries-overview{gap:6px}.entries-overview-card{padding:9px}.entries-overview-value{font-size:19px}.report-summary{grid-template-columns:minmax(0,1fr)}.report-total{min-height:110px}.report-total-value{font-size:32px}.report-summary-breakdown{padding:13px}.summary-table th,.summary-table td{padding:8px 6px;font-size:11px}.summary-table table{min-width:0}.desktop-entry-table{display:none}.entry-cards{display:grid}.form-actions{display:grid;grid-template-columns:1fr}.form-actions .primary-btn,.form-actions .secondary-btn{width:100%;min-height:46px}.report-calendar .calendar-day{min-height:54px}.report-filter-float{right:10px;bottom:88px;width:min(340px,calc(100vw - 20px))}.report-filter-toggle{right:12px;bottom:86px;padding:12px 15px}}
     @media(max-width:760px){input,select,textarea{font-size:16px!important}.calendar-grid{gap:3px}.calendar-day{min-height:54px;border-radius:8px;padding:5px 1px}.day-hours{font-size:9px}.calendar-weekday{font-size:9px}.calendar-title{font-size:15px}.calendar-toolbar .secondary-btn{padding:8px 10px}}
     @media(max-width:1050px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.two-col{grid-template-columns:1fr}}
@@ -227,7 +227,7 @@
       .app{display:block}.sidebar{display:none}.main{padding:19px 14px 92px}.topbar{align-items:flex-start;margin-bottom:20px}.topbar .top-actions{justify-content:flex-end}.user-chip{display:none}
       .mobile-nav{position:fixed;z-index:20;left:10px;right:10px;bottom:10px;display:flex;justify-content:space-around;gap:3px;background:var(--navy);border:1px solid #ffffff20;border-radius:16px;padding:7px;box-shadow:0 12px 30px #09142a55}
       .mobile-nav button{flex:1;border:0;background:transparent;color:#aab8d2;border-radius:10px;padding:9px 3px;font-size:10px;display:grid;justify-items:center;gap:3px}
-      .mobile-nav button.active{background:#4776f6;color:white}.mobile-nav .nav-icon{font-size:17px}
+      .mobile-nav button.active{background:#2878a8;color:white}.mobile-nav .nav-icon{font-size:17px}
       .stats{gap:10px}.stat-card{padding:14px}.stat-value{font-size:24px}.stat-icon{width:30px;height:30px}
       .panel{padding:16px;margin-bottom:14px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.three-col{grid-template-columns:1fr}
       .topbar h1{font-size:25px}.subtitle{font-size:12px}.topbar .icon-btn{width:38px;height:38px}
@@ -235,27 +235,27 @@
       .date-presets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.date-preset{padding:9px 4px;white-space:normal}
       .date-filter-fields{gap:8px}.date-filter-fields input[type="date"]{font-size:12px!important;padding:10px 5px}
     }
-    @media(max-width:390px){.stats{grid-template-columns:1fr 1fr}.stat-value{font-size:21px}.top-actions{gap:5px}.icon-btn{width:36px;height:36px}}
+    @media(max-width:390px){.stats{grid-template-columns:1fr 1fr}.stat-value{font-size:21px}.top-actions{gap:5px}.icon-btn{width:36px;height:36px}.job-directory-cards{grid-template-columns:minmax(0,1fr)}.job-directory-card{padding:10px}.job-card-actions button.icon-btn{width:32px;height:30px;min-width:32px;min-height:30px}}
   </style>
 </head>
 <body>
   <div id="loginView" class="login-wrap">
     <div class="login-card">
-      <div class="brand"><div class="brand-mark">F</div><div><div class="brand-name">HVAC Hours Tracker</div><div class="brand-sub">Simple hour allocation for the field</div></div></div>
-      <div class="login-kicker">Team workspace · Secure sign-in</div><h1>Welcome to your workspace</h1><p class="subtitle">Sign in to manage job-hour allocations and keep your team's work organized.</p>
+      <div class="brand"><div class="brand-mark">TG</div><div><div class="brand-name">TG Ventilation</div><div class="brand-sub">Jobs · Hours · Field operations</div></div></div>
+      <div class="login-kicker"><span class="airflow-mark" aria-hidden="true">〰</span> TG VENTILATION SOLUTIONS · TEAM ACCESS</div><h1>Job &amp; hours workspace</h1><p class="subtitle">Keep ventilation projects organized, track allocated hours, and stay connected to the work happening on site.</p>
       <div id="loginNotice" class="notice hidden"></div>
       <form id="loginForm">
-        <div class="field"><label for="email">Email address</label><input id="email" type="email" autocomplete="username" required placeholder="you@company.com"></div>
+        <div class="field"><label for="email">Email address</label><input id="email" type="email" autocomplete="username" required placeholder="name@tgventilation.ca"></div>
         <div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required placeholder="Enter your password"></div>
-        <button class="primary-btn" type="submit" style="width:100%;padding:12px">Sign in <span>-></span></button>
+        <button class="primary-btn" type="submit" style="width:100%;padding:13px;background:linear-gradient(100deg,#153d55,#168c98);border-color:#168c98">Sign in to TG Ventilation <span aria-hidden="true">→</span></button>
       </form>
-      <p class="small muted" style="margin:17px 0 0">Secure access for your team. Contact your administrator if you need an account.</p>
+      <div class="login-footer"><span class="login-footer-dot"></span><span>Secure team access for field and office staff</span></div>
     </div>
   </div>
 
   <div id="appView" class="app hidden">
     <aside class="sidebar">
-      <div class="brand"><div class="brand-mark">F</div><div><div class="brand-name">HVAC Hours Tracker</div><div class="brand-sub">HVAC team workspace</div></div></div>
+      <div class="brand"><div class="brand-mark">TG</div><div><div class="brand-name">TG Ventilation</div><div class="brand-sub">VENTILATION JOB WORKSPACE</div></div></div>
       <div><div class="nav-label">Workspace</div><nav class="nav" id="sideNav">
         <button data-page="log" class="active"><span class="nav-icon">+</span>Allocate hours</button>
         <button data-page="entries"><span class="nav-icon">[ ]</span>My allocations</button>
@@ -264,7 +264,7 @@
       </nav></div>
       <div class="sidebar-bottom"><div class="secure-note"><span>*</span><span>Built for field teams<br><span style="opacity:.7">Hours, jobs and reporting in one place.</span></span></div></div>
     </aside>
-    <main class="main">
+    <main class="main" id="mainContent">
       <header class="topbar">
         <div><div class="welcome-greeting hidden" id="welcomeGreeting"></div><div class="eyebrow" id="pageEyebrow">FIELD WORKSPACE</div><h1 id="pageTitle">Allocate hours</h1><p class="subtitle" id="pageSubtitle">Choose the job, date and hours. That’s it.</p></div>
         <div class="top-actions"><div class="user-chip"><div class="avatar" id="userAvatar">F</div><div><div class="user-name" id="userName">Team member</div><div class="user-role" id="userRole">Technician</div></div></div><button class="secondary-btn" id="logoutBtn">Sign out</button></div>
@@ -361,9 +361,10 @@
       <button data-page="reports" class="admin-only hidden"><span class="nav-icon">[R]</span>Reports</button>
       <button data-page="jobs" class="admin-only hidden"><span class="nav-icon">[J]</span>Jobs</button>
     </nav>
-    <button type="button" id="reportFilterToggle" class="report-filter-toggle hidden" aria-expanded="false"><span>☷</span> Report filters</button>
+    <div id="appToast" class="app-toast hidden" role="status" aria-live="polite"></div>
+    <button type="button" id="reportFilterToggle" class="report-filter-toggle hidden" aria-expanded="false"><span>☷</span> Filter reports</button>
     <section id="reportFilterFloat" class="report-filter-float hidden" aria-label="Floating report filters">
-      <div class="report-filter-head" id="reportFilterDrag"><strong>Report filters</strong><button type="button" id="reportFilterMinimize" aria-label="Collapse filter options" title="Collapse filter options">−</button><button type="button" id="reportFilterClose" aria-label="Close filters" title="Close filters">×</button></div>
+      <div class="report-filter-head" id="reportFilterDrag"><strong>Filter reports</strong><button type="button" id="reportFilterClose" aria-label="Close filters" title="Close filters">×</button></div>
       <div class="report-filter-body" id="reportFilterBody">
         <div class="date-presets" data-preset-group="floating-report"><button class="date-preset" type="button" data-date-preset="floating-report:week">This week</button><button class="date-preset" type="button" data-date-preset="floating-report:lastweek">Last week</button><button class="date-preset" type="button" data-date-preset="floating-report:month">This month</button><button class="date-preset" type="button" data-date-preset="floating-report:lastmonth">Last month</button><button class="date-preset" type="button" data-date-preset="floating-report:all">All time</button><button class="date-preset" type="button" data-date-preset="floating-report:custom">Custom dates</button></div>
         <div class="date-filter-fields"><div class="field"><label for="floatingReportFrom">From date</label><input id="floatingReportFrom" type="date"></div><div class="field"><label for="floatingReportTo">To date</label><input id="floatingReportTo" type="date"></div></div>
@@ -398,6 +399,8 @@
   const fmtHours = value => `${Number(value || 0).toLocaleString(undefined,{maximumFractionDigits:2})}`;
   const showNotice = (id, message, type='') => { const el=$(id); el.textContent=message; el.className=`notice ${type}`.trim(); el.classList.remove('hidden'); };
   const hideNotice = id => $(id).classList.add('hidden');
+  let toastTimer=null;
+  function showToast(message,type='') { const el=$('appToast');if(!el)return;el.textContent=message;el.className=`app-toast ${type}`.trim();el.classList.remove('hidden');if(toastTimer)clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.add('hidden'),6500); }
   const initials = value => (String(value||'F').trim().split(/\s+/).slice(0,2).map(s=>s[0]).join('').toUpperCase() || 'F');
   const jobLabel = j => `${j.job_code || 'No code'} - ${j.job_name || 'Unnamed job'}`;
   const friendlyError = error => {
@@ -462,12 +465,12 @@
     });
     $('jobCountPill').textContent=`${state.jobs.length} total · ${state.jobs.filter(j=>j.active!==false).length} active`;
     $('jobList').innerHTML=jobs.length?`<div class="job-directory-cards">${jobs.map(j=>{
-      const stats=state.jobStats[String(j.id)]||{hours:0,count:0};
-      const total=stats.hours;
-      const count=stats.count;
+      const stats=state.jobStats[String(j.id)]||{hours:0,count:0,technicians:[],technicianCount:0};
+      const total=stats.hours||0, techs=stats.technicians||[], techCount=stats.technicianCount||techs.length;
       const isDetail=String(state.jobDetailId)===String(j.id);
-      const details=isDetail?(state.jobDetailLoading?'<div class="small muted" style="margin-top:12px">Loading job activity…</div>':renderJobDetailContent(j,state.jobDetailRows)):'';
-      return `<article class="job-directory-card"><div class="job-directory-card-top"><div style="min-width:0"><div class="job-directory-code">${esc(j.job_code||'No job code')}</div><div class="job-directory-name">${esc(j.job_name||'Unnamed job')}</div></div><span class="pill" style="${j.active===false?'background:var(--surface-2);color:var(--muted)':''}">${j.active===false?'Completed':'Active'}</span></div><div class="entries-overview" style="grid-template-columns:repeat(2,minmax(0,1fr));margin:12px 0 0"><div class="entries-overview-card"><div class="entries-overview-label">Allocated hours</div><div class="entries-overview-value" style="font-size:20px">${esc(fmtHours(total))}</div></div><div class="entries-overview-card"><div class="entries-overview-label">Allocations</div><div class="entries-overview-value" style="font-size:20px">${count}</div></div></div><div class="job-card-actions"><button class="secondary-btn job-details-btn" data-id="${esc(j.id)}" type="button">${isDetail?'Hide details':'View job details'}</button><button class="secondary-btn edit-job" data-id="${esc(j.id)}" type="button">Edit</button><button class="secondary-btn toggle-job" data-id="${esc(j.id)}" data-active="${j.active===false?'false':'true'}" type="button">${j.active===false?'Reopen':'Complete'}</button><button class="danger-btn delete-job" data-id="${esc(j.id)}" type="button">Delete</button></div>${details}</article>`;
+      const details=isDetail?(state.jobDetailLoading?'<div class="small muted" style="margin-top:10px">Loading job activity…</div>':renderJobDetailContent(j,state.jobDetailRows)):'';
+      const techSummary=techs.length?`${techs.slice(0,2).join(', ')}${techs.length>2?` +${techs.length-2} more`:''}`:(techCount?'Technician names unavailable':'No technicians yet');
+      return `<article class="job-directory-card"><div class="job-directory-card-top"><div style="min-width:0"><div class="job-directory-code">${esc(j.job_code||'No job code')}</div><div class="job-directory-name">${esc(j.job_name||'Unnamed job')}</div></div><span class="pill" style="flex-shrink:0;${j.active===false?'background:var(--surface-2);color:var(--muted)':''}">${j.active===false?'Completed':'Active'}</span></div><div class="job-card-meta"><strong>${esc(fmtHours(total))} h</strong> allocated <span aria-hidden="true">·</span> ${techCount} technician${techCount===1?'':'s'}</div><div class="job-card-techs"><strong>Worked on by:</strong> ${esc(techSummary)}</div><div class="job-card-actions"><button class="secondary-btn job-details-btn" data-id="${esc(j.id)}" type="button" aria-expanded="${isDetail?'true':'false'}">${isDetail?'Hide details ↑':'View details ↓'}</button><button class="icon-btn edit-job" data-id="${esc(j.id)}" type="button" aria-label="Edit ${esc(j.job_code||'job')}" title="Edit job">✎</button><button class="icon-btn toggle-job" data-id="${esc(j.id)}" data-active="${j.active===false?'false':'true'}" type="button" aria-label="${j.active===false?'Reopen':'Mark complete'} ${esc(j.job_code||'job')}" title="${j.active===false?'Reopen job':'Mark complete'}">${j.active===false?'↻':'✓'}</button><button class="icon-btn danger-btn delete-job" data-id="${esc(j.id)}" type="button" aria-label="Delete ${esc(j.job_code||'job')}" title="Delete job">⌫</button></div>${details}</article>`;
     }).join('')}</div>`:'<div class="empty"><strong>No matching jobs</strong>Try another search or status filter.</div>';
   }
   function renderJobDetailContent(job,rows) {
@@ -479,8 +482,12 @@
     if(error) throw error;
     state.jobs=data||[];
     state.jobStats={};
-    const {data:allocationStats}=await sb.from('time_entries').select('job_id,hours').limit(5000);
-    (allocationStats||[]).forEach(row=>{const key=String(row.job_id);if(!state.jobStats[key])state.jobStats[key]={hours:0,count:0};state.jobStats[key].hours+=Number(row.hours||0);state.jobStats[key].count+=1;});
+    const {data:allocationStats}=await sb.from('time_entries').select('job_id,hours,user_id').limit(5000);
+    const techIds=[...new Set((allocationStats||[]).map(row=>row.user_id).filter(Boolean))];
+    const techNames=new Map();
+    if(techIds.length){const {data:profiles}=await sb.from('profiles').select('id,full_name').in('id',techIds);(profiles||[]).forEach(profile=>techNames.set(String(profile.id),profile.full_name||'Technician'));}
+    (allocationStats||[]).forEach(row=>{const key=String(row.job_id);if(!state.jobStats[key])state.jobStats[key]={hours:0,count:0,technicianIds:new Set(),technicians:[],technicianCount:0};state.jobStats[key].hours+=Number(row.hours||0);state.jobStats[key].count+=1;if(row.user_id)state.jobStats[key].technicianIds.add(String(row.user_id));});
+    Object.values(state.jobStats).forEach(stats=>{stats.technicianCount=stats.technicianIds.size;stats.technicians=[...stats.technicianIds].map(id=>techNames.get(id)).filter(Boolean).sort((a,b)=>a.localeCompare(b));delete stats.technicianIds;});
     $('jobSelect').innerHTML='<option value="">Choose a job...</option>'+state.jobs.map(j=>`<option value="${esc(j.id)}">${esc(jobLabel(j))}</option>`).join('');
     renderJobOptions();renderJobDirectory();
     $('reportJob').innerHTML='<option value="">All jobs</option>'+state.jobs.map(j=>`<option value="${esc(j.id)}">${esc(jobLabel(j))}</option>`).join('');
@@ -626,6 +633,9 @@
 
   function goPage(page) {
     if(!pageMeta[page] || (['reports','jobs'].includes(page)&&!state.isAdmin)) page='log';
+    if(page!=='reports'){$('reportFilterFloat').classList.add('hidden');$('reportFilterToggle').dataset.minimized='true';}
+    window.scrollTo({top:0,left:0,behavior:'auto'});
+    if($('mainContent'))$('mainContent').scrollTop=0;
     document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
     $(`page-${page}`).classList.add('active');
     document.querySelectorAll('[data-page]').forEach(el=>el.classList.toggle('active',el.dataset.page===page));
@@ -747,7 +757,7 @@
     $('reportTech').innerHTML='<option value="">All technicians</option>'+ids.map(id=>`<option value="${esc(id)}">${esc(names.get(id)||`User ${id.slice(0,8)}`)}</option>`).join('');
     $('reportTech').value=ids.includes(old)?old:'';
   }
-  function chartColors(){return ['#4776f6','#18b6a4','#8b6df2','#f4a340','#e45d6b','#36a2eb','#e879c8','#7dbd55','#e6c84f','#6d82a8'];}
+  function chartColors(){return ['#2878a8','#18b6a4','#8b6df2','#f4a340','#e45d6b','#36a2eb','#e879c8','#7dbd55','#e6c84f','#6d82a8'];}
   function makeChart(old,canvas,type,data,options) { if(old)old.destroy(); return new Chart($(canvas),{type,data,options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:type==='doughnut',position:'bottom',labels:{color:getComputedStyle(document.body).getPropertyValue('--muted'),usePointStyle:true,boxWidth:8,padding:15}},tooltip:{callbacks:{label:c=>`${c.dataset.label?c.dataset.label+': ':''}${Number(c.raw||0).toLocaleString()} hours`}}},scales:type==='doughnut'?{}:{x:{ticks:{color:getComputedStyle(document.body).getPropertyValue('--muted')},grid:{color:'rgba(120,140,170,.12)'}},y:{beginAtZero:true,ticks:{color:getComputedStyle(document.body).getPropertyValue('--muted')},grid:{color:'rgba(120,140,170,.12)'}}},...options}}); }
   function renderCharts(rows) {
     const colors=chartColors(), byTech={},byJob={},byMix={};
@@ -803,7 +813,7 @@
     const job=state.jobs.find(j=>String(j.id)===String(id));if(!job)return;
     const {count,error:countError}=await sb.from('time_entries').select('id',{count:'exact',head:true}).eq('job_id',id);
     if(countError){showNotice('jobNotice',friendlyError(countError),'error');return;}
-    if((count||0)>0){showNotice('jobNotice',`“${job.job_code}” has ${count} allocation(s), so it cannot be deleted without risking historical records. Mark it completed instead.`, 'error');return;}
+    if((count||0)>0){const message=`Cannot delete ${job.job_code}: this job has ${count} allocated hour entr${count===1?'y':'ies'}. Its history is protected. Mark the job completed instead.`;showNotice('jobNotice',message,'error');showToast(message,'error');return;}
     if(!window.confirm(`Delete job ${job.job_code} — ${job.job_name}? This cannot be undone.`))return;
     const {error}=await sb.from('jobs').delete().eq('id',id);
     if(error){showNotice('jobNotice',friendlyError(error),'error');return;}
@@ -872,9 +882,9 @@
   $('exportCsvBtn').addEventListener('click',exportCsv);$('jobForm').addEventListener('submit',addJob);$('cancelJobEditBtn').addEventListener('click',resetJobForm);$('jobDirectorySearch').addEventListener('input',renderJobDirectory);$('jobDirectoryStatus').addEventListener('change',renderJobDirectory);
   $('reportFilterToggle').dataset.minimized='true';
   $('reportFilterFloat').classList.add('hidden');
-  $('reportFilterMinimize').addEventListener('click',()=>{const panel=$('reportFilterFloat');panel.classList.toggle('collapsed');const collapsed=panel.classList.contains('collapsed');$('reportFilterMinimize').textContent=collapsed?'+':'−';$('reportFilterMinimize').setAttribute('aria-label',collapsed?'Expand filter options':'Collapse filter options');$('reportFilterMinimize').title=collapsed?'Expand filter options':'Collapse filter options';});
-  $('reportFilterClose').addEventListener('click',()=>{$('reportFilterFloat').classList.add('hidden');$('reportFilterFloat').classList.remove('collapsed');$('reportFilterMinimize').textContent='−';$('reportFilterToggle').dataset.minimized='true';$('reportFilterToggle').classList.remove('hidden');$('reportFilterToggle').setAttribute('aria-expanded','false');});
-  $('reportFilterToggle').addEventListener('click',()=>{$('reportFilterFloat').classList.remove('hidden','collapsed');$('reportFilterMinimize').textContent='−';$('reportFilterToggle').dataset.minimized='false';$('reportFilterToggle').classList.add('hidden');$('reportFilterFloat').style.left='';$('reportFilterFloat').style.top='';$('reportFilterFloat').style.right='18px';$('reportFilterFloat').style.bottom=window.matchMedia('(max-width:760px)').matches?'88px':'20px';$('reportFilterToggle').setAttribute('aria-expanded','true');});
+  $('reportFilterClose').addEventListener('click',()=>{$('reportFilterFloat').classList.add('hidden');$('reportFilterToggle').dataset.minimized='true';$('reportFilterToggle').classList.remove('hidden');$('reportFilterToggle').setAttribute('aria-expanded','false');});
+  $('reportFilterToggle').addEventListener('click',()=>{$('reportFilterFloat').classList.remove('hidden');$('reportFilterToggle').dataset.minimized='false';$('reportFilterToggle').classList.add('hidden');$('reportFilterFloat').style.left='';$('reportFilterFloat').style.top='';$('reportFilterFloat').style.right='18px';$('reportFilterFloat').style.bottom=window.matchMedia('(max-width:760px)').matches?'88px':'20px';$('reportFilterToggle').setAttribute('aria-expanded','true');});
+  document.addEventListener('click',e=>{const panel=$('reportFilterFloat');if(!panel.classList.contains('hidden')&&!panel.contains(e.target)&&!$('reportFilterToggle').contains(e.target)&&!e.target.closest('[data-date-preset^="floating-report:"]')){panel.classList.add('hidden');$('reportFilterToggle').dataset.minimized='true';$('reportFilterToggle').classList.remove('hidden');$('reportFilterToggle').setAttribute('aria-expanded','false');}});
   ['floatingReportFrom','floatingReportTo'].forEach((id,i)=>$(id).addEventListener('change',()=>{const target=i===0?'reportFrom':'reportTo';$(target).value=$(id).value;setCustomPresetOnDateChange('report');loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));}));
   ['floatingReportTech','floatingReportJob'].forEach((id,i)=>$(id).addEventListener('change',()=>{const target=i===0?'reportTech':'reportJob';$(target).value=$(id).value;loadReport().catch(e=>showNotice('reportNotice',friendlyError(e),'error'));}));
   $('floatingReportReset').addEventListener('click',()=>{$('clearReportFilters').click();syncFloatingReportFilters();});
